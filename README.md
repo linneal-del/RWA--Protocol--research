@@ -3,32 +3,32 @@
 Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景资料 + 协议清单 + 逐协议调研」整合在一个仓库里，供数据中台侧（解析 / NAV / PNL）与产品侧（详情页 Underlying / Yield Source / Risk / Compliance 文案）共用。
 
 - **维护人**：Linnea（从 Scott 接管 RWA 数据对接）
-- **首次整理**：2026-07-31
+- **本轮范围**：**「已确认真实解析」的 7 个协议**（2026-07-31 收敛）
 - **上线目标**：2026 年 8 月底完成 RWA 数据对接
 
 ## 目录结构
 
 ```
 ├── 00-背景/                        # 读这里知道"为什么做、要产出什么"
-│   ├── 00-新手入门-通俗版.md         ← ⭐ 零基础先看这篇（概念、术语、三类记收益方式）
+│   ├── 00-新手入门-通俗版.md         ← ⭐ 零基础先看这篇
 │   ├── 01-项目背景与目标.md
-│   ├── 02-PRD要点-数据侧视角.md      ← ⭐ 数据侧必读（含解析类型三分法、赎回链路分析）
+│   ├── 02-PRD要点-数据侧视角.md      ← ⭐ 数据侧必读
 │   ├── 03-2026-07-30-需求对齐会记录.md
 │   ├── 04-数据对接待办与依赖.md
 │   └── 05-协议调研模版.md            ← 新增协议时复制这个
 ├── 01-协议清单/
-│   ├── 协议清单总览.md              ← ⭐ 从这里进各协议文档，含冲突汇总与优先级建议
+│   ├── 协议清单总览.md              ← ⭐ 7 个协议的入口 + 冲突汇总 + 优先级
 │   ├── 8月待冲刺RWA协议列表.md       # 模版来源（Scott）
-│   └── [Master] RWA Season - 产品信息.csv   # 原始主表
-├── 02-协议调研/                     # 16 篇，覆盖 Master 表 20 行产品
+│   └── [Master] RWA Season - 产品信息.csv
+├── 02-协议调研/                     # 本轮 7 篇
 │   ├── Ember.md  Re.md  DMZ-RWAlpha.md  Nest-Credit.md
-│   ├── Unitas.md  Ondo.md  OpenTrade.md
-│   ├── USDai.md  OnRe.md  Asseto.md  Ethena.md
-│   └── Huma.md  DigiFT.md  Midas.md  XAUE.md  Theo.md
-└── 03-参考/
-    ├── 组合层风险与交叉依赖.md        ← ⭐ 跨协议相关性（Ethena / 黄金 / 私人信贷集中度）
-    ├── Plume-生态背景.md
-    └── 调研方法与信息源.md
+│   └── Unitas.md  Ondo.md  OpenTrade.md
+├── 03-参考/
+│   ├── 需要提供的交易Hash清单.md      ← 🔴 当前最大卡点：合约地址
+│   ├── 组合层风险与交叉依赖.md
+│   ├── Plume-生态背景.md
+│   └── 调研方法与信息源.md
+└── 99-暂不调研/                     # 待确认组 9 篇，已完成未删除，进排期时直接取用
 ```
 
 ## 从哪开始读
@@ -40,33 +40,19 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 | 中台 / 解析同学 | [00-背景/02-PRD要点-数据侧视角.md](00-背景/02-PRD要点-数据侧视角.md) + 各协议文档第 6 章 |
 | 产品 / 风控同学 | [03-参考/组合层风险与交叉依赖.md](03-参考/组合层风险与交叉依赖.md) + 各协议文档第 3/4/7/8 章 |
 
-## 协议索引
+## 协议索引（7 个）
 
-### ✅ 已确认真实解析（7 个）
+| 协议 | 产品 | 链 | 类别 | 解析类型 | 当前最大卡点 | 文档 |
+|------|------|----|------|---------|------------|------|
+| Ember (Bitwise) | RWA Multiply Vault | ETH | Private Credit | A | 拿不到 PPLUS 合约地址（官网 403） | [Ember.md](02-协议调研/Ember.md) |
+| Re | reUSD / reUSDe | ETH | Reinsurance | A | reUSDe 是**季度赎回**，标"活期"会误导 | [Re.md](02-协议调研/Re.md) |
+| DMZ (RWAlpha) | rAI Stocks basket | BNB | Stocks | **C 派息** | **PNL 必须含派息**，否则显示为 0 | [DMZ-RWAlpha.md](02-协议调研/DMZ-RWAlpha.md) |
+| Nest Credit | nOPAL | BNB⚠️ | Private Credit | A | 链冲突（官方只见 Plume/SOL/ETH/AVAX） | [Nest-Credit.md](02-协议调研/Nest-Credit.md) |
+| Unitas | XGLD | BNB | Gold | A | 美元 PNL 会混入金价波动 | [Unitas.md](02-协议调研/Unitas.md) |
+| Ondo | USDY | BNB⚠️ | TBills | **A/B 待定** | **是 USDY 还是 rUSDY**（决定要不要 NAV 曲线） | [Ondo.md](02-协议调研/Ondo.md) |
+| OpenTrade | PRIME+ Vault | ETH | MMF | A | TVL=0，可能是新池子（**对我们是好事**） | [OpenTrade.md](02-协议调研/OpenTrade.md) |
 
-| 协议 | 产品 | 链 | 类别 | 解析类型 | 文档 |
-|------|------|----|------|---------|------|
-| Ember (Bitwise) | RWA Multiply Vault | ETH | Private Credit | A | [Ember.md](02-协议调研/Ember.md) |
-| Re | reUSD / reUSDe | ETH | Reinsurance | A | [Re.md](02-协议调研/Re.md) |
-| DMZ (RWAlpha) | rAI Stocks basket | BNB | Stocks | **C 派息** | [DMZ-RWAlpha.md](02-协议调研/DMZ-RWAlpha.md) |
-| Nest Credit | nOPAL / nFXCF | Plume 系 | Private Credit | A | [Nest-Credit.md](02-协议调研/Nest-Credit.md) |
-| Unitas | XGLD | BNB | Gold | A | [Unitas.md](02-协议调研/Unitas.md) |
-| Ondo | USDY / QYLDon / JAAAon | BNB | TBills / Equities | A + B | [Ondo.md](02-协议调研/Ondo.md) |
-| OpenTrade | PRIME+ Vault | ETH | MMF | A | [OpenTrade.md](02-协议调研/OpenTrade.md) |
-
-### 🟡 待确认（9 个）
-
-| 协议 | 产品 | 链 | 关键阻塞 | 文档 |
-|------|------|----|---------|------|
-| USD.AI | sUSDai | ARB⚠️ | 30 天 epoch + FIFO 队列 vs「活期」 | [USDai.md](02-协议调研/USDai.md) |
-| OnRe | ONyc | **Solana** | 季度赎回 + 赎回需合格投资者 | [OnRe.md](02-协议调研/OnRe.md) |
-| Huma | PST | **Solana** | Solana 解析能力；定期 60D 口径 | [Huma.md](02-协议调研/Huma.md) |
-| Theo | sthUSD | BNB | 状态自相矛盾；申购币种是 thUSD | [Theo.md](02-协议调研/Theo.md) |
-| Midas | mF-ONE | ETH⚠️ | 链冲突；NAV 更新频率 | [Midas.md](02-协议调研/Midas.md) |
-| XAUE | XAUE | ETH⚠️ | 白名单铸造，零售只能二级买 | [XAUE.md](02-协议调研/XAUE.md) |
-| DigiFT | pEAK | ETH⚠️ | 仅合格投资者；无稳定 APY | [DigiFT.md](02-协议调研/DigiFT.md) |
-| Asseto | NGI+ | ETH⚠️ | 私募股权，季度估值 vs 天级 NAV | [Asseto.md](02-协议调研/Asseto.md) |
-| Ethena | ? | ? | **产品指向未定义** | [Ethena.md](02-协议调研/Ethena.md) |
+> Master CSV 的 **Ember (Securitize)**、**FalconX nFXCF**、**Ondo QYLDon / JAAAon** 属待确认组，因主协议在范围内，保留在对应文档的子章节里。
 
 ## 每篇协议文档包含什么
 
@@ -81,29 +67,27 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 | 9. 待确认清单（问谁 / 怎么查） | 推进用 |
 | 10. 参考链接 | 复查用 |
 
-## 三个最重要的结论
+## 收敛到 7 个之后，剩下的核心问题只有三个
 
-调研 20 个产品后，最值得先处理的三件事：
+**1. 🔴 合约地址全缺 —— 这是最长的前置依赖**
+7 个协议里只查到一个地址，而且还不是要接的那个 vault。没有地址，所有解析工作都开不了工。
+→ **一条真实交易 hash 能同时解决"合约地址 + 链 + 事件结构 + 入场 NAV 验证"**，详见 [03-参考/需要提供的交易Hash清单.md](03-参考/需要提供的交易Hash清单.md)。
 
-**1. 🔴「池子类别」口径系统性错误 —— 6 个协议标「活期」但实际不是**
-USD.AI（30 天 epoch + FIFO 可跨月）、Re reUSDe（季度）、OnRe（季度 + 30 天通知期）、Theo（约两周队列）、Asseto（私募股权）、DigiFT（对冲基金）。
-→ 直接影响 PRD 4.5.1 时间线组件与 4.6.2 赎回流程。**找 Marcus 对齐口径。**
+**2. 🔴 两个解析类型待定，定错了要重做**
+- **Ondo USDY**：是"净值涨"（A 类）还是"余额涨"（B 类，rebasing）？若是 B 类，**NAV 恒为 1，详情页不能配 NAV 曲线**
+- **DMZ rAI**：唯一的**现金流派息型**，`PNL = NAV 变化 + 累计派息`。沿用通用公式会算出 0 收益，且这类 bug 通常上线后才发现
+→ 需和 Jackson / Calvin 单独对齐一次口径
 
-**2. 🔴 DMZ rAI 的 PNL 公式必须单独处理**
-它是唯一的**现金流派息型**产品（每周派 USDT），`PNL = NAV 变化 + 累计派息`。沿用通用的 NAV 差分公式会**严重低估收益**，且这类 bug 通常上线后才被发现。
-→ **和 Jackson / Calvin 单独对齐一次。**
+**3. 🔴 Re reUSDe 标「活期」但官方是季度赎回**
+用户看到"活期"以为随时可取，实际一季度才处理一次。属产品预期错配，需找 Marcus 定口径（reUSD 是即时赎回，可以先上）。
 
-**3. 🔴 两个协议在 Solana 上，与「EVM 为主」基线冲突**
-OnRe ONyc、Huma PST 都是 SPL 代币。
-→ **先问 Jeff / Johnson 中台是否具备 Solana 解析能力**，答案是"否"就能直接砍掉两个协议的调研与对接投入。
-
-更多跨协议结论见 [03-参考/组合层风险与交叉依赖.md](03-参考/组合层风险与交叉依赖.md)。
+> 📌 **收敛带来的三个好消息**：7 个全是 EVM 链（原先 OnRe / Huma 在 Solana 的能力缺口问题消失）、黄金产品只剩 Unitas 一个（同质竞品问题消失）、纳指 covered call 只剩 DMZ 一个（策略重叠问题消失）。
 
 ## 使用与维护约定
 
 - **数字必须带日期**：TVL / APY 是快照，写就写清抓取时间
 - **区分事实与推断**：公开信息可证的直接写；推断标「推断：」；冲突或缺失标 **⚠️ 待核实** 并写明核实路径
-- **不编合约地址**：本轮除少数几个（OnRe ONyc mint、Ember Earn vault）外，**合约地址普遍待项目方提供**，不要凭猜测填
+- **不编合约地址**：本轮除 Ember Earn vault 外普遍缺失，不要凭猜测填
 - **解决待确认项时**：在对应文档「9. 待确认清单」勾掉并注明来源，**不删除**（保留决策轨迹）
 - **新增协议**：复制模版 → 写文档 → 更新 `01-协议清单/协议清单总览.md` 与本 README 索引
 

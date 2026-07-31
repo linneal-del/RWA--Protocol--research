@@ -47,9 +47,11 @@ RWA 详情页 **Overview Tab** 有四个子 Tab，内容全部由**管理后台�
 
 | 类型 | 机制 | 持仓解析 | NAV 曲线 | 典型协议 |
 |------|------|---------|---------|---------|
-| **A. NAV 累积型**（ERC-4626 / share 价格上涨） | balance 不变，`convertToAssets` 上升 | balance × NAV | 直接从合约取，天级打点 | Ember、Nest nOPAL、Unitas XGLD、sUSDai、ONyc、Theo sthUSD、Midas mfONE、XAUE |
-| **B. Rebasing / balance 增长型** | share 价格恒定，balance 增长 | 直接读 balance | **NAV 恒为 1，曲线无意义** | Ondo rUSDY、Ondo GM 在 Solana 侧 |
-| **C. 现金流分发型**（定期派息） | 周期性发 USDT 到钱包 | balance + 派息记录 | NAV 平，收益在派息流水里 | DMZ rAI（每周 USDT 派息） |
+| **A. NAV 累积型**（ERC-4626 / share 价格上涨） | balance 不变，`convertToAssets` 上升 | balance × NAV | 直接从合约取，天级打点 | **Ember、Re、Nest nOPAL、Unitas XGLD、OpenTrade PRIME+** |
+| **B. Rebasing / balance 增长型** | share 价格恒定，balance 增长 | 直接读 balance | **NAV 恒为 1，曲线无意义** | **Ondo：USDY 是 A 类、rUSDY 是 B 类 —— 我们接哪个待确认** ⚠️ |
+| **C. 现金流分发型**（定期派息） | 周期性发 USDT 到钱包 | balance + 派息记录 | NAV 平，收益在派息流水里 | **DMZ rAI**（每周 USDT 派息，本轮唯一） |
+
+> 范围已于 2026-07-31 收敛为 7 个协议。原 20 个产品的分类见 `99-暂不调研/` 各文档。
 
 > **对 PRD 的直接影响**：PRD 核心指标栏 Tab 是「NAV / APY / 派息信息」三选，正好对应上面三类。B 类不要配 NAV Tab，C 类必须配「派息信息」Tab。
 
@@ -59,12 +61,12 @@ PRD 4.6.2 要求返回 **request ID + 交易结果状态**。调研发现协议�
 
 | 赎回模式 | 说明 | 影响 |
 |---------|------|------|
-| 即时赎回 | 池内有流动性即到账 | 无需 request ID，无「赎回中」态 |
-| T+N 结算 | 如 OpenTrade 同日 / T+4 | 需要 request ID 跟踪 |
-| **Epoch / 队列** | 如 sUSDai 30 天 epoch + FIFO 队列 | 队列可能跨多个 epoch，「赎回中」可能持续数月 |
-| **季度赎回窗口** | 如 Re reUSDe、OnRe ONyc（季度 + 30 天通知期） | 前端需展示「下一个赎回窗口」，PRD 目前无此字段 ⚠️ |
+| 即时赎回 | **Ondo USDY、Nest nOPAL、Re 的 reUSD**（有额度即时） | 无需 request ID，无「赎回中」态 |
+| T+N 结算 | **OpenTrade**（同日，约 6h） | 需要 request ID 跟踪 |
+| 需解杠杆等待 | **Ember**（循环贷退出需时间）、**Unitas**（可能需解杠杆） | 时效待项目方确认 |
+| **季度赎回窗口** | 🔴 **Re 的 reUSDe**（季度处理） | 前端需展示「下一个赎回窗口」，**PRD 目前无此字段** ⚠️ |
 
-> Scott 的结论是「只返回交易成功/失败状态可行，关联最终赎回结果需重构系统」——上面这张表说明：**季度赎回窗口类协议若不关联最终结果，用户体验会很差**，建议一期优先选即时/T+N 类协议。
+> Scott 的结论是「只返回交易成功/失败状态可行，关联最终赎回结果需重构系统」。收敛到 7 个之后，**只有 Re 的 reUSDe 一个协议触及这个难点** —— 建议一期只上 reUSD（即时赎回），reUSDe 等赎回窗口方案做完再上，这样 Scott 原来的方案就够用了。
 
 ## 六、PRD 待确认事项（数据侧相关）
 
