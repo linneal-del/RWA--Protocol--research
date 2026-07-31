@@ -24,6 +24,7 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 │   ├── Ember.md  Re.md  DMZ-RWAlpha.md  Nest-Credit.md
 │   └── Unitas.md  Ondo.md  OpenTrade.md
 ├── 03-参考/
+│   ├── 实操清单-去哪里操作与需要提供什么.md  ← 🔴 要动手的看这篇（含安全提醒）
 │   ├── 需要提供的交易Hash清单.md      ← 🔴 当前最大卡点：合约地址
 │   ├── 组合层风险与交叉依赖.md
 │   ├── Plume-生态背景.md
