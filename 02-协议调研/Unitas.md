@@ -57,13 +57,26 @@ XGLD = **拿 XAUt（Tether Gold）去做 delta 中性套利**的收益型黄金�
 
 ## 5. 链上机制与凭证代币
 
-| 项 | 内容 |
+> ✅ **2026-08-02 产品页截图确认。完整记录见 [../03-参考/已确认合约地址与链上实测.md](../03-参考/已确认合约地址与链上实测.md)**
+
+**✅ 疑点已解决**
+
+| 项 | 我原先的疑点 | 实际（产品页原文） |
+|----|------------|-----------------|
+| 收益是 NAV 累积还是定期派发 | ⚠️ 官方两种表述并存，**决定 PNL 公式** | ✅ **确认 NAV 累积**。页面原文："XGLD is a Unitas-issued, yield-bearing gold asset backed by Tether Gold (XAUt), driving **continuous NAV growth** via Unitas strategies" |
+
+| 项 | 内容（2026-08-02 产品页） |
 |----|------|
 | 凭证代币 | XGLD（BNB Chain） |
-| 合约地址 | ⚠️ 待补 |
-| 铸造 | 存 XAUt → 1:1 铸 XGLD |
-| 收益表达 | NAV 增长（待确认是否也有派发） |
-| 赎回 | 活期；⚠️ 时效待确认（需先解开借贷头寸，可能有延迟） |
+| 合约地址 | ⚠️ 待补（**再截一次图即可**） |
+| 铸造 | ✅ **Swap 面板：Sell XAUT → Buy XGLD**，确认申购币种是 XAUT 不是稳定币，CSV 正确 |
+| 收益表达 | ✅ **continuous NAV growth**（A 类，无派发） |
+| **XGLD APY** | **2.94%**（页面可切 1W / 1M）（CSV 写 3% ✅） |
+| **TVL** | 🔴 **$15.99M** —— **CSV 写的是 100k，差约 160 倍**，CSV 严重过期 |
+| ⚠️ **二级市场** | 页面直接推荐 **"Exchange on PancakeSwap — Get XGLD from the secondary open market"**<br>→ 用户可能从二级买入，**成本基准不能只从 mint 事件推**，要用实际成交价 |
+| 🔴 **活动** | 页面挂着 **"Unitas Booster Earn Season 2 — Join the Binance Wallet Booster Earn & Share Mega Rewards!"**<br>→ **已经和 Binance Wallet 有联合活动**，这就是 PRD **Campaign Bonus** 字段的现实来源，需和运营对齐奖励数据从哪来 |
+| 页面还有 | **Balance / Earnings** 两个 tab（30D/90D/365D/All）→ 有历史数据，可能有 API ｜ **Bridge** 功能（未来可能扩链）｜ USDu 产品线 ｜ Rewards 页 |
+| 赎回 | 活期；⚠️ 时效仍待确认（需先解开借贷头寸，可能有延迟） |
 | 抵押率 | **最高 70% LTV**（借稳定币） |
 
 ## 6. 数据接入要点（对齐 PRD）
@@ -124,7 +137,10 @@ XGLD 的美元价值 = XGLD 数量 × (每 XGLD 对应的 XAUt 数量) × (XAUt 
 
 | # | 问题 | 问谁 / 怎么查 |
 |---|------|------------|
-| 1 | **收益是 NAV 累积还是定期派发** | 项目方 / DD（**优先**，决定 PNL 公式） |
+| 1 | ~~收益是 NAV 累积还是定期派发~~ → ✅ **2026-08-02 产品页确认：NAV 累积（continuous NAV growth）**，PNL 用净值差公式 | — |
+| 1b | 🔴 **CSV 的 TVL 写 100k，实际 $15.99M（差 160 倍）** —— 主表数据需刷新；且这会影响优先级判断（看着 10 万 vs 实际 1600 万，结论完全不同） | Cece / Marcus（**新发现**） |
+| 1c | **Binance Wallet Booster Earn Season 2 活动**的奖励数据从哪来（对应 PRD Campaign Bonus 字段） | 运营 + Marcus（**新发现**） |
+| 1d | 用户可能从 **PancakeSwap 二级市场**买入 XGLD —— 成本基准怎么取（不能只看 mint 事件） | Scott/Linnea 内部定 + 报 Jackson |
 | 2 | **USD 本位 PNL 会混入金价波动，前端是否需要额外说明或提供黄金本位视图** | Marcus（**优先**，客诉风险） |
 | 3 | 实际 LTV 水位与清算机制 | 项目方 / DD |
 | 4 | 链部署（BNB 确认；Ethereum 报道是否误传） | 项目方 |

@@ -79,12 +79,32 @@ Nest 是 **Plume 生态的旗舰收益层**，把机构级资产（巴西信用�
 
 ## 5. 链上机制与凭证代币
 
-| 项 | 内容 |
+> ✅ **2026-08-02 产品页截图确认**（BNB Chain 视角）。完整记录见 [../03-参考/已确认合约地址与链上实测.md](../03-参考/已确认合约地址与链上实测.md)
+
+**🔴 重要更正：CSV 是对的，我错了**
+
+| 项 | 我原先的质疑 | 实际（产品页确认） |
+|----|------------|-----------------|
+| 链 | 质疑 CSV 写的 BNB（官方 docs 只列 Plume/Solana/ETH/AVAX） | ✅ **BNB Chain 确实支持**，页面链选择器就选着 BNB Chain，"Available networks" 显示 **5 条链** |
+| 申购币种 | 质疑 CSV 写的 USDT（官方 docs 说 pUSD/USDC） | ✅ **BSC-USD**（BNB 链上的 USDT），CSV 正确 |
+
+> 📌 **教训**：官方 docs 的部署列表不全，**产品页才是真相**。以后核链先看产品页。
+
+| 项 | 内容（2026-08-02 产品页） |
 |----|------|
-| 凭证代币 | nOPAL、nFXCF（ERC-20 / SPL 视链而定） |
-| 收益表达 | **token 价格上涨**（NAV 累积型），非 rebasing |
-| 申购 | 存 pUSD 或 USDC 直接在 Plume 上铸 nOPAL；**无需 KYC** |
-| 赎回 | **无赎回费**；⚠️ 具体到账时效/是否有队列待确认（nFXCF 为月度贷款周期，可能有周期约束） |
+| 凭证代币 | nOPAL（BNB Chain 上为 ERC-20）；nFXCF 视链而定 |
+| 合约地址 | ⚠️ 待补（页面标题旁有下拉箭头，点开应能看到地址 —— **再截一次图即可**） |
+| **NAV（Exchange rate）** | ✅ **1 nOPAL → 1.082662 BSC-USD** —— 确认 **A 类 NAV 累积型**，已累积 8.27% |
+| 🔴 **NAV 更新频率** | **Hourly on Weekdays（工作日每小时）** → **周末不更新**，天级打点在周末会拿到重复值 |
+| **赎回时效** | **~30 分钟（最长 4 天）** → 可标"活期"，后台「赎回处理时间」建议按保守口径填 4 天 |
+| 🔴 **赎回费（两种）** | **Instant redemptions 0.15%** ／ **Standard redemptions 0.015%**（差 10 倍）<br>⚠️ **PRD 后台只有一个「赎回费」字段，装不下两种**，见 §9.4 |
+| Vault APY | **11.05%**（CSV 写 12%） |
+| TVL | **$53M**（CSV 写 30M） |
+| 持有人数 | 2,665 ｜ 安全：Fully audited ｜ Yield type：Directional |
+| 页面 Tab | Overview / Transparency / **Performance** / **Risk** → 📌 官方已有 Performance 与 Risk 页，**详情页文案可直接引用，省 PM 写作成本** |
+| 申购 | 页面有 **Mint / Redeem / Bridge** 三个 tab；**无需 KYC** |
+| 相邻产品 | 侧边栏有 **nOPAL·pUSD 6.7x**（杠杆金库）、导航有 **Loop（New）** → Nest 自己也做循环贷，若未来接需另立条目 |
+| 顶部 Banner | "Access RWA yield through Nest's nBASIS vault, **now available in Binance Wallet**" → ✅ 印证 Binance Wallet 已接 nBASIS 的先例 |
 | 跨链 | Nest UI 内置 LayerZero 桥（Plume ↔ Ethereum） |
 | 组合性 | nOPAL 已上 **Pendle**（Ethereum 主网 120 天市场，PT 固定约 11% APY）；nFXCF 是 **Morpho 上第二大 RWA 抵押物**（2026-06-22 约 $76M） |
 | 数据源 | CoinGecko 已收录 nOPAL / nCREDIT，RWA.xyz 有 FalconX vault 数据 |
@@ -143,14 +163,19 @@ Nest 是 **Plume 生态的旗舰收益层**，把机构级资产（巴西信用�
 
 ## 9. 待确认清单
 
-| # | 问题 | 问谁 / 怎么查 |
-|---|------|------------|
-| 1 | **CSV 写 nOPAL 在 BNB Chain，官方资料只见 Plume/Solana/Ethereum/Avalanche** —— 是新部署还是填表笔误？ | Cece（**优先**，链填错会直接导致解析配错） |
-| 2 | 「WK 已接入，需修改」修改点是什么 | Jeff / Johnson / WK |
-| 3 | nFXCF 的 CSV 链写 Ethereum，官方说三链，我们接哪条 | Cece |
-| 4 | 赎回时效 / 是否有队列（影响 PRD 赎回中状态） | 项目方 |
-| 5 | nFXCF 收益率 CSV 为空，是否用 8.25% 毛收益还是净值 | Cece |
-| 6 | 是否还要接 Nest 其他金库（nTBILL / nBASIS / nALPHA / nACRDX）——**Binance Wallet 已上过 nBASIS**，可能有复用 | Marcus / Cece |
+| # | 问题 | 问谁 / 怎么查 | 状态 |
+|---|------|------------|------|
+| 1 | ~~nOPAL 是否真在 BNB Chain~~ | — | ✅ **2026-08-02 产品页确认：是，CSV 正确** |
+| 2 | ~~申购币种是 USDT 还是 pUSD/USDC~~ | — | ✅ **确认 BSC-USD（USDT），CSV 正确** |
+| 3 | ~~赎回时效~~ | — | ✅ **~30 分钟，最长 4 天** |
+| 4 | 🔴 **两种赎回费率（instant 0.15% / standard 0.015%）怎么装进后台单一「赎回费」字段** | Marcus（**新发现，优先**） | 🟡 待答 |
+| 5 | 🔴 **NAV 工作日每小时更新、周末不动** —— 天级打点选哪个时点？周末重复值 PNL 怎么处理？ | Scott/Linnea 内部定 + 报 Jackson | 🟡 待定 |
+| 6 | nOPAL 在 BNB 链上的合约地址 | **页面标题旁下拉箭头点开，再截一次图**（最容易解决的一条） | 🟡 待补 |
+| 7 | 「WK 已接入，需修改」修改点是什么 | Jeff / Johnson / WK | 🟡 待答 |
+| 8 | nFXCF 的 CSV 链写 Ethereum，官方说三链，我们接哪条 | Cece | 🟡 待答（nFXCF 本轮范围外） |
+| 9 | nFXCF 收益率 CSV 为空，是否用 8.25% 毛收益还是净值 | Cece | 🟡 待答 |
+| 10 | 是否还要接 Nest 其他金库（nTBILL / nBASIS / nALPHA / nACRDX）——**Binance Wallet 已上过 nBASIS**，可能有复用 | Marcus / Cece | 🟡 待答 |
+| 11 | Nest 自己的 **Loop / 6.7x 杠杆金库**是否在未来范围内 | Marcus | 🟡 待答 |
 
 ## 10. 参考链接
 

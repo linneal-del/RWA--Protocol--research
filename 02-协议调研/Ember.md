@@ -1,4 +1,6 @@
-# Ember（Bitwise RWA Multiply Vault / Securitize Corporate Bond）
+# Ember —— Bitwise Premium+ RWA Vault（PPLUS）／ Securitize Corporate Bond
+
+> ✅ **2026-08-02 更正**：`ember.so/earn/PPLUS` 的正式产品名是 **"Bitwise Premium+ RWA Vault"**（Premium**Plus**），**不是** 我原先推测的 OpenTrade PRIME+。curator 也已确认就是 **Bitwise**。
 
 > **状态**：✅ 已确认接入（Bitwise vault，接入情况「WK」）｜ 🟡 待确认（Securitize Corporate Bond）
 > **调研时间**：2026-07-31 ｜ **解析类型**：A（NAV 累积，ERC-4626 share 价格上涨）
@@ -77,14 +79,50 @@ CSV 标的收益率 10%，落在"底层 + 适度杠杆"的合理区间。
 
 ## 5. 链上机制与凭证代币
 
-| 项 | 内容 |
+> ✅ **2026-08-02 产品页截图确认。完整记录见 [../03-参考/已确认合约地址与链上实测.md](../03-参考/已确认合约地址与链上实测.md)**
+
+**🔴 两处更正**
+
+| 项 | 我原先的判断 | 实际（产品页确认） |
+|----|------------|-----------------|
+| PPLUS 是什么 | 推测 = OpenTrade 的 **PRIME+** | ❌ **错。是 "Bitwise Premium+ RWA Vault"** —— **P**remium**Plus**，与 OpenTrade 无关 |
+| curator 是不是 Bitwise | ⚠️ 找不到公开证据 | ✅ **确认是 Bitwise**（页面有 Bitwise 徽章 + logo，且有 RWAs 认证标） |
+
+| 项 | 内容（2026-08-02 产品页） |
 |----|------|
-| 标准 | ERC-4626 原则（share token） |
-| 收益表达 | **share 汇率上涨**，balance 不变（1 share 从 1.00 → 1.05 USDC） |
-| NAV 取数 | `convertToAssets(1e18)` / `previewRedeem`（⚠️ 需确认合约是否标准 4626 接口） |
-| 已知合约 | Ember Earn：`0x9be9294722f8AAd37b11a9792Be2C782182caFA2`（Ethereum）——⚠️ **这是 EARN 金库，不是 PPLUS 金库**，PPLUS 地址需另取 |
-| 赎回 | 活期。⚠️ 但循环贷策略"退出需要时间"（公开资料明确指出即使固定利率借款，解开 loop 也需时间），是否有赎回队列 / 缓冲池待确认 |
-| 组合性 | share 可再抵押给借贷市场 |
+| 正式产品名 | **Bitwise Premium+ RWA Vault** |
+| 链 | Ethereum ✅ ｜ 申购币种：**USDC** ✅ |
+| **Share Price（NAV）** | ✅ **1.0029** —— 确认 **A 类 NAV 累积型**；且**极接近 1.0 说明金库很新，几乎没有历史 NAV 可回溯** |
+| Target APY | **12.00%**（CSV 写 10%）⚠️ 注意是 **Target 目标值**，不是实测收益 |
+| TVL | **$5.91M**（CSV 写 3M） |
+| Yield Composition | Deposit Yield 12.00% ／ Rewards 0.00%（目前无代币激励） |
+| 🔴 **申购机制** | **Daily Processing，"Next: 3 Aug, 00:00"**，且 **"Shares Received: After processing"**<br>→ **申购不是即时铸份额，见下方专门说明** |
+| **赎回时效** | **最长 7 天**（Withdrawal: Up to 7 days）→ 后台「赎回处理时间」填 7 天 |
+| 合约地址 | ⚠️ 仍待补。页面有 **Details / Transparency** 两个 tab，点进去应有地址 —— **再截一次图即可** |
+| 已知的另一个金库 | Ember Earn：`0x9be9294722f8AAd37b11a9792Be2C782182caFA2`（Ethereum）—— ⚠️ **不是本产品**，别配错 |
+| 页面链接 | Docs / **Legal** / **Risks** → Compliance 与 Risk Tab 文案可直接取用 |
+| 产品定位原文 | "institutional grade product designed to maximize real-world asset yield through a **capital-efficient looping strategy**，targeting higher returns than traditional RWA lending" ✅ 印证 CSV 的"循环贷" |
+
+### 🔴 「每日批处理」会打破 PRD 的申购流程
+
+页面明确写 **Daily Processing** + **Shares Received: After processing**，意思是：
+
+```
+用户签完申购交易 → USDC 已扣走 → 但拿不到 share
+                 → 等到下一个处理时点（每天 00:00）→ 才铸出 share
+```
+
+**这段真空期里**：用户的钱没了，凭证代币 balance 还是 0 → **按现有解析逻辑（balance × NAV），持仓会显示为 0**。
+
+**对 PRD 的直接冲击**：
+
+| PRD 位置 | 问题 |
+|---------|------|
+| 4.6.1 Step 4「申购成功」 | 展示"质押金额 900.28 USDC"，但此刻链上并无对应持仓 |
+| 4.5.2 Portfolio Tab | 展示规则是"有持仓才展示" → 用户申购后打开详情页会看到**空状态** |
+| 整体 | PRD **只为「赎回中」设计了中间态，没有「申购中」** |
+
+→ 🔴 **建议**：新增「申购处理中（Pending Subscription）」状态，或中台解析要能识别"已存入未铸份额"的待处理金额。**需找 Marcus 单独过一次。**
 
 ## 6. 数据接入要点（对齐 PRD）
 
