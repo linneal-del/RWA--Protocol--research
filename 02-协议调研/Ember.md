@@ -81,6 +81,29 @@ CSV 标的收益率 10%，落在"底层 + 适度杠杆"的合理区间。
 
 > ✅ **2026-08-02 产品页截图确认。完整记录见 [../03-参考/已确认合约地址与链上实测.md](../03-参考/已确认合约地址与链上实测.md)**
 
+### 产品页截图（2026-08-02，Bitwise Premium+ RWA Vault）
+
+![Ember Bitwise Premium+ 产品页](截图/Ember-BitwisePremiumPlus-产品页-20260802.png)
+
+**截图上要看的点**：
+
+| 位置 | 内容 | 意义 |
+|------|------|------|
+| 页面标题 | 🔴 **"Bitwise Premium+ RWA Vault"** + `RWAs` 标签 + 认证勾 | ✅ **PPLUS = Premium Plus**，不是我推测的 OpenTrade PRIME+ |
+| 标题下方 | 🔴 **Bitwise 徽章 + logo** | ✅ **curator 确认是 Bitwise**（此前找不到公开证据） |
+| **Share Price** | **1.0029** | ✅ 这就是 NAV，确认 A 类；**极接近 1.0 → 金库很新，几乎无历史 NAV 可回溯** |
+| Target APY | **12.00%** | ⚠️ 是 **Target 目标值**，不是实测收益（CSV 写 10%） |
+| TVL | **$5.91M** | CSV 写 3M，已过期 |
+| 右侧面板 | Deposit 币种 **USDC** ✅ ｜ Chain 图标为 Ethereum ✅ | CSV 正确 |
+| 🔴 **Daily Processing** | **"Next: 3 Aug, 00:00"** | **申购是每日批处理，不是即时** |
+| 🔴 **Shares Received** | **"After processing"** | **签完交易拿不到 share** → 见下方专门说明 |
+| **Withdrawal** | **Up to 7 days** | 后台「赎回处理时间」填 7 天 |
+| Yield Composition | Deposit Yield **12.00%** ／ Rewards **0.00%** | 目前无代币激励 |
+| 产品描述原文 | "institutional grade product designed to maximize real-world asset yield through a **capital-efficient looping strategy**" | ✅ 印证 CSV 的"循环贷" |
+| 底部链接 | **Docs / Legal / Risks** | Compliance 与 Risk Tab 文案可直接取用 |
+| Tab | Overview / **Transparency** / **Details** | 📌 **合约地址大概率在 Details 或 Transparency 里，点开再截一次即可** |
+| 右侧按钮 | "Connected chain unsupported" | 当时钱包在错的链上，不影响以上结论 |
+
 **🔴 两处更正**
 
 | 项 | 我原先的判断 | 实际（产品页确认） |

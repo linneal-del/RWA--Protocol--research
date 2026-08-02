@@ -81,6 +81,30 @@ Nest 是 **Plume 生态的旗舰收益层**，把机构级资产（巴西信用�
 
 > ✅ **2026-08-02 产品页截图确认**（BNB Chain 视角）。完整记录见 [../03-参考/已确认合约地址与链上实测.md](../03-参考/已确认合约地址与链上实测.md)
 
+### 产品页截图（2026-08-02，nOPAL / BNB Chain）
+
+![Nest nOPAL 产品页](截图/Nest-nOPAL-产品页-20260802.png)
+
+**截图上要看的点**：
+
+| 位置 | 内容 | 意义 |
+|------|------|------|
+| 右上角链选择器 | 🔴 **BNB Chain** | ✅ **CSV 正确，我错了** —— BNB 部署确实存在 |
+| Available networks | **5 个网络图标** | 官方 docs 只列了 4 条，实际更多 |
+| 右侧 Mint 面板 | Deposit 币种 **BSC-USD**（余额 40.99） | ✅ 申购币种是 BNB 链上的 USDT，CSV 正确 |
+| **Exchange rate** | **1 nOPAL → 1.082662 BSC-USD** | ✅ 这就是 NAV，确认 A 类累积型，已涨 8.27% |
+| **Redemption time** | **~30 min（up to 4 days）** | 可标活期；后台「赎回处理时间」按保守口径填 4 天 |
+| **Payout schedule** | 🔴 **Hourly on Weekdays** | **周末不更新** → 天级打点会拿重复值 |
+| Instant redemptions | 🔴 **0.15% fee** | ⚠️ 与下一行**两种费率**，后台单一字段装不下 |
+| Standard redemptions | 🔴 **0.015% fee** | 相差 10 倍 |
+| Vault APY / TVL | **11.05%** ／ **$53M** | CSV 写 12% / 30M，已过期 |
+| Yield type | Directional | 详情页 Yield Source 可引用 |
+| 其他 | 持有人 **2,665** ｜ Security reviews: **Fully audited** ｜ 标签 Highest TVL / Payment financing / Audited | Compliance Tab 可引用 |
+| 底部 Tab | Overview / Transparency / **Performance** / **Risk** | 📌 官方已有 Performance 与 Risk 页，**详情页文案可直接引用** |
+| 左侧栏 | 有 **nOPAL·pUSD 6.7x**（杠杆金库）、导航有 **Loop（New）** | Nest 自己也做循环贷，未来若接需另立条目 |
+| 顶部 Banner | 🔴 "Access RWA yield through Nest's nBASIS vault, **now available in Binance Wallet**" | ✅ 印证 Binance Wallet 已接 nBASIS 的先例，可找当时对接同学复用经验 |
+| 右侧面板 Tab | **Mint / Redeem / Bridge** | 有官方跨链桥 |
+
 **🔴 重要更正：CSV 是对的，我错了**
 
 | 项 | 我原先的质疑 | 实际（产品页确认） |

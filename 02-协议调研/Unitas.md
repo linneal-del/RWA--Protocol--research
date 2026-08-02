@@ -59,6 +59,23 @@ XGLD = **拿 XAUt（Tether Gold）去做 delta 中性套利**的收益型黄金�
 
 > ✅ **2026-08-02 产品页截图确认。完整记录见 [../03-参考/已确认合约地址与链上实测.md](../03-参考/已确认合约地址与链上实测.md)**
 
+### 产品页截图（2026-08-02，XGLD）
+
+![Unitas XGLD 产品页](截图/Unitas-XGLD-产品页-20260802.png)
+
+**截图上要看的点**：
+
+| 位置 | 内容 | 意义 |
+|------|------|------|
+| 页面副标题原文 | 🔴 "XGLD is a Unitas-issued, yield-bearing gold asset backed by Tether Gold (XAUt), driving **continuous NAV growth** via Unitas strategies" | ✅ **确认 NAV 累积型、无定期派发** —— 原疑点解决，PNL 用净值差公式 |
+| **TVL** | 🔴 **$15.99M** | **CSV 写 100k，差约 160 倍** —— 主表严重过期，会误导排期优先级 |
+| **XGLD APY** | **2.94%**（可切 1W / 1M） | CSV 写 3% ✅ |
+| 右侧 Swap 面板 | **Sell `XAUT` → Buy `XGLD`** | ✅ 确认申购币种是 XAUT 不是稳定币，CSV 正确 |
+| 🔴 PancakeSwap 卡片 | "Exchange on PancakeSwap — **Get XGLD from the secondary open market**" | ⚠️ 用户可能从二级买入 → **成本基准不能只看 mint 事件**，要用实际成交价 |
+| 🔴 右下角 Banner | **"Unitas Booster Earn Season 2 — Join the Binance Wallet Booster Earn & Share Mega Rewards!"** | 🔴 **已与 Binance Wallet 有联合活动** → 这就是 PRD **Campaign Bonus** 字段的现实来源，需和运营对齐奖励数据来源 |
+| 左侧 | Earnings 卡片 ｜ **Balance / Earnings** 两个 tab，范围 30D / 90D / 365D / All | 有历史数据，可能有 API |
+| 顶部导航 | USDu / **XGLD** / Rewards / Dashboards ｜ 右侧面板有 **Bridge** | 有 Rewards 页；Bridge 说明未来可能扩链 |
+
 **✅ 疑点已解决**
 
 | 项 | 我原先的疑点 | 实际（产品页原文） |

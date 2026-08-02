@@ -22,7 +22,8 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 │   └── [Master] RWA Season - 产品信息.csv
 ├── 02-协议调研/                     # 本轮 7 篇
 │   ├── Ember.md  Re.md  DMZ-RWAlpha.md  Nest-Credit.md
-│   └── Unitas.md  Ondo.md  OpenTrade.md
+│   ├── Unitas.md  Ondo.md  OpenTrade.md
+│   └── 截图/                        # 产品页原始截图（已内嵌到各协议文档 §5）
 ├── 03-参考/
 │   ├── 已确认合约地址与链上实测.md      ← ⭐ **给中台的交付物**（实测确认，非文档推断）
 │   ├── 实操清单-去哪里操作与需要提供什么.md  ← 要动手的看这篇（含安全提醒）
@@ -44,15 +45,17 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 
 ## 协议索引（7 个）
 
-| 协议 | 产品 | 链 | 类别 | 解析类型 | 当前最大卡点 | 文档 |
-|------|------|----|------|---------|------------|------|
-| Ember (Bitwise) | RWA Multiply Vault | ETH | Private Credit | A | 拿不到 PPLUS 合约地址（官网 403） | [Ember.md](02-协议调研/Ember.md) |
-| Re | reUSD / reUSDe | ETH | Reinsurance | A | reUSDe 是**季度赎回**，标"活期"会误导 | [Re.md](02-协议调研/Re.md) |
-| DMZ (RWAlpha) | rAI Stocks basket | BNB | Stocks | **C 派息** | **PNL 必须含派息**，否则显示为 0 | [DMZ-RWAlpha.md](02-协议调研/DMZ-RWAlpha.md) |
-| Nest Credit | nOPAL | BNB⚠️ | Private Credit | A | 链冲突（官方只见 Plume/SOL/ETH/AVAX） | [Nest-Credit.md](02-协议调研/Nest-Credit.md) |
-| Unitas | XGLD | BNB | Gold | A | 美元 PNL 会混入金价波动 | [Unitas.md](02-协议调研/Unitas.md) |
-| Ondo | USDY | BNB⚠️ | TBills | **A/B 待定** | **是 USDY 还是 rUSDY**（决定要不要 NAV 曲线） | [Ondo.md](02-协议调研/Ondo.md) |
-| OpenTrade | PRIME+ Vault | ETH | MMF | A | TVL=0，可能是新池子（**对我们是好事**） | [OpenTrade.md](02-协议调研/OpenTrade.md) |
+| 协议 | 产品 | 链 | 类别 | 解析类型 | 截图 | 当前最大卡点 | 文档 |
+|------|------|----|------|---------|:---:|------------|------|
+| Ember | **Bitwise Premium+ RWA Vault** | ETH ✅ | Private Credit | A ✅ | ✅ | 🔴 **申购是每日批处理**，PRD 缺「申购中」状态 | [Ember.md](02-协议调研/Ember.md) |
+| Re | reUSD / reUSDe | ETH ✅ | Reinsurance | A ✅ | ✅ | 🔴 **非 4626，NAV 走 Oracle**，取数入口待补 | [Re.md](02-协议调研/Re.md) |
+| DMZ (RWAlpha) | rAI Stocks basket | BNB | Stocks | **C 派息** | — | **PNL 必须含派息**，否则显示为 0；需派息 hash | [DMZ-RWAlpha.md](02-协议调研/DMZ-RWAlpha.md) |
+| Nest Credit | nOPAL | **BNB ✅** | Private Credit | A ✅ | ✅ | 🔴 **两种赎回费率**，后台单一字段装不下 | [Nest-Credit.md](02-协议调研/Nest-Credit.md) |
+| Unitas | XGLD | BNB ✅ | Gold | A ✅ | ✅ | 美元 PNL 会混入金价波动；主表 TVL 差 160 倍 | [Unitas.md](02-协议调研/Unitas.md) |
+| Ondo | USDY | BNB⚠️ | TBills | **A/B 待定** | — | **是 USDY 还是 rUSDY**（决定要不要 NAV 曲线） | [Ondo.md](02-协议调研/Ondo.md) |
+| OpenTrade | PRIME+ Vault | ETH | MMF | A | — | 域名待验证；TVL=0 可能是新池子（**对我们是好事**） | [OpenTrade.md](02-协议调研/OpenTrade.md) |
+
+> ✅ = 2026-08-02 已由产品页截图 / 链上实测确认，非文档推断。截图内嵌在各协议文档 §5，原图在 [`02-协议调研/截图/`](02-协议调研/截图/)。
 
 > Master CSV 的 **Ember (Securitize)**、**FalconX nFXCF**、**Ondo QYLDon / JAAAon** 属待确认组，因主协议在范围内，保留在对应文档的子章节里。
 
