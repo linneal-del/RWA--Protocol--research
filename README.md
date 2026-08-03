@@ -103,10 +103,30 @@ Instant 0.15% ／ Standard 0.015%（差 10 倍）。**PRD 后台只有一个「�
 **4. Master CSV 的 TVL 严重过期**
 Unitas 表里写 100k、**实际 $15.99M（差约 160 倍）**；Nest 30M→$53M；Ember 3M→$5.91M。这不只是显示问题 —— **看着 10 万和实际 1600 万，排期优先级判断会完全不同**。
 
+### 📍 2026-08-03 追加：多链实测 + 真实交易 hash
+
+**已确认的合约地址与 decimals**（全部链上实测，非文档推断）：
+
+| 协议 | 链 | 地址 | decimals |
+|------|----|------|:---:|
+| Re / reUSD | ETH | `0x5086bf358635B81D8C47C66d1C8b9E567Db70c72` | 18 |
+| Re / reUSDe | ETH | `0xdDC0f880ff6e4e22E4B74632fBb43Ce4DF6cCC5a` | 18 |
+| **Nest / nOPAL** | **BNB＝ETH＝Plume 同址** | `0x119dd7daff816f29d7ee47596ae5e4bdc4299165` | 🔴 **6** |
+| **Unitas / XGLD** | BNB | `0xe60106a5cAb7e7C64830919d36Ab20CaAf50Ac91` | 🔴 **6** |
+
+**已捞到 6 条真实交易 hash**（Re×3、nOPAL×1、XGLD×2）→ 见 [已确认合约地址与链上实测.md](03-参考/已确认合约地址与链上实测.md)
+
+**三个新增结论**：
+1. 🔴 **decimals 陷阱**：nOPAL 与 XGLD 都是 **6 位**，按 18 位解析会把金额算小 10¹² 倍 —— 不报错、难发现
+2. 🔴 **"NAV 取不到"是模式不是个案**：Re / nOPAL / XGLD **三个全都不是 ERC-4626**。这类"链下运营 + 链上凭证"的 RWA 协议普遍不把 NAV 放在代币合约里，通用方案要假设 **NAV 来自外部数据源**
+3. 🔴 **XGLD 的价格源必须配黄金**：实测供应 3,775.57 × ≈$4,235 ≈ 页面 TVL $15.99M → 1 XGLD ≈ 1 盎司，**不能按 1 XGLD ≈ $1 处理**
+
 ### 还缺的
 
 - **DMZ 的派息 hash**（决定 PNL 能否自动化）、**Ondo 的链与代币版本**（决定要不要做 NAV 曲线）、**OpenTrade 域名确认**
-- Nest / Ember / Unitas 的合约地址 —— **页面上点一下就有，再截一次图即可**
+- **Re 的 NAV Oracle 地址** —— 唯一的硬阻塞
+- Ember Premium+ 的 vault 合约地址（产品页 Details / Transparency tab 里，点一下就有）
+- nOPAL 的申购 hash、XGLD 的赎回 hash（近期区块内未发生，bscscan 翻更早记录即可）
 
 > 📌 **收敛带来的三个好消息仍然成立**：7 个全是 EVM 链、黄金只剩 Unitas、纳指 covered call 只剩 DMZ。
 
