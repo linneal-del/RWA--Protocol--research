@@ -85,7 +85,12 @@ XGLD = **拿 XAUt（Tether Gold）去做 delta 中性套利**的收益型黄金�
 | 项 | 内容（2026-08-02 产品页） |
 |----|------|
 | 凭证代币 | XGLD（BNB Chain） |
-| 合约地址 | ⚠️ 待补（**再截一次图即可**） |
+| ✅ **合约地址（BNB Chain）** | **`0xe60106a5cAb7e7C64830919d36Ab20CaAf50Ac91`**（2026-08-03 BSC 实测 `symbol()`="XGLD"、`name()`="Unitas Gold"） |
+| 🔴 **decimals** | **6**（不是 18） |
+| 实测供应量 | **3,775.571480 XGLD** |
+| 是否 ERC-4626 | ❌ **不是**（`asset()` / `convertToAssets()` revert）→ NAV 链上取数入口待确认 |
+| 🎯 **交叉验证** | 3,775.57 XGLD ÷ 产品页 TVL $15.99M → 隐含单价 **≈$4,235** ≈ 一金衡盎司金价<br>→ **推断 1 XGLD ≈ 1 XAUt ≈ 1 盎司**（不像 XAUE 那样 1:1000 拆细）<br>→ 🔴 **价格源必须配黄金（XAU/XAUt），不能按 1 XGLD ≈ $1 处理** |
+| ✅ **真实申购 hash** | `0x5a9c4bc2ad7215045daffe12990d2f0c88b37af1a93d587ffd028cff37677e30`（0.298432 XGLD）<br>`0xb31d83868885ce81582f509bb34ee85eee9cc08d5cd3976614bf714fc4e65e17`（0.510665 XGLD）<br>⚠️ 两笔接收方同为 `0x0a4db057…`，大概率是 router/做市商而非散户 |
 | 铸造 | ✅ **Swap 面板：Sell XAUT → Buy XGLD**，确认申购币种是 XAUT 不是稳定币，CSV 正确 |
 | 收益表达 | ✅ **continuous NAV growth**（A 类，无派发） |
 | **XGLD APY** | **2.94%**（页面可切 1W / 1M）（CSV 写 3% ✅） |

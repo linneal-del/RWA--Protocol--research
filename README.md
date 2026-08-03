@@ -51,8 +51,8 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 | Ember | **Bitwise Premium+ RWA Vault** | ETH ✅ | Private Credit | A ✅ | ✅ | 🔴 **申购是每日批处理**，PRD 缺「申购中」状态 | [Ember.md](02-协议调研/Ember.md) |
 | Re | reUSD / reUSDe | ETH ✅ | Reinsurance | A ✅ | ✅ | **解析规格已跑通 + 有真实 hash**；只差 NAV Oracle 地址 | [Re.md](02-协议调研/Re.md) |
 | DMZ (RWAlpha) | rAI Stocks basket | BNB | Stocks | **C 派息** | — | **PNL 必须含派息**，否则显示为 0；需派息 hash | [DMZ-RWAlpha.md](02-协议调研/DMZ-RWAlpha.md) |
-| Nest Credit | nOPAL | **BNB ✅** | Private Credit | A ✅ | ✅ | 🔴 **两种赎回费率**，后台单一字段装不下 | [Nest-Credit.md](02-协议调研/Nest-Credit.md) |
-| Unitas | XGLD | BNB ✅ | Gold | A ✅ | ✅ | 美元 PNL 会混入金价波动；主表 TVL 差 160 倍 | [Unitas.md](02-协议调研/Unitas.md) |
+| Nest Credit | nOPAL | **BNB ✅** | Private Credit | A ✅ | ✅ | **地址+hash 已确认**（三链同址、decimals=6）；两种赎回费率装不下 | [Nest-Credit.md](02-协议调研/Nest-Credit.md) |
+| Unitas | XGLD | BNB ✅ | Gold | A ✅ | ✅ | **地址+hash 已确认**（decimals=6，价格源要配黄金） | [Unitas.md](02-协议调研/Unitas.md) |
 | Ondo | USDY | BNB⚠️ | TBills | **A/B 待定** | — | **是 USDY 还是 rUSDY**（决定要不要 NAV 曲线） | [Ondo.md](02-协议调研/Ondo.md) |
 | OpenTrade | PRIME+ Vault | ETH | MMF | A | — | 域名待验证；TVL=0 可能是新池子（**对我们是好事**） | [OpenTrade.md](02-协议调研/OpenTrade.md) |
 

@@ -115,28 +115,65 @@ Solana 和 EVM 有几个**关键差异**，第一次接触很容易踩：
 
 > ⚠️ 这个和 Ember/Re 不是同一个项目，属于 DeX / 基础解析那条线。
 
-**先拿 mint 地址（三种方式任选）**：
+#### ✅ mint 地址已确认（2026-08-03 链上实测）
 
-| 方式 | 操作 |
-|------|------|
-| **最可靠** | 在 **Binance Wallet** 里打开自己的 BNSOL 资产 → 详情页会显示合约/mint 地址 → 复制 |
-| 次选 | Solscan 搜索框输入 `BNSOL` → 在结果里找 **Binance Staked SOL**，注意核对名称完全一致（山寨币会用相同符号） |
-| 兜底 | 官方文档 / 公告页 |
-
-> 🔴 **务必核对**：Solana 上同名代币极多，**只认名称 + 发行方都对得上的那个**。拿错 mint 地址会导致解析对象整个错掉。我这里不写具体地址，就是为了避免你抄到一个我记错的值。
-
-**再捞 hash**：
 ```
-Solscan → 打开 BNSOL 的 mint 地址页
-  → "Transfers" 标签：找 From 为空/零 的记录 = 质押铸造（stake）
-  → "Holders" 标签：挑一个余额小的持有人 → 点进去看它的交易历史
-     （能一次拿到「质押 → 持有 → 解押」的完整链路）
+BNSOL mint: BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85
 ```
+
+| 实测项 | 结果 |
+|-------|------|
+| owner（所属程序） | `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`（SPL Token 程序）✅ |
+| 账户大小 | 82 字节 = 标准 SPL Mint ✅ |
+| **decimals** | **9** ← 和 EVM 的 18/6 都不一样，务必注意 |
+| supply | 9,043,715.3922 |
+| **mintAuthority** | `75NPzpxoh8sXGuSENFMREidq6FMzEx4g2AfcBEB6qjCV` |
+
+> 💡 地址来源：CoinGecko API 的 `platforms.solana` 字段，然后我用 Solana RPC 的 `getAccountInfo` **逐项验证过**（不是凭记忆）。你可以自己复现：
+> ```bash
+> curl -s https://api.coingecko.com/api/v3/coins/binance-staked-sol | python3 -m json.tool | grep -A3 platforms
+> ```
+> 注意 CoinGecko 免费接口限流很严（连续请求会 429），**一次只查一个，或者用 `/coins/list?include_platform=true` 一次拿全部**。
+
+#### ✅ 已捞到的 signature（但**是 swap，不是质押**）
+
+| signature | 说明 |
+|-----------|------|
+| `2vfcDXHjFiyUTQskvfGh1yHGmLLX9YfMsjvHpQSdeEX8eccvqAeu9Tbp1P7YAkmSQj1jGiDEPGeKzCSQWszE8yxp` | 经 DFlow 聚合器，BNSOL +0.2468 |
+| `4sPac6c1cwWcArFAChcm59NP64kff4vRAUbUvbQtKih82BaFyAQKi9BJKo2RUUPdnWkNQAw2vvoSHUv2v2iyuiKs` | 经 Titan 聚合器，BNSOL +0.0008 |
+| `3ANXHAQHvqvuHT28vn49Eaa6r8Be8covURadFJF8FWv9dpnd4oNUq9WaArtsi6odCt2a98vQLppxV91VUWb4kbL7` | USDC ↔ BNSOL |
+
+🔴 **我一开始判断错了，这里如实记下来当教训**：
+我先用"BNSOL 余额净增"来判断动作类型，把这几笔标成了"≈质押"。**逐笔看指令后发现全是 swap** —— 因为：
+- 指令里只有**聚合器程序** + `spl-associated-token-account: createIdempotent`
+- **没有 `mintTo` 指令**，也没有质押池程序
+
+**→ 教训：判断 Solana 动作类型不能只看余额变化方向，必须看指令（instruction）。** 余额增加既可能是质押铸造，也可能是二级市场买入，两者的解析逻辑完全不同。
+
+#### 怎么找**真正的**质押 / 解押交易
+
+```
+方式 A（最快）：Solscan 界面
+  1. 打开 https://solscan.io/token/BNso1VUJnh4zcfpZa6986Ea66P6TCp59hvtNJ8b1X85
+  2. 点 "Transfers" 标签
+  3. 找 From 是 "—" 或零地址的记录 = mintTo = 真正的质押铸造
+  4. 或者点 "Analytics" / "DeFi Activities"，Solscan 会自动标注动作类型
+
+方式 B：从 mintAuthority 反查
+  打开 https://solscan.io/account/75NPzpxoh8sXGuSENFMREidq6FMzEx4g2AfcBEB6qjCV
+  它签名的交易里就包含铸造操作
+
+方式 C（最可靠）：自己在 Binance Wallet 里质押一笔最小额
+  Solana gas 极便宜（一笔约 0.000005 SOL ≈ 一分钱），成本可忽略
+  然后从钱包交易历史里拿 signature
+```
+
+**判定标准**：打开交易详情，指令列表里出现 **`mintTo`（质押）** 或 **`burn`（解押）** 才是对的；如果只看到 swap / 聚合器程序，那就是二级市场交易。
 
 **要提供给解析同学的 3 类 signature**：
-1. **质押（SOL → BNSOL）**
-2. **解押 / 赎回（BNSOL → SOL）** —— 注意 Binance 的解押可能有等待期，会分成两笔（申请 + 到账）
-3. **兑换率变化相关**（BNSOL 是生息代币，兑 SOL 比率会涨，找一笔能看出比率的交易）
+1. **质押（SOL → BNSOL）** → 找 `mintTo`
+2. **解押 / 赎回（BNSOL → SOL）** → 找 `burn`；注意可能分两笔（申请 + 到账）
+3. **二级市场 swap** → 上面三条已经有了，可以直接用（**这类要能和质押区分开，别算成申购**）
 
 ---
 
@@ -144,29 +181,53 @@ Solscan → 打开 BNSOL 的 mint 地址页
 
 > ⚠️ 同上，属于 DeX 那条线。
 
-**先确认"V3"指什么**（这一步不能省）：
-Orca 的历史版本有：
-- 早期的 **恒定乘积池（Constant Product / V1）**
-- 现在主力的 **Whirlpools（集中流动性 CLMM）** —— 很多人口头叫它 V2/V3
+#### ✅ Program ID 已确认（2026-08-03 链上实测）
 
-🔴 **"V3" 是内部叫法还是官方版本名，需要先跟提需求的人确认**。否则你捞到的 hash 可能是错的池子类型，解析同学白做一遍。
-
-**拿 Program ID**：
 ```
-Solscan 搜 "Orca" → 找到官方的 Whirlpools 程序
-（Whirlpools 的 Program ID 是个 vanity 地址，以 whirL… 开头，很好认）
-→ ⚠️ 但请在 Solscan 上核对"官方认证/标签"，不要凭记忆抄
+Orca Whirlpools 程序: whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc
 ```
 
-或者更直接：**在 orca.so 上做一笔最小额 swap，从钱包历史里拿 signature** —— Solana gas 极便宜（一笔约 0.000005 SOL），成本可以忽略。
+| 实测项 | 结果 |
+|-------|------|
+| owner | `BPFLoaderUpgradeab1e11111111111111111111111` |
+| **executable** | **true** → ✅ 确认是一个可执行程序，不是普通账户 |
 
-**要提供的 4 类 signature**：
-1. **Swap**（最常见，优先给这个）
-2. **加流动性**（open position / increase liquidity）
-3. **移除流动性**（decrease liquidity / close position）
-4. **收手续费**（collect fees）—— CLMM 特有，容易被漏掉
+#### 🔴 关于「Orca V3」：实测证据说这个叫法有问题
 
-> 📌 **提醒解析同学**：Whirlpools 是**集中流动性**，仓位是 NFT（每个 position 一个 NFT），不是简单的 LP token。持仓解析逻辑和传统 AMM 完全不同，务必提前说明。
+我从 5 笔成功交易的日志里解出了实际的 Anchor 指令名：
+
+```
+Whirlpools 自己的指令 : Swap、SwapV2、Swap2、Deposit、Withdraw
+外层聚合器的指令      : SwapTob、SwapTobEnhanced、SwapRouteV3、CreateTokenAccount
+```
+
+**Whirlpools 的指令集里没有任何 "V3"。** 唯一带 V3 的是 `SwapRouteV3`，而它属于**外层聚合器**，不是 Orca 的。
+
+→ 📌 **动手前先确认「Orca V3」指什么**。两种可能：
+1. 是内部对 **Whirlpools（CLMM 集中流动性）** 的口头叫法
+2. 是把聚合器的 `SwapRouteV3` 误当成了 Orca 的版本号
+
+**搞错会让解析对象整个偏掉。** 一句话就能问清，值得先问。
+
+#### ✅ 已捞到的真实 signature（已分类）
+
+| 推荐度 | signature | 指令构成 |
+|:---:|-----------|---------|
+| ⭐ **先用这笔** | `nBy9BhsNKK2GxQCyu4p3aqoRyP1WrFfLiuCaSv29kBGqawgWKyAZNzZLELysyLymwcgSUqBqvhsiudXiPNygH5a` | SwapRouteV3, SwapV2｜只涉及 2 个 mint，**结构最干净** |
+| ⭐ **要 LP 的话用这笔** | `2VR4X5o5Na8XkUR9GPmo1FLzCsLTR56wUdLDN2iNGTP5CnQmZCEsReSoTG8qwUmTFJmeK96KLY8d4btRuXRwN9bG` | CreateTokenAccount, SwapTobEnhanced, SwapV2, Swap, **Deposit**, **Withdraw** ← 唯一含流动性操作 |
+| | `3vzNc5Nx2m2gJYgdsKG4kTvNxuMJ6nwod7cgJrY2C7noqxYZZRG4CzkVviToAr2UuWYyXZKWAP3ur2dzepaGnbGA` | SwapTob, SwapV2, Swap2（多跳） |
+| | `2zWZGWt4AWTFsX9Go8ot7jBrfjSwC5mtPYCmWvAyCxNDjKzmTjaqEScynZGCLhdhbmVmjGG1uCgymDxat4GUiE9` | SwapRouteV3, SwapV2, Swap2 |
+| | `2GxVKDNBUytBKZ4wnpFTfFJ9ELsqfij3nG2fS3uCeXGE6HiQ5BBXg6DvqBXRo87dQnVSo5eSabT1SHvc6AiiejBe` | SwapTobEnhanced, SwapV2 |
+
+⚠️ **Orca 程序的失败率极高：25 笔里只有 5 笔成功**，大量是套利机器人抢跑失败。
+→ **捞样本必须过滤 `err == null`**，否则十条里有八条是废的。
+
+#### 还缺的两类（需要你或项目方补）
+
+1. **纯 Orca 直连的 swap**（不经聚合器）—— 上面 5 笔全都套了外层聚合器。最快办法：**自己在 orca.so 上做一笔最小额 swap**（gas ≈ 一分钱）
+2. **收手续费（collect fees）** —— CLMM 特有动作，最容易被漏，需要有 LP 仓位才会产生
+
+> 📌 **务必提醒解析同学**：Whirlpools 是**集中流动性（CLMM）**，仓位是 **NFT**（每个 position 一个 NFT），不是传统的 LP token。持仓解析逻辑和恒定乘积 AMM 完全不同 —— 需要读 position NFT + tick 范围才能算出实际仓位价值。这一点如果不提前说，解析同学大概率会按传统 LP 去做，然后整个返工。
 
 ---
 
@@ -214,6 +275,85 @@ https://etherscan.io/token/0x5086bf358635B81D8C47C66d1C8b9E567Db70c72
 ```
 
 完整的合约地图、方法选择器、事件结构、解析规格见 [已确认合约地址与链上实测.md §6](已确认合约地址与链上实测.md)。
+
+---
+
+### 5️⃣ 顺手补上的：Nest nOPAL / Unitas XGLD（BNB 链）
+
+| 协议 | 合约地址（BNB Chain） | decimals |
+|------|---------------------|:---:|
+| **Nest nOPAL** | `0x119dd7daff816f29d7ee47596ae5e4bdc4299165` | 🔴 **6** |
+| **Unitas XGLD** | `0xe60106a5cAb7e7C64830919d36Ab20CaAf50Ac91` | 🔴 **6** |
+
+**已捞到的 hash**：
+
+| 协议 | 动作 | tx hash |
+|------|------|---------|
+| nOPAL | **赎回 burn** | `0xd9f45ecb06b1b87d2b72daac161f1752bc1dd0cd5ff576cbf485781bd8f4d3b4` |
+| XGLD | **申购 mint** | `0x5a9c4bc2ad7215045daffe12990d2f0c88b37af1a93d587ffd028cff37677e30` |
+| XGLD | **申购 mint** | `0xb31d83868885ce81582f509bb34ee85eee9cc08d5cd3976614bf714fc4e65e17` |
+
+⚠️ 两笔 XGLD 申购的接收方是同一个地址（`0x0a4db057…`），大概率是 router / 做市商而非散户，用的时候要说明。
+
+**还缺**：nOPAL 的申购、XGLD 的赎回（最近 5,000 区块内没发生）。用 **bscscan.com** 翻更早的记录即可：
+```
+https://bscscan.com/token/<地址> → Transfers → 找 From/To = 0x000…000
+```
+
+> 💡 **BSC 节点备忘**：`bsc-rpc.publicnode.com` 支持 `eth_getLogs`；`bsc-dataseed.binance.org` 会报 `limit exceeded`；`bsc.drpc.org` / `binance.llamarpc.com` / `1rpc.io/bnb` 实测连不上。
+
+---
+
+## 五之二、实战案例：一条"看起来对、其实不对"的 hash
+
+> 这是 2026-08-03 真实发生的一次核对，非常典型，单独记下来。
+
+**背景**：我说还缺 reUSD 的赎回样本，收到一条 hash：
+```
+0xa122e5a8826929a0ddb30917ac1912486ed6a4ed3e49090f13d6acc033d8f35a
+```
+
+**核对结果：这不是 reUSD 赎回。** 判定过程：
+
+| 检查 | 结果 |
+|------|------|
+| 交易存在吗 | ✅ 存在，区块 25,671,740，状态成功 |
+| 日志条数 | 🔴 **80 条**（正常的 Re 赎回应该只有 2–3 条） |
+| 调用的合约 | `0x1aea38a9…f6eb` —— **不是 Re 的入口合约** |
+| 里面有 reUSD 吗 | ✅ 有，16.121786 reUSD 在流转 |
+| 🔴 **有 reUSD 的 `Transfer(to = 0x0)` 吗** | ❌ **没有** → **没有销毁 → 不是赎回** |
+| 唯一的 mint 是什么 | 是另一个代币（`0x9487bd5a…1648`）的铸造，不是 reUSD |
+
+**它实际是什么**：一笔经过聚合器的复合交易，路径里出现了 WETH、USDT、sUSDe、reUSD，还调用了 **Permit2**、**Uniswap V4 PoolManager**、**Pendle Router**（这三个是业内公认地址，按地址特征判断）。属于**杠杆 / 套利 / Pendle 相关操作**，reUSD 只是中途经过。
+
+### 🎯 这个案例的三个价值
+
+**1. 它示范了"怎么一眼判断"**
+```
+赎回 = 凭证代币的 Transfer 里，To = 0x0000...0000
+没有这一条，就不是赎回，不管交易里出现了多少该代币
+```
+
+**2. 它示范了"日志条数就是信号"**
+| 日志条数 | 说明 |
+|:---:|------|
+| **2–3 条** | 用户直连协议的干净样本 ← **要的就是这种** |
+| **10 条以上** | 大概率经过了聚合器 / 多跳路由 |
+| **50 条以上** | 几乎肯定是套利或杠杆组合操作，**不适合当解析样本** |
+
+**3. 🔴 它本身是一个极有价值的「反例样本」，别扔**
+
+把它交给解析同学，标注为 **"负向测试用例"**：
+
+```
+tx: 0xa122e5a8826929a0ddb30917ac1912486ed6a4ed3e49090f13d6acc033d8f35a
+类型：负向用例（NOT 申购、NOT 赎回）
+说明：这笔交易里有 16.12 reUSD 的转账，但没有 mint 也没有 burn，
+      是用户把 reUSD 拿去 Pendle / Uniswap V4 做组合操作。
+期望结果：解析器应当【不产生任何申购/赎回记录】，也不改变持仓成本基准。
+```
+
+**为什么这个用例重要**：reUSD / reUSDe 是可组合的（能在 Pendle、Curve、Morpho 用）。如果解析器只按"用户地址收到/转出该代币"来判断申赎，就会把这类交易**误判成申购或赎回**，导致用户的持仓成本和收益全错。**这类 bug 只有靠反例样本才能测出来。**
 
 ---
 
