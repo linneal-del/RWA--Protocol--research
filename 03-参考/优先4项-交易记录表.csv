@@ -1,0 +1,24 @@
+序号,标的,链,操作入口,操作步骤,交易类型,金额,tx hash / signature,截图名,时间(UTC+8),备注
+1,BNSOL,Solana,Binance App / Wallet 质押,SOL 质押 → 铸 BNSOL,质押铸造,,,01-BNSOL-stake,,重点看是否出现 mintTo
+2,BNSOL,Solana,https://jup.ag,swap 买入 BNSOL,二级市场买入,,,02-BNSOL-swap,,不是申购，解析要能区分
+3,BNSOL,Solana,同第 1 步入口,解押 BNSOL → SOL,解押/赎回,,,03-BNSOL-unstake,,★是一步到账还是分两笔（申请+到账）
+4,Orca,Solana,https://www.orca.so,Swap 最小额,Swap,,,04-Orca-swap,,
+5,Orca,Solana,https://www.orca.so/pools,开仓 / 加流动性,加流动性,,,05-Orca-addliq,,★CLMM 仓位是 NFT 不是 LP token
+6,Orca,Solana,同上（我的仓位页）,收手续费,收手续费,,,06-Orca-collectfee,,★最易漏；需先有交易量
+7,Orca,Solana,同上,移除流动性 / 关仓,移除流动性,,,07-Orca-removeliq,,
+8,Orca,Solana,页面任意处,截图页面版本说法,观察-版本确认,,,08-Orca-version,,★页面写的是 Whirlpools/CLMM 还是 V3？
+9,Ember,Ethereum,https://ember.so/earn/PPLUS,打开 Details / Transparency 截合约地址,前置-记录地址,,,09-Ember-contract,,我还缺 vault 地址
+10,Ember,Ethereum,同上,授权 USDC,Approve,,,10-Ember-approve,,独立一笔交易
+11,Ember,Ethereum,同上,Deposit 存入,申购-存入,,,11-Ember-deposit,,
+12,Ember,Ethereum,同上（持仓页）,存入后立刻看持仓,观察-申购中,,,12-Ember-pending,,★★持仓是否显示 0？
+13,Ember,Ethereum,同上（持仓页）,过了 00:00 批处理后再看,申购-份额到账,,,13-Ember-shares-received,,★★是否产生第二笔交易？
+14,Ember,Ethereum,同上,Withdraw 提交赎回,赎回申请,,,14-Ember-withdraw,,最长 7 天
+15,Ember,Ethereum,同上,赎回到账,赎回到账,,,15-Ember-withdraw-done,,
+16,Re / reUSD,Ethereum,https://app.re.xyz （reUSD tab）,授权 USDC,Approve,,,16-Re-reUSD-approve,,
+17,Re / reUSD,Ethereum,同上,Mint 申购,申购,,,17-Re-reUSD-mint,,代币 0x5086bf...0c72 decimals=18
+18,Re / reUSD,Ethereum,同上,Redeem 赎回,赎回,,,18-Re-reUSD-redeem,,官方说有额度即时，验证一下
+19,Re / reUSDe,Ethereum,https://app.re.xyz （reUSDe tab）,授权 USDe,Approve,,,19-Re-reUSDe-approve,,
+20,Re / reUSDe,Ethereum,同上,Mint 申购（最小额）,申购,,,20-Re-reUSDe-mint,,⚠️只投最小额，可能季度赎回
+21,Re / reUSDe,Ethereum,同上,点开 Redeem 面板,观察-赎回条款,,,21-Re-reUSDe-redeem-panel,,★★页面是否显示赎回周期？
+22,Re,Ethereum,同上（Swap tab）,Swap 换一笔,二级市场 swap,,,22-Re-swap,,不应算作申购
+23,任意,任意,任意,故意输入低于最低申购额,失败-低于最低额,,,23-FAIL-min-amount,,能暴露合约限制
