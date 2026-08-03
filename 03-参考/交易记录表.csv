@@ -1,0 +1,42 @@
+序号,协议,链,操作步骤,交易类型,金额,tx hash,截图文件名,时间(UTC+8),备注
+1,DMZ (RWAlpha),BNB,sp.rwalpha.ai/vault/AI → 授权 USDT,Approve,,,DMZ-01-approve.png,,先做 DMZ！每周派息要等一周
+2,DMZ (RWAlpha),BNB,输入金额 → 确认申购,申购,,,DMZ-02-mint.png,,记下得到多少 rAI
+3,DMZ (RWAlpha),BNB,（被动）等一周收到派息 USDT,派息到账,,,DMZ-03-dividend.png,,★PNL 公式关键。第 8 天回来记
+4,DMZ (RWAlpha),BNB,赎回一部分,部分赎回,,,DMZ-04-redeem-partial.png,,
+5,DMZ (RWAlpha),BNB,赎回剩余全部,全部赎回,,,DMZ-05-redeem-all.png,,
+6,Nest Credit,BNB,nest.credit/vaults/nest-opal-vault → 授权 USDT,Approve,,,Nest-01-approve.png,,合约 0x119dd7daff816f29d7ee47596ae5e4bdc4299165 decimals=6
+7,Nest Credit,BNB,Mint 输入金额 → 确认,申购,,,Nest-02-mint.png,,交换率约 1 nOPAL = 1.0827 USDT
+8,Nest Credit,BNB,再买一次（验证成本累加）,追加申购,,,Nest-03-mint-again.png,,
+9,Nest Credit,BNB,Redeem → 选 Instant,赎回-即时,,,Nest-04-redeem-instant.png,,★费率 0.15%，与下一行对比
+10,Nest Credit,BNB,Redeem → 选 Standard,赎回-标准,,,Nest-05-redeem-standard.png,,★费率 0.015%。后台单一字段装不下两种
+11,Nest Credit,BNB,Bridge 跨链一小笔,跨链 Bridge,,,Nest-06-bridge.png,,三链同地址，跨链后持仓怎么算
+12,Unitas,BNB,先换到 XAUT（申购币种不是稳定币）,前置-换币,,,Unitas-01-get-xaut.png,,
+13,Unitas,BNB,evm.unitas.so/xgld → 授权 XAUT,Approve,,,Unitas-02-approve.png,,合约 0xe60106a5cAb7e7C64830919d36Ab20CaAf50Ac91 decimals=6
+14,Unitas,BNB,Swap XAUT → XGLD,申购,,,Unitas-03-mint.png,,1 XGLD ≈ 1 盎司黄金
+15,Unitas,BNB,赎回 XGLD → XAUT,赎回,,,Unitas-04-redeem.png,,
+16,Unitas,BNB,从 PancakeSwap 二级市场买 XGLD,二级市场买入,,,Unitas-05-pancake-buy.png,,★成本基准来源与 mint 不同
+17,Unitas,BNB,Rewards 页 / Booster Earn 活动相关操作,活动奖励,,,Unitas-06-rewards.png,,对应 PRD Campaign Bonus
+18,Ondo,BNB,app.ondo.finance/assets/usdy → 授权 USDT,Approve,,,Ondo-01-approve.png,,
+19,Ondo,BNB,申购,申购,,,Ondo-02-mint.png,,★确认拿到的是 USDY 还是 rUSDY
+20,Ondo,BNB,持有一两天后看余额有没有自己变多,观察-余额变化,,,Ondo-03-balance-check.png,,★余额自增=rebasing，不能配 NAV 曲线
+21,Ondo,BNB,赎回,赎回,,,Ondo-04-redeem.png,,
+22,Ember,ETH,ember.so/earn/PPLUS → Details/Transparency 抓合约地址,前置-记录地址,,,Ember-01-contract.png,,顺手把 vault 地址截下来
+23,Ember,ETH,授权 USDC,Approve,,,Ember-02-approve.png,,
+24,Ember,ETH,Deposit 输入金额 → 确认,申购-存入,,,Ember-03-deposit.png,,★存入后先别走，看持仓是否为 0
+25,Ember,ETH,存入后立刻看持仓页,观察-申购中,,,Ember-04-pending.png,,★★Daily Processing 真空期，PRD 缺此状态
+26,Ember,ETH,等过了 00:00 批处理后再看持仓,申购-份额到账,,,Ember-05-shares-received.png,,★★是否产生第二笔交易？
+27,Ember,ETH,Withdraw 提交赎回,赎回申请,,,Ember-06-withdraw-request.png,,最长 7 天
+28,Ember,ETH,赎回到账,赎回到账,,,Ember-07-withdraw-done.png,,
+29,Re,ETH,app.re.xyz → reUSD 授权 USDC,Approve,,,Re-01-reusd-approve.png,,入口 0x4691c475be804fa85f91c2d6d0adf03114de3093
+30,Re,ETH,reUSD Mint（USDC 进）,申购-reUSD,,,Re-02-reusd-mint.png,,代币 0x5086bf358635B81D8C47C66d1C8b9E567Db70c72 decimals=18
+31,Re,ETH,reUSD Redeem,赎回-reUSD,,,Re-03-reusd-redeem.png,,官方说有额度即时
+32,Re,ETH,reUSDe 授权 USDe,Approve,,,Re-04-reusde-approve.png,,入口 0xe1886be2ba8b2496c2044a77516f63a734193082
+33,Re,ETH,reUSDe Mint（USDe 进）,申购-reUSDe,,,Re-05-reusde-mint.png,,★只投最小额！官方文档说季度赎回
+34,Re,ETH,reUSDe Redeem（看页面有没有周期提示）,赎回申请-reUSDe,,,Re-06-reusde-redeem.png,,★★重点：页面到底显不显示赎回周期
+35,Re,ETH,Swap tab 换币,二级市场 swap,,,Re-07-swap.png,,不应算作申购
+36,OpenTrade,ETH,⚠️ 先找 Cece 确认 lovable.app 域名是否官方,前置-域名确认,,,,,确认前不要连钱包
+37,OpenTrade,ETH,授权 USDC,Approve,,,OT-01-approve.png,,
+38,OpenTrade,ETH,申购,申购,,,OT-02-mint.png,,
+39,OpenTrade,ETH,赎回（官方说同日约 6h 到账）,赎回,,,OT-03-redeem.png,,
+40,任意协议,任意,故意输入低于最低申购额,失败-低于最低额,,,FAIL-01-min-amount.png,,能暴露合约限制条件
+41,任意协议,任意,故意在授权额度不足时申购,失败-授权不足,,,FAIL-02-allowance.png,,
