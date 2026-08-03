@@ -1,0 +1,27 @@
+序号,协议,链,操作步骤,交易类型,金额,tx hash / signature,截图,时间(UTC),验证状态,给解析的要点
+1,Ember Bitwise Premium+,Ethereum,vault 页 Deposit 1 USDC,申购-提交入队,1 USDC,0xf53c337104ff7bdd28af59ba757efe4be09b1afc7bacd01e5cfc511e12bfc94f,Ember-deposit-queued-20260803.png,2026-08-03 ~13:59,✅链上已验,🔴钱扣了但无份额mint；入口0x626d3410450c0a716d721e6a3c6b75a36d00e913；方法0x6e553f65 deposit(uint256,address)；事件0x9cc70bb6a09a…
+2,Ember Bitwise Premium+,Ethereum,等 8/4 00:00 批处理后份额到账,申购-份额到账,,⬜待补,⬜待截图,,⬜待做,批处理后才铸份额；这笔能揭示份额代币地址
+3,Ember Bitwise Premium+,Ethereum,点排队条目的 Cancel,取消排队申购,,⬜待补,⬜待截图,,⬜待做,UI 有 Cancel 按钮，是独立交易类型
+4,Re reUSDe,Ethereum,Swap tab 1 USDC → reUSDe,二级市场swap-失败,1 USDC,—（execution reverted: 0xcea9e31d）,⬜待截图,2026-08-03,✅UI已证,🔴走 ParaSwap Augustus V6.2 (0x6a000f20005980200259b80c5102003040001068, version=6.2.0)，方法 swapExactAmountIn；不能算申购
+5,Re reUSDe,Ethereum,Mint tab 输入 1 USDe,申购-被最小额拦截,1 USDe,—,⬜待截图,2026-08-03,✅UI已证,🔴最小申购 250 USDe；汇率 1 reUSDe = 1.3974 USDe
+6,Re reUSDe,Ethereum,Redeem tab,赎回-功能关闭,—,—,⬜待截图,2026-08-03,✅UI已证,🔴"Redeem is currently closed / No redemption window is open"→CSV标活期是错的
+7,Orca Whirlpools,Solana,Trade → Swap,Swap（两跳）,—,B6Ago4ntzqmPgcPaYgDeavYPiFcnLSKj7agLHmypsEYC5WxwPP62qBCAfKDCBUsnDo6Nscbm8jvb6a7SQj9ShoK,⬜待截图,2026-08-03 07:33:57,✅链上已验,Anchor: Swap → TwoHopSwap；买入 ORCA 代币
+8,Orca Whirlpools,Solana,Pools → Create Position（自动换币腿）,Autoswap-经聚合器,USDC -0.510447,danFLgRuT6EGrWUZesDuAqq1d1zcsuaL1ZT2LGZFQWs1x5Z2WGqXnt2jKuj8WRTKRTFodJxX2vYrALYaHXumvQ1,Orca-openposition-confirm.png,2026-08-03 07:37:50,✅链上已验,🔴不是开仓！是 Autoswap；聚合器 oBbXuJJbV6yhGFaCCFfFmf7ko1n7NNk9a2eh3iAGH3P
+9,Orca Whirlpools,Solana,同上（真正的开仓）,开仓 OpenPosition,USDC -0.476861,54G7sZ99HHPsruwcdYNHCN7ztRm1Re6JZS1qp1JqzsoCydFxrpWPGPsKvFfgKTnSWbsxysatumwUEWg2FiG9ibWm,Orca-openposition-confirm.png,2026-08-03 07:37:50,✅链上已验,🔴OpenPositionWithTokenExtensions；仓位NFT FLGBtfD9… 0→1；NFT 属 Token-2022 程序
+10,Orca Whirlpools,Solana,同上（附带）,优先费/Tip,—,4ZnqM4G8eiw4iLDgCgDPq2k12ouxzoe5CUHiUe8bRcS61z8TKiLW4kr7LTyTJc1zLz4YXG5CLqJTbaGVW53vFdyG,—,2026-08-03 07:37:50,✅链上已验,仅 System transfer；不算仓位资金
+11,Orca Whirlpools,Solana,仓位页 → Withdraw,移除流动性（未关仓）,USDC +0.00067 / WSOL 0.00001,a3JWN8bQ5pNeyVYMWifcvjhhxzBcyTWdvTL4chzToLH8ixnM28wBGYCrVUCM8gNBKNivyirgkPxH9T7FtKCE7Lj,Orca-removeliq-solscan.png,2026-08-03 07:38:57,✅链上已验,🔴仓位NFT仍为1.0→未关仓；含 Jito tip 0.000002607 SOL 不算仓位资金
+12,Orca Whirlpools,Solana,关仓 ClosePosition,关仓,,⬜待补,⬜待截图,,⬜待做,移除流动性≠关仓，需独立样本
+13,Orca Whirlpools,Solana,收手续费 collect fees,收手续费,,⬜待补,⬜待截图,,⬜待做,CLMM 特有，需先有交易量
+14,BNSOL,Solana,Binance App 质押 SOL,质押铸造,-0.336987 SOL / +0.297781 BNSOL,33fXGtKbgxTe8d9MtqPiPncQ3jQUKysxPrU8fPfSYp5gGzoH6KuDogNCjYHMyzhU56PR1vWYRzbDVL6FWC7qUDhP,bnsol-stake-confirm.png,2026-07-29 15:30:23,✅链上已验,质押池 SPoo1Ku8WFXoNDMHPsrGSTSG1Y47rzgn41SLUNakuHy；指令 DepositSol；费率≈0.61%；汇率≈1.1248
+15,BNSOL,Solana,赎回,解押/赎回,,⬜（原表：疑似赎回不了）,⬜待截图,,⬜待做,推断为 WithdrawSol 储备不足需走 WithdrawStake（等一个epoch）；请记录报错文案
+16,Huma,Solana,Prime tab 存款,申购 Deposit,,F1MdrX5dwq6MYraF7NYNnZMs65dCCiFbAaf8BRES1qQFBQa7dQAgQh8X4gvsfSH8eK4rrdQiG3GE6zoiGUz4yXq,huma-deposit-prime.png,2026-07,✅已有,程序 prm1azdDGzyqP76s3Hv2nuG3uLnBgR5u2d7pANwmmzC
+17,Huma,Solana,Prime 赎回申请,赎回申请,,LnpBYdHUbY8mjL8GzUBhPRexfmEZ5uLRXzLm4PUjd7oLijgwjPywdESD6FgtnFCVe2ZsVeZmiQGCLyhUF4Jn53K,—,2026-07-29 15:48,✅链上已验,指令 CreateDepositorAccounts + RequestRedemption
+18,Huma,Solana,Stake $HUMA（第1笔）,质押,12 HUMA,3j1E13TAKht5hRwV5GMgBWgyyMuFZxfdS8scN4YZSoaZab76bZ5NUjbEozdsfZQbhwoXV5K2nKyxxZhiYsd68iiM,huma-stake.png,2026-07-29 15:50,✅链上已验,🔴原表误标为解质押；程序 vsRJM68m7i18PwzTFphgPYXTujCgxEi28knpUwSmg3q
+19,Huma,Solana,Stake $HUMA（第2笔）,质押-锁仓转移,,YWLyFXCwChuPwHSvLJJdLBeWuL9tUwyPryivx1c3c37U1FZaTNePNgmUte4czF9f12Ggpu8kKDwqXKfYrhcoACe,huma-unstake-success.png,2026-07-29 15:51,✅链上已验,InternalTransferLocked；一次质押=2笔，只解析一笔会漏
+20,Huma,Solana,真正的解质押 Unstake,解质押,,⬜待补,⬜待截图,,⬜待做,现有三笔里没有真正的 unstake
+21,Re reUSD,Ethereum,旁证-别人的申购,申购,35000 USDC → 32032.1169 reUSD,0xf252d674eacd3b3ba48449f71a28a202d1b71e0f46f8aa87e7cd5f6f92c9bdbc,—,—,✅链上已验,交叉验证用；入场NAV=1.09264
+22,Re reUSDe,Ethereum,旁证-别人的申购,申购,24994.5262 USDe → 17892.7882 reUSDe,0x38a21b691067a5de68f440123d6231ec8b6133fc0b24e1eecaed7efe8e83e76f,—,—,✅链上已验,反推NAV 1.39694 vs 页面1.3970/Mint汇率1.3974 三者吻合
+23,Re reUSDe,Ethereum,旁证-别人的赎回,赎回,1.0 reUSDe,0xb5ef00777bea1d3f8c34ac9cf071d25d4efcf1f634bc517c3f82420943056036,—,—,✅链上已验,Transfer(to=0x0)
+24,Re reUSD,Ethereum,🔴负向用例,非申赎（不该产生记录）,16.12 reUSD 流转,0xa122e5a8826929a0ddb30917ac1912486ed6a4ed3e49090f13d6acc033d8f35a,—,—,✅链上已验,80条日志；经Permit2/UniV4/Pendle；无mint无burn；解析器不该识别为申赎
+25,Nest nOPAL,BNB,旁证-别人的赎回,赎回,5583.869538 nOPAL,0xd9f45ecb06b1b87d2b72daac161f1752bc1dd0cd5ff576cbf485781bd8f4d3b4,—,—,✅链上已验,合约0x119dd7daff816f29d7ee47596ae5e4bdc4299165；decimals=6；三链同址
+26,Unitas XGLD,BNB,旁证-别人的申购,申购,0.298432 XGLD,0x5a9c4bc2ad7215045daffe12990d2f0c88b37af1a93d587ffd028cff37677e30,—,—,✅链上已验,合约0xe60106a5cAb7e7C64830919d36Ab20CaAf50Ac91；decimals=6；1XGLD≈1盎司黄金
