@@ -121,7 +121,7 @@ CSV 标的收益率 10%，落在"底层 + 适度杠杆"的合理区间。
 | Yield Composition | Deposit Yield 12.00% ／ Rewards 0.00%（目前无代币激励） |
 | 🔴 **申购机制** | **Daily Processing，"Next: 3 Aug, 00:00"**，且 **"Shares Received: After processing"**<br>→ **申购不是即时铸份额，见下方专门说明** |
 | **赎回时效** | **最长 7 天**（Withdrawal: Up to 7 days）→ 后台「赎回处理时间」填 7 天 |
-| 合约地址 | ⚠️ 仍待补。页面有 **Details / Transparency** 两个 tab，点进去应有地址 —— **再截一次图即可** |
+| ✅ **合约地址** | 🟢 **2026-08-10 已补齐（链上实测）**：<br>**份额代币 PPLUS = `0xbc5d3722376d44f3bC316C6EA61C9Bd553Be8CBe`**（name "Bitwise Premium+"，symbol PPLUS，**decimals 6**）<br>申购入口 / 队列合约 = `0x626d3410450C0A716D721e6a3C6B75A36d00E913`（ERC1967Proxy → 实现合约 **`EmberDepositParkingLot`**）<br>→ 详见下方「✅ 2026-08-10 排队申购已闭环」 |
 | 已知的另一个金库 | Ember Earn：`0x9be9294722f8AAd37b11a9792Be2C782182caFA2`（Ethereum）—— ⚠️ **不是本产品**，别配错 |
 | 页面链接 | Docs / **Legal** / **Risks** → Compliance 与 Risk Tab 文案可直接取用 |
 | 产品定位原文 | "institutional grade product designed to maximize real-world asset yield through a **capital-efficient looping strategy**，targeting higher returns than traditional RWA lending" ✅ 印证 CSV 的"循环贷" |
@@ -147,6 +147,40 @@ CSV 标的收益率 10%，落在"底层 + 适度杠杆"的合理区间。
 
 → 🔴 **建议**：新增「申购处理中（Pending Subscription）」状态，或中台解析要能识别"已存入未铸份额"的待处理金额。**需找 Marcus 单独过一次。**
 
+### ✅ 2026-08-10 排队申购已闭环（补上 8/3 缺的第二笔）
+
+> 8/3 的实测只拿到「申购-提交」那一笔（钱扣了、份额没铸），当时留下的待补是**「批处理之后的第二笔交易 + 份额代币地址」**。
+> **2026-08-10 反查同一个钱包，两项都拿到了。** 测试钱包：Ethereum `0x9da44afe5ba28aa42301c626155ea66eb544c33c`
+
+**完整的两段式链路（全部链上实测）**：
+
+| 阶段 | 时间（UTC） | tx hash | 链上事实 |
+|------|-----------|---------|---------|
+| **① 申购-提交** | 2026-08-03 **05:59:23** | `0xf53c337104ff7bdd28af59ba757efe4be09b1afc7bacd01e5cfc511e12bfc94f` | 用户调 `deposit(uint256,address)`；USDC **1.000000** 用户 → ParkingLot；🔴 **无份额 mint** |
+| **② 批处理-铸份额** | 2026-08-03 **17:26:11** | `0x8b9d5df2b28e22badba3958732eccc1cf1de0fb8db73800b702d01538e0aa84c` | 方法 **`processDeposits`**<br>USDC 1.000000 ParkingLot → PPLUS 合约<br>**PPLUS +0.996526 铸给用户**（from `0x0`） |
+
+**🔴🔴 给解析同学的关键坑（这条最容易漏）**
+
+| 项 | 值 |
+|----|-----|
+| 第 ② 笔的 **tx.from** | **`0x71da2342b11AE27aF0a7E2507eCeF6CC89572738`** —— **项目方 operator，不是用户** |
+| 第 ② 笔的 **tx.to** | ParkingLot `0x626d3410…`（也不是用户相关地址） |
+| 用户在这笔交易里的位置 | **只出现在 PPLUS 的 `Transfer(from=0x0, to=用户)` 事件里** |
+
+**→ 如果按 `tx.from == 用户地址` 来归集用户交易，这笔「申购完成」会被 100% 漏掉。**
+**→ 必须按 `Transfer(from=0x0, to=用户)` 事件识别申购完成**，且要能把它和 11 小时前的那笔 deposit 关联起来（否则用户看到的是两条互不相干的记录）。
+📌 这与 8/3 记录的 Orca「feePayer 不是用户」是**同一类坑**：**批处理 / 代付场景下，交易发起人和受益人不是同一个地址。**
+
+**实测出的三个可直接填 PRD 的数字**
+
+| 项 | 实测值 | 与 UI 对照 |
+|----|-------|-----------|
+| **实际处理耗时** | **11 小时 27 分**（05:59 → 17:26） | ⚠️ UI 当时写 *Est. processing in ~10 hours* 且 *Next: 4 Aug, 00:00*<br>→ **实际早于 UI 说的"次日 00:00"**，UI 的"Daily Processing 00:00"口径不准，别照抄 |
+| **隐含份额价格** | 1.000000 USDC ÷ 0.996526 PPLUS = **1.003486 USDC/PPLUS** | UI Share Price **1.0031**（差 0.04%）✅ 基本吻合，NAV 反推口径可靠 |
+| **PPLUS decimals** | **6**（跟随 USDC，不是 18） | —— |
+
+**PPLUS 代币快照（2026-08-10）**：totalSupply **5,891,316.881132 PPLUS** × 份额价格 ≈ **$5.91M** ✅ 与 8/3 UI 的 TVL $5.91M 吻合 → **可以用 `totalSupply × 份额价格` 反算 TVL**。
+
 ## 6. 数据接入要点（对齐 PRD）
 
 ### 6.1 六维度自评
@@ -168,8 +202,8 @@ CSV 标的收益率 10%，落在"底层 + 适度杠杆"的合理区间。
 
 ### 6.3 需向项目方索取
 
-1. **PPLUS 金库合约地址 + ABI**（当前只有 EARN 金库地址）
-2. 是否标准 ERC-4626（`convertToAssets` / `previewRedeem` 是否可用）
+1. ~~**PPLUS 金库合约地址**~~ → ✅ **2026-08-10 链上实测已得**：PPLUS `0xbc5d3722376d44f3bC316C6EA61C9Bd553Be8CBe`、申购入口 `0x626d3410450C0A716D721e6a3C6B75A36d00E913`。**仍需索取 ABI**（ParkingLot 的自定义事件签名仍未知）
+2. 🔴 是否标准 ERC-4626（`convertToAssets` / `previewRedeem` 是否可用）—— ⚠️ **注意 8/3 实测 ParkingLot 的 4626 视图全部 revert**；本次拿到的 PPLUS 是独立 ERC-20 份额代币，**它自身是否 4626 尚未实测**。§6.1 里「标准 4626 路径」这一假设需要先验证再排期
 3. 循环贷标的清单及权重（PST / sUSDai / PRIME 的实际配比与调仓频率）
 4. 赎回机制：是否有队列、最坏情况到账时间、是否需要 request ID
 5. Securitize Corporate Bond 产品的上线时间、合约、赎回条款
