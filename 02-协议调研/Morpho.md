@@ -3,7 +3,7 @@
 > ⚠️ **范围声明**：本协议**不属于**本仓库原本的 RWA 7 协议范围，来自 **DeX 行情接链项目**（协议表条目 `KatanaMorpho`）。
 > **状态**：✅ 两条产品线的申购路径均已实测并逐笔链上验证
 > **实测时间**：2026-08-10 ｜ **测试钱包**：`0x9da44afe5ba28aa42301c626155ea66eb544c33c`
-> ⚠️ **链是 Base，不是 Katana** —— 与协议表条目名 `KatanaMorpho` 冲突，见 §9
+> ⚠️ **2026-08-10 已在 Base 和 Katana 两条链上分别实测** —— 协议表条目名 `KatanaMorpho` 指向 Katana，但两条链的部署差异很大，见 §5.5 与 §9
 > **本页可信度**：全部链上事实为 Blockscout 交易/日志 + Base RPC `eth_call` 实测；UI 数值来自 2026-08-10 截图（已落盘）
 
 ## 0. 一句话结论
@@ -138,6 +138,69 @@ Morpho 在同一个品牌下有**两条机制根本不同的产品线**，**必�
 **→ 固定利率是「折价买入、到期按面值兑付」的贴现模式**，收益 = (units − assets) / assets = **0.1654% / 18 天** ≈ **年化 3.35%**。
 🔴 **这个收益不体现在任何代币余额的增长上** —— 它体现在「到期能拿回 1.001654 而现在只付了 1.0」。**PNL 必须按到期价值折算，不能按余额差。**
 
+### 5.5 🔴🔴 Katana 实测：一笔存款里份额代币被 mint 了两次，给两个不同地址
+
+> **2026-08-10 13:08:03 UTC 在 Katana（chainId 747474）实测**
+> tx `0x6b44d705d42017e94af11b2908f1c8295c657ea0b3b1cc1de5a6f4a24362fc40`
+> 金库 **Yearn OG ETH**（symbol `yOG-ETH`）`0x5920A6FC553af799542EDA628AdfCc9eA52e141C`
+
+这一笔里，**同一个份额代币 `yOG-ETH` 出现了两条 `Transfer(from=0x0)`**：
+
+| 顺序 | 事件 | 收款方 | 数量 | 性质 |
+|:---:|------|-------|------|------|
+| 1 | `AccrueInterest` → `Transfer(src=0x0)` | **`0x518C21DC88D9780c0A1Be566433c571461A70149`**（**SafeL2 多签**，curator 金库） | **0.001711443599531311** | 🔴 **performance fee，不是任何人的申购** |
+| 2 | `Transfer(src=0x0)` + `Deposit` | `0x9DA44Afe…c33c`（用户） | **0.004992515259004409** | ✅ 用户的申购份额 |
+
+🔴🔴 **这直接推翻「申购 = 份额代币 `Transfer(from=0x0)`」这条通用识别规则。**
+
+本仓库此前在 Re、Renzo 等协议上都写过这条规则（见 [Renzo.md](Renzo.md) §6.2、[../03-参考/交付研发-2026-08-03实测结果.md](../03-参考/交付研发-2026-08-03实测结果.md) §3.4）。在 Morpho V2 金库上，**它会把 curator 的 performance fee 误判成一笔申购**：
+
+- 费用接收方是个 **SafeL2 多签**（实测其 `yOG-ETH` 余额已累积到 **0.2661717249226733**，是本次用户份额的 53 倍）
+- 若该地址进了我们的解析范围，会凭空生成一条「申购」记录；即使不在范围内，**`totalSupply` 的增量也大于用户申购份额之和**，用「供应量变化」反推资金流会偏
+- 费用铸造与用户申购**在同一笔交易、同一个 block、同一个 token**，靠交易哈希或时间都区分不开
+
+**✅ 正确的识别方式**：以 **`Deposit` 事件**为准，取其中的**受益人字段**，不要扫裸 `Transfer(from=0x0)`。
+
+⚠️ **但受益人字段名在两条链上不一样**（Blockscout 解码结果）：
+
+| 链 | 金库 | Deposit 事件签名（解码后） |
+|----|------|------------------------|
+| Base | Steakhouse Prime USDC | `Deposit(sender, **onBehalf**, assets, shares)` |
+| Katana | Yearn OG ETH | `Deposit(caller, **owner**, assets, shares)` |
+
+→ **不能按字段名硬编码**，需按 ABI 的第 2 个 indexed 参数取受益人。（两者 UI 都标 V2，字段名差异可能来自浏览器所用 ABI 不同，**上线前需以合约实际 ABI 复核**。）
+
+#### Katana 这笔是 4 层嵌套（比 Base 多一层）
+
+```
+用户 ──0.005 vbETH──> GeneralAdapter1 (0x916Aa175…)
+                          └──> Yearn OG ETH 金库 (0x5920A6FC…)   ← 铸 yOG-ETH 给用户
+                                   └──> 适配器 (0x1fd23989ADc1…)
+                                            └──> Morpho Blue (0xD50F2DffFd62…)
+```
+且 **vbETH 本身还是一层包装** —— 合约 `0xEE7D8BCFb72bC1880d0Cf19822eB0a2e6577Ab62`，名称 **"Vault Bridge ETH"**，合约类型 **`TokenWrappedTransparentProxy`**（agglayer 跨链桥包装代币）。
+
+🔴 **所以 Katana 侧用户的 ETH 计价价值要三次换算**：
+```
+份额数 × 份额价格(vbETH/share) × vbETH→ETH 汇率 × ETH 价格
+```
+Base 那条线只需两次（份额 × 份额价格 × USDC 价格）。**同一个「Morpho」协议，两条链的估值链路长度不同。**
+
+#### Katana 侧实测数据
+
+| 项 | 值 |
+|----|-----|
+| 投入 | **0.005 vbETH** |
+| 得到份额 | **0.004992515259004409 yOG-ETH** |
+| 反推份额价格 | 0.005 / 0.004992515259004409 = **1.0014994 vbETH/share** |
+| `convertToAssets(1e18)` 实测 | **1.001499406870679** ✅ 完全一致 |
+| `previewRedeem(用户份额)` | **0.005000001080119404 vbETH** ✅ 与投入吻合 |
+| 金库 decimals | 18 ｜ `asset()` = vbETH（18 位）→ **本条线无精度错配**（与 Base 的 6/18 错配不同） |
+| gas | **0.000616735846677 ETH**（原生 ETH，非 vbETH） |
+| 🔴 `maxWithdraw` / `maxDeposit` | **均为 0** —— 与 Base 侧同样的异常，见 §6.3。**两条链都复现，说明是 Vault V2 的共性行为，不是单个金库配置问题** |
+
+📌 **补记一个操作前提**：Katana 的 gas 用**原生 ETH**，与金库资产 vbETH 是两种东西。实测该钱包在做这笔之前 vbETH 有 0.0052 但原生 ETH 为 0、nonce 为 0，**无法提交**；需先桥入 ETH 当 gas。
+
 ## 6. 数据接入要点
 
 ### 6.1 ✅ 实测交易全集（2026-08-10，UTC，Base 链）
@@ -158,9 +221,10 @@ Morpho 在同一个品牌下有**两条机制根本不同的产品线**，**必�
 |:---:|------|------|
 | **1** | 🔴 **固定利率持仓没有代币，只能读合约** | 持仓 = `Midnight` 合约里 `(marketId, user)` 的记录，事件是 `UpdatePosition(id_, user, …)`。**扫代币余额永远读不到**。必须按 marketId + 用户地址查 |
 | **2** | 🔴 **同一笔交易里有两套 shares，别拿错** | 见 §5.3。用户的是 `VaultV2.Deposit.shares`（18 位），Morpho Blue 的 `Supply.shares` 是金库的 |
-| **3** | 🔴 **事件里的 `sender` 不是用户，`onBehalf` 才是** | Bundler / Adapter 模式下发起人恒为适配器合约。**按 sender 归属会全错** |
-| **4** | 🔴 **两条产品线的 decimals 不同源** | 金库份额 **18 位**、底层 USDC **6 位**；固定利率的 units 是 **6 位**。同一协议内三套精度 |
-| **5** | **固定利率有到期日，是定期产品** | 到期 2026-08-28。**需要「到期日」「到期可得」字段**，且到期后应有一笔结算交易（本次未观测到，见 §9） |
+| **3** | 🔴🔴 **绝不能用「份额代币 `Transfer(from=0x0)`」识别申购** | 见 §5.5。Katana 实测：一笔存款里该事件出现 **2 次**，一次给用户、一次是给 curator 多签的 **performance fee**。**必须用 `Deposit` 事件的受益人字段**，且字段名两条链不一致（Base `onBehalf` / Katana `owner`），要按 ABI 第 2 个 indexed 参数取 |
+| **4** | 🔴 **事件里的 `sender` / `caller` 不是用户** | Bundler / Adapter 模式下发起人恒为适配器合约。**按 sender 归属会全错** |
+| **5** | 🔴 **精度与估值链路两条链不同** | Base：金库份额 18 位、底层 USDC 6 位（**错配**）、固定利率 units 6 位 —— 同一条链内三套精度<br>Katana：份额与 vbETH 均 18 位（不错配），但**多一层 vbETH 包装**，估值要三次换算（见 §5.5） |
+| **6** | **固定利率有到期日，是定期产品** | 到期 2026-08-28。**需要「到期日」「到期可得」字段**，且到期后应有一笔结算交易（本次未观测到，见 §9） |
 
 ### 6.3 ⚠️ 一个已验证但原因未确认的异常
 
@@ -175,7 +239,8 @@ Morpho 在同一个品牌下有**两条机制根本不同的产品线**，**必�
 | 🔴 `maxDeposit(用户)` | **0** |
 
 🔴 **`maxDeposit` 返回 0，但用户在几十分钟前刚成功存进 1 USDC** —— 说明这几个 `max*` 视图在 Vault V2 上**不能当作「用户能否申购/赎回」的判断依据**。
-⚠️ **原因未确认**（可能与 Vault V2 的 liquidity adapter 设计、额度上限、或 idle assets 为 0 有关；UI 同时显示 Liquidity $145.41M，与 `maxWithdraw = 0` 直接矛盾）。
+🔴 **2026-08-10 在 Katana 的 Yearn OG ETH 金库上复现了完全相同的现象**（`maxWithdraw` / `maxDeposit` 均为 0，而 `convertToAssets` / `previewRedeem` 正常）→ **这是 Morpho Vault V2 的共性行为，不是某个金库的配置问题**，影响面是所有 V2 金库。
+⚠️ **原因仍未确认**（可能与 Vault V2 的 liquidity adapter 设计、额度上限、或 idle assets 为 0 有关；UI 同时显示 Liquidity $145.41M，与 `maxWithdraw = 0` 直接矛盾）。
 **→ 给解析同学**：**不要用 `maxWithdraw` / `maxDeposit` 做可用性判断或余额展示**，否则用户会看到「余额 0 / 不可赎回」。用 `previewRedeem` 或 `convertToAssets` 取价值。
 **→ ⬜ 待查**：这是 Vault V2 的设计语义还是该金库的具体配置，需要问项目方或读 VaultV2 源码确认。
 
@@ -221,12 +286,15 @@ UI 市场页明确显示 **Withdrawable liquidity 0.0000 USDC**，同时 Outstan
 
 | # | 问题 | 问谁 / 怎么查 |
 |---|------|------------|
-| 1 | 🔴 **协议表写 `KatanaMorpho`，实测是 Base 链** —— 要接的是 Katana 上的 Morpho 还是 Base？**解析对象可能整个跑偏** | 提需求方 / DeX 项目侧 |
-| 2 | 🔴 **两条线的赎回样本都没有**（金库 withdraw / 固定利率提前退出或到期结算） | Linnea 补做（固定利率到期日 **2026-08-28**，可等到期观察自动结算） |
+| 1 | 🔴 **要接 Base 还是 Katana？两条链差异很大，不能互相替代** —— 已确认 Morpho 在两条链都有部署（Katana chainId **747474**），但：<br>① **固定利率产品只在 Base**，Katana 没有（官方文档 Midnight 仅列 Base；markets.morpho.org 的 Network 筛选器只有 Base 一项）<br>② Katana 全部金库用 **vb 系包装资产**（vbUSDC / vbETH / vbUSDT），估值多一层<br>③ **同名不同物**：两条链都有 "Steakhouse Prime USDC"，Base 是原生 USDC / $595.62M / 4.43%，Katana 是 vbUSDC / $1.49M / 1.56% | 提需求方 / DeX 项目侧 |
+| 2 | 🔴 **三条线的赎回样本都没有**（Base 金库 withdraw / Katana 金库 withdraw / 固定利率提前退出或到期结算） | Linnea 补做（固定利率到期日 **2026-08-28**，可等到期观察自动结算） |
 | 3 | 🔴 **Midnight 持仓读取函数**（固定利率实时解析入口） | 项目方 / 读 Midnight 源码 |
-| 4 | 🔴 `maxWithdraw`/`maxDeposit` 返回 0 的原因（见 §6.3） | 项目方 / 读 VaultV2 源码 |
-| 5 | 固定利率是否只能到期取（决定池子类别标活期还是定期） | 实测提前退出 |
-| 6 | 协议背景 / 底层 / 风险 / 合规四章 | 未做，需补 |
+| 4 | 🔴 `maxWithdraw`/`maxDeposit` 返回 0 的原因 —— **两条链均复现**（见 §6.3） | 项目方 / 读 VaultV2 源码 |
+| 5 | 🔴 **`Deposit` 事件受益人字段名两条链不一致**（Base `onBehalf` / Katana `owner`）—— 是浏览器 ABI 差异还是合约版本差异？ | 以合约实际 ABI 复核 |
+| 6 | 🔴 **performance fee 的铸造频率与触发条件**（每笔存款都会触发，还是按时间/阈值？）—— 影响「供应量变化反推资金流」的误差量级 | 项目方 / 读 VaultV2 源码 |
+| 7 | **vbETH / vbUSDC 的汇率取数入口**（Katana 侧估值必需，Vault Bridge 是否有 NAV 接口） | Katana / Vault Bridge 项目方 |
+| 8 | 固定利率是否只能到期取（决定池子类别标活期还是定期） | 实测提前退出 |
+| 9 | 协议背景 / 底层 / 风险 / 合规四章 | 未做，需补 |
 
 ## 10. 参考链接
 

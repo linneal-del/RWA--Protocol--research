@@ -1,27 +1,33 @@
-# Renzo —— ezUSDC1 Reserve Vault ／ ezETH Restaking
+# Renzo —— ezUSDC1 Reserve ／ ezETH Restaking ／ ezSOL（Solana）
 
 > ⚠️ **范围声明**：本协议**不属于**本仓库原本的 RWA 7 协议范围，来自 **DeX 行情接链项目**（协议表条目 `SOLRenzo`）。放在本目录是为了复用同一套调研模版与实测规范。
-> **状态**：🟡 实测已完成，协议背景调研未做
-> **实测时间**：2026-08-10 ｜ **测试钱包**：Ethereum `0x9da44afe5ba28aa42301c626155ea66eb544c33c`
+> **状态**：🟡 实测已完成（**含 Solana 侧 ezSOL**），协议背景调研未做
+> **实测时间**：2026-08-10
+> **测试钱包**：Ethereum `0x9da44afe5ba28aa42301c626155ea66eb544c33c` ｜ Solana `9Gu4W2YUYCRMXiZWrD5ExF77PAS6X3Mfa6kwSmc9MhgS`
+> ✅ **`SOLRenzo` 的口径疑问已解决**：Renzo **确实有 Solana 产品 ezSOL**，且已实测赎回。见 §5.4
 > **本页可信度**：链上部分为 `getTransaction` / Blockscout 逐笔实测；UI 部分为操作当时截图读取（原图未落盘，见文末）
 > **解析类型**：A（NAV 累积，份额价格 > 1）
 
 ## 0. 一句话结论
 
-Renzo 在同一个 App 下挂着**两条机制完全不同的产品线**：**Reserve**（ezUSDC1 等收益金库，ERC-20 份额 + 排队赎回）和 **Staking**（ezETH liquid restaking，即时铸造）。实测最需要注意的是 **ezUSDC1 份额价格约 4.376 USDC、decimals 是 6，且赎回要经 WithdrawQueue 排队** —— 按 1:1 或按 18 位处理都会错。
+Renzo 在同一个 App 下挂着**三条机制两两不同的产品线，横跨两条公链**：**Reserve**（ezUSDC1 收益金库，ERC-20 份额 + WithdrawQueue 排队赎回）、**Staking-ETH**（ezETH，即时铸造）、**Staking-Solana**（ezSOL，Jito Restaking，赎回走 **ticket PDA 托管**）。
+
+实测最需要注意的两点：
+1. **ezUSDC1 份额价格约 4.376 USDC、decimals 是 6** —— 按 1:1 或按 18 位处理都会错
+2. 🔴 **ezSOL 赎回时份额被转进一个新建的 PDA，用户侧任何代币余额都读不到这笔待领取资产** —— 见 §5.4
 
 ## 1. 基础信息（实测口径）
 
 | 字段 | 值 |
 |------|-----|
 | 协议 | Renzo（app.renzoprotocol.com） |
-| 链 | **Ethereum**（⚠️ 与协议表条目名 `SOLRenzo` 不一致，见 §9） |
-| 本次实测产品 | ① **USDC Yield / ezUSDC1**（Reserve）② **ezETH**（Staking, EigenLayer） |
-| Supply Coins | ① USDC ② ETH（原生币，非 ERC-20） |
-| Coins Integrated | ① ezUSDC1 ② ezETH |
-| 池子 TVL | ① **$394.30** ② **$88.76M**（2026-08-10 UI 快照） |
-| 收益率 | ① 30D APY 面板未展示数值 ② **2.33%**，标注 Auto-compound（2026-08-10 UI 快照） |
-| 池子类别 | ① **排队赎回**（非活期）② 待补 |
+| 链 | **Ethereum**（ezUSDC1 / ezETH）+ **Solana**（ezSOL，见 §5.4） |
+| 本次实测产品 | ① **USDC Yield / ezUSDC1**（Reserve, ETH）② **ezETH**（Staking, EigenLayer, ETH）③ **ezSOL**（Staking, Jito, Solana） |
+| Supply Coins | ① USDC ② ETH（原生币，非 ERC-20）③ JitoSOL |
+| Coins Integrated | ① ezUSDC1 ② ezETH ③ ezSOL |
+| 池子 TVL | ① **$394.30** ② **$88.76M** ③ **$2.82M**（2026-08-10 UI 快照） |
+| 收益率 | ① 30D APY 面板未展示数值 ② **2.33%** ③ **5.40%**，②③ 均标注 Auto-compound（2026-08-10 UI 快照） |
+| 池子类别 | ① **排队赎回**（非活期）② 待补 ③ **排队赎回**（ticket 制，非活期） |
 | 产品网页 | https://app.renzoprotocol.com/reserve/ezusdc1 ／ …/staking |
 | 接入情况 | 待定（DeX 项目侧口径） |
 
@@ -45,6 +51,8 @@ Renzo 在同一个 App 下挂着**两条机制完全不同的产品线**：**Res
 
 ## 5. 链上机制与合约（✅ 全部实测）
 
+> ⚠️ **三条产品线的机制两两不同**：ezUSDC1 走 WithdrawQueue、ezETH 即时铸造、ezSOL 走 Jito ticket PDA。**不能共用一套适配器。**
+
 ### 5.1 合约清单
 
 | 项 | 地址 | 实测确认 |
@@ -66,15 +74,71 @@ Renzo 在同一个 App 下挂着**两条机制完全不同的产品线**：**Res
 **→ 三者吻合（差 0.0007%），NAV 反推口径可靠。**
 🔴 **绝不能按 1 ezUSDC1 ≈ $1 处理**，也不能按 18 位小数解析。
 
-### 5.3 申购 / 赎回路径（两条线机制不同）
+### 5.3 申购 / 赎回路径（Ethereum 侧两条线机制不同）
 
 ```
 【ezUSDC1 申购】approve(USDC) → deposit()          ← 2 笔交易，份额即时 mint（from=0x0）
 【ezUSDC1 赎回】approve(ezUSDC1) → withdraw()      ← 2 笔交易，份额转给 WithdrawQueue，🔴 本笔不到账
 【ezETH 质押】  depositETH()                        ← 1 笔交易（ETH 原生币无需 approve），ezETH 即时 mint
+【ezSOL 赎回】  EnqueueWithdrawal()                 ← 1 笔交易（Solana），份额转入 ticket PDA，🔴 本笔不到账（见 §5.4）
 ```
 
 🔴 **ezUSDC1 赎回是排队制**：`withdraw` 那笔链上只看到 **0.1 ezUSDC1 从用户转给 `0x01D62CAE…`（WithdrawQueue）**，**没有任何 USDC 回到用户**。与 Ember 的排队申购是镜像问题 —— 详见 §6.2。
+
+### 5.4 ✅ Solana 侧：ezSOL（Jito Restaking）—— 赎回机制与 Fragmetric 完全不同
+
+> **2026-08-10 13:17:27 UTC 实测** ｜ 测试钱包 `9Gu4W2YUYCRMXiZWrD5ExF77PAS6X3Mfa6kwSmc9MhgS`（Solflare）
+> signature `4D5miJ2EKobo13nVMS556xuZrPT3m61fKigNHJoXxvXWSVqArKbDmRMLjjhALaiuzM37LVnNkPfHmWWHcvg61b8t`
+
+#### 基础信息（2026-08-10 UI 快照）
+
+| 项 | 值 |
+|----|-----|
+| 产品 | **ezSOL**，底层标注 **JITO** |
+| TVL | **$2.82M** |
+| APY | **5.40%**，Rewards **Auto-compound** |
+| 🔴 赎回得到的资产 | **JitoSOL**（不是 SOL）→ **本身又是一个 LST，估值要多一层** |
+| 汇率 | **1 ezSOL = 1.00507 JitoSOL** |
+| ezSOL mint | `ezSoL6fY1PVdJcJsUpe5CM3xkfmy3zoVCABybm5WtiC`（decimals **9**，classic SPL Token）<br>链上实测总供应 **28,293.84 ezSOL** |
+| 页面入口 | app.renzoprotocol.com **Staking** 页（⚠️ **需先连 Solana 钱包才会出现**，只连 EVM 钱包时该产品不显示） |
+| UI 其他入口 | **NCNs** / **Withdrawals** 两个按钮 → 有 NCN 明细页和提现队列页 |
+
+#### 🔴🔴 赎回是「份额转进票据账户」，不是销毁
+
+实测指令序列：
+
+```
+CreateIdempotent ×2            ← 建 associated token account
+Instruction: EnqueueWithdrawal  ← 🔴 入队，不是即时赎回
+Program log: Initializing vault staker withdrawal ticket at address
+             2TmT9mRER1gg6ayrZkbxFgUXG8hNcPNxFe9BVRsiFCN2
+```
+
+| 项 | 链上事实 |
+|----|---------|
+| 用户 ezSOL | **0.153050077 → 0.003050077**（−0.15） |
+| 🔴 这 0.15 去哪了 | **转进了新建的 withdrawal ticket 账户 `2TmT9mRER1gg6ayrZkbxFgUXG8hNcPNxFe9BVRsiFCN2`** |
+| 🔴 JitoSOL 到账 | **没有**（UI 显示 Receive 0.15046 JitoSOL，但本笔链上无任何 JitoSOL 转入） |
+| 票据账户归属程序 | **`Vau1t6sLNxnzB7ZDsef8TLbPLfyZMYXH8WTNqUdm9g8`**（Jito Vault 程序），data 512 字节，租金 0.00356352 SOL |
+| fee | 0.001232679 SOL |
+| 第二签名者 | `3orFoZZsQxZncLpshH6kvozPu6jXwmEf9hdedpqBfUcV`（非用户，疑为代付/relayer —— 同 Orca 的 feePayer 坑） |
+
+**🔴 和 Fragmetric 对比 —— 同样是 Solana restaking，赎回的链上表达完全相反**：
+
+| | **Fragmetric**（fragSOL） | **Renzo ezSOL** |
+|---|---|---|
+| 指令 | `UserRequestWithdrawal` | `EnqueueWithdrawal` |
+| 份额代币 | 🔴 **`Burn` 销毁** + `MintTo` 铸提现凭证 | 🔴 **不销毁**，转进 **ticket PDA 托管** |
+| 用户余额怎么变 | 份额减少，同时拿到一个凭证代币 | 份额减少，**什么都没拿到** |
+| 待领取金额怎么读 | 读提现凭证代币余额 | 🔴 **必须找到 ticket PDA 并解析其 512 字节数据** |
+| 底层 | Jito Restaking | Jito Restaking（**同一个底层，机制却不同**） |
+
+**→ 给解析同学的两条硬规格**：
+
+1. 🔴 **ezSOL 的待领取赎回，从用户的任何代币余额里都读不出来。** 份额被转进一个新建的 PDA，用户侧只看到「余额少了、什么都没多」。**必须按 Jito Vault 程序 `Vau1t6sL…` 枚举该用户的 withdrawal ticket 账户**，否则用户在赎回等待期内会看到资产凭空少掉。
+2. 🔴 **「同底层 = 同机制」的假设不成立。** Fragmetric 和 Renzo ezSOL 都跑在 Jito Restaking 上，但一个销毁+铸凭证、一个转入托管 PDA。**每个协议都得单独实测，不能按底层归类套用。**
+
+⚠️ **一个未解释的数字差**：UI 汇率 1 ezSOL = 1.00507 JitoSOL，0.15 × 1.00507 = **0.150761**，但 UI 的 Receive 显示 **0.15046**（少 0.0003，约 0.2%）。**推断**是赎回费或滑点，**未证实** —— 需等 claim 到账后用实收金额反推。
 
 ## 6. 数据接入要点
 
@@ -87,6 +151,7 @@ Renzo 在同一个 App 下挂着**两条机制完全不同的产品线**：**Res
 | 3 | 08:10:47 | Withdraw 第 1 步 | **approve(ezUSDC1)** | `0x12acb97783a86f61774f27a001d4fbd49826ac539810e7afce517b35f6271cd5` | 额度 0 → **0.1**，授权对象 `0x01D62CAE…` ✅ 与 UI 弹窗一致 |
 | 4 | 08:10:59 | Withdraw 0.1 份额 | 🔴 **赎回-提交（进队列）** | `0x0798eff3319f8be06efa061e450f7584b9d8410512589ba804ea2f38bee90c82` | ezUSDC1 **−0.1**（用户→WithdrawQueue）<br>🔴 **无 USDC 到账** |
 | 5 | 08:11:59 | Stake 0.00001 ETH | **质押（即时 mint）** | `0xda2a5ba5045bdea792bde33261a1b713000292ca53170495a19a4878de6c0699` | 方法 **`depositETH`**<br>ezETH **+0.000009229160829871**（from `0x0`） |
+| 6 | 13:17:27 | **Solana** Withdraw 0.15 ezSOL | 🔴 **赎回-入队（转入票据账户）** | `4D5miJ2EKobo13nVMS556xuZrPT3m61fKigNHJoXxvXWSVqArKbDmRMLjjhALaiuzM37LVnNkPfHmWWHcvg61b8t` | 指令 **`EnqueueWithdrawal`**<br>ezSOL 0.153050077 → 0.003050077<br>🔴 0.15 转入新建 ticket `2TmT9mRER…FCN2`<br>🔴 **无 JitoSOL 到账**｜详见 §5.4 |
 
 **交叉验证**：ezETH 实得 0.000009229160829871 ÷ 0.00001 ETH = **0.9229**；UI 报价 **1 ETH = 0.92292 ezETH**，UI 预估收到 **0.00000922 EZETH** ✅ 完全吻合。
 
@@ -132,8 +197,11 @@ Renzo 在同一个 App 下挂着**两条机制完全不同的产品线**：**Res
 
 | # | 问题 | 问谁 / 怎么查 |
 |---|------|------------|
-| 1 | 🔴 **协议表写的是 `SOLRenzo`（Solana），本次实测是 Ethereum 的 ezUSDC1 + ezETH** —— 要接的到底是 Solana 上的 ezSOL 还是本次这两个？**解析对象可能整个跑偏** | 提需求方 / DeX 项目侧 |
-| 2 | 🔴 WithdrawQueue 的 claim 交易样本（本次只做到提交，没等到到账） | Linnea 补做 |
+| 1 | ~~协议表写 `SOLRenzo` 但实测是 Ethereum~~ → ✅ **已解决**：Renzo 确有 Solana 产品 **ezSOL**（Staking 页，需连 Solana 钱包才显示），2026-08-10 已实测赎回，见 §5.4。<br>⚠️ **仍需与需求方确认接入范围**：Renzo 一家有 **ezUSDC1（ETH 金库）/ ezETH（ETH 质押）/ ezSOL（Solana）** 三条机制各异的线，`SOLRenzo` 是否仅指 ezSOL | 提需求方 / DeX 项目侧 |
+| 1b | 🔴 **ezSOL 的 withdrawal ticket PDA 枚举方式**（Jito Vault 程序 `Vau1t6sL…`，512 字节数据结构）—— **赎回等待期内读取用户资产的唯一入口** | 项目方 / Jito Vault 文档 |
+| 1c | 🔴 **ezSOL claim（领取 JitoSOL）的样本与等待时长** | Linnea 补做（UI 有 Withdrawals 页可看队列） |
+| 1d | UI Receive 0.15046 与汇率反推 0.150761 差 0.2% 的原因（赎回费？滑点？） | 等 claim 到账后反推 / 问项目方 |
+| 2 | 🔴 WithdrawQueue 的 claim 交易样本（Ethereum 侧 ezUSDC1，本次只做到提交，没等到到账） | Linnea 补做 |
 | 3 | 份额价格链上取数函数 | Etherscan Read Contract / 项目方 |
 | 4 | ezUSDC1 是否 ERC-4626 | 实测 `asset()` / `convertToAssets()` |
 | 5 | 协议背景 / 底层 / 风险 / 合规四章 | 未做，需补 |
@@ -143,7 +211,14 @@ Renzo 在同一个 App 下挂着**两条机制完全不同的产品线**：**Res
 
 - ezUSDC1 产品页：https://app.renzoprotocol.com/reserve/ezusdc1
 - Staking 页：https://app.renzoprotocol.com/staking
-- 实测截图：⚠️ **原图未落盘**（会话图片缓存已被系统清理）。UI 数值已逐项抄录进本页 §5.2 / §6.1，需要原图请重新截取
+- ezSOL 页（需连 Solana 钱包）：https://app.renzoprotocol.com/staking
+
+## 11. 实测截图
+
+| 文件 | 内容 | 状态 |
+|------|------|------|
+| ![Renzo ezSOL 赎回](截图/Renzo-ezSOL-赎回-20260810.png) | **ezSOL / JITO**：TVL $2.82M ｜ APY 5.40% ｜ Auto-compound ｜ Withdraw 0.15 ezSOL → Receive 0.15046 JitoSOL ｜ 汇率 1 ezSOL = 1.00507 JitoSOL ｜ 余额 0.15305 ｜ 底部 **NCNs / Withdrawals** 两个入口 | ✅ 已落盘 |
+| ezUSDC1 deposit / withdraw 授权 / ezETH 质押（3 张） | Ethereum 侧操作截图 | ⚠️ **原图未落盘**（会话图片缓存已被系统清理）。UI 数值已逐项抄录进本页 §5.2 / §6.1，需要原图请重新截取 |
 
 ---
 

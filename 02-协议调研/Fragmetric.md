@@ -101,6 +101,7 @@ Instruction: MintTo                          ← 🔴 铸出提现凭证（这�
 | # | 规格 | 说明 |
 |:---:|------|------|
 | **1** | 🔴 **unstake 里的 `MintTo` 不能漏** | 一笔 unstake 同时 `Burn` fragSOL + `MintTo` 提现凭证。**只看 Burn 会判定为「用户资产减少且无对价」**，实际用户拿到的是一张排队中的提现凭证 |
+| **1b** | 🔴 **别把这套规则套到其他 Jito Restaking 协议上** | 2026-08-10 实测 [Renzo ezSOL](Renzo.md#54--solana-侧ezsoljito-restaking--赎回机制与-fragmetric-完全不同) —— **同样跑在 Jito Restaking 上，赎回却是 `EnqueueWithdrawal` + 份额转入 ticket PDA，既不销毁也不铸凭证**。<br>Fragmetric：读提现凭证代币余额即可；ezSOL：**必须枚举 Jito Vault 程序下的 ticket 账户**。**「同底层 = 同机制」的假设不成立，每个协议都要单独实测** |
 | **2** | 🔴 **赎回是两段式** | UI 明确分 **Unstake / Withdraw 两个 tab**，文案：*"fragSOL unstaking usually takes 1 day, may require 3 epochs (6 days) depending on operations"*、*"Unstake at the station to withdraw principal"* → **必须有「赎回中」状态 + 预计到账时间**，且 claim 是**第二笔独立交易**（本次未做，见 §9） |
 | **3** | **奖励在独立账户里** | `UserCreateRewardAccountIdempotent` 说明奖励记在**专门的 reward account**，**不在 fragSOL 的 token balance 里**。只读 token 余额会漏掉全部未领取奖励 |
 | **4** | **wFRAG 买入不是申购** | 第 3 笔走 Raydium CLMM 二级市场，是 `Swap`/`Buy`，**不能算作 Fragmetric 申购**（同 Re 走 ParaSwap 的先例） |
