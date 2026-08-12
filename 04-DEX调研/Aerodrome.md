@@ -29,11 +29,27 @@ Aerodrome 是 Base 链上的主流 DEX，V2 版本为恒定函数 AMM（含 stab
 
 ## 2. 协议背景
 
-⬜ **未做**。Base 链原生 DEX，继承原 Fantom 上 Solidly fork 谱系（ve(3,3) 模型）。背景 / 团队 / 融资 / 审计待补。
+**上线时间**：2023-08-28，Base 链原生 DEX，无 VC 融资、无代币销售，以 fair launch 形式启动。
+
+**谱系**：继承 Fantom 上 Solidly fork 谱系，采用 **ve(3,3) 模型**——同属 Velodrome Finance 生态。2026 年 Aerodrome 将与 Velodrome（Optimism Superchain DEX）合并为 **Aero**，运行在 MetaDEX03 上，成为以太坊统一流动性层。
+
+**审计**：Spearbit + ChainSecurity 双重审计，运行在不可变智能合约上，无中心化服务器依赖。
+
+**规模**（2026-04 快照）：累计交易量超 $185B，累计手续费超 $270M，已向 token operator 分发约 $450M+ 收入。2025 年 10,000 veAERO 按平均效率投票全年约赚 $2,470 奖励。
+
+**GitHub**：`aerodrome-finance`（合约源码公开）｜ **Twitter**：`aerodromefi`
 
 ## 3. 底层资产
 
-⬜ **未做**。DEX 协议底层为流动性池（LP）里的 token 对，非生息资产。Aerodrome 池型（stable / volatile）的差异与适用场景待补。
+DEX 协议底层**不是生息资产**，而是流动性池（LP）里的 token 对。与 RWA 协议（底层是债券/质押收益）根本不同。
+
+**池型**（Aerodrome V2）：
+- **stable 池**：同类资产（如 USDC/USDT、WETH/sETH），用稳定曲线（类似 Curve），低滑点、低 fee
+- **volatile 池**：不同类资产（如 WETH/USDC、AERO/WETH），用恒定乘积曲线（x*y=k，类似 Uni V2），更高 fee 补偿 IL 风险
+
+⚠️ 池型差异影响解析：stable 和 volatile 的曲线公式不同，**swap 事件的 amountIn/amountOut 计算逻辑不能共用一套**。池型判定字段待实测确认（可能在 PoolFactory 事件或合约 ABI 里）。
+
+**V3 差异**：V3 引入集中流动性（参考 Uniswap V3），LP 可选价格区间做市，资金效率更高但 IL 风险也更大。V3 的 tick/区间概念在 V2 里不存在。
 
 ## 4. 收益来源
 
@@ -97,11 +113,31 @@ DEX 解析的关键坑（首笔实测已确认 + 预判待补）：
 
 ## 7. 风险
 
-⬜ **未做**。DEX 协议的核心风险：无常损失（IL）/ 激励代币通胀 / 路由合约升级。待实测后补充观察到的具体风险。
+DEX 协议的核心风险（与 RWA 协议的风险维度完全不同）：
+
+| 风险类型 | 说明 |
+|---------|------|
+| 🔴 **无常损失（Impermanent Loss, IL）** | LP 提供流动性后，若 token 对价格发生偏离，LP 的持仓价值会低于"不动"的情况。volatile 池 IL 风险远高于 stable 池。**V3 集中流动性会放大 IL**（资金集中在窄区间，价格偏离时损失更大） |
+| 🔴 **$AERO 代币通胀** | 年化通胀约 10.9%（2026-04 快照），每周铸币分发给 LP。**LP 的 AERO 奖励是通胀币**，实际收益要扣掉 AERO 本身的贬值 |
+| ⚠️ **路由合约升级** | Aerodrome 的 Router 合约可能升级（如从 V2 Router 到 V3 Router），解析侧要跟踪 Router 地址变更 |
+| ⚠️ **veAERO 治理风险** | veAERO 锁仓后无法提前取出（类似 veCRV），锁仓期间 AERO 价格下跌会造成实际损失 |
+| ⚠️ **智能合约风险** | 虽经 Spearbit + ChainSecurity 审计，但 DEX 合约是高价值攻击目标（历史上发生过类似协议被黑） |
+
+**实测中观察到的具体风险**：暂无（仅 2 笔实测，未观察到异常）。后续 remove liquidity 实测时重点关注——remove 时收回的 token 数量是否与 add 时投入一致（IL 的直接体现）。
 
 ## 8. 合规与准入
 
-⬜ **未做**。DEX 通常无 KYC，非托管。具体地域限制 / 前端合规拦截待补。
+DEX 协议通常无 KYC、非托管：
+
+| 维度 | 说明 |
+|------|------|
+| KYC | ❌ 无 KYC 环节，任何人可直接通过合约交互 |
+| 托管 | 非托管，资金在用户钱包和合约之间流转 |
+| 地域限制 | 前端可能有地域拦截（需实测确认），但合约层无限制 |
+| 合规姿态 | Aerodrome 强调"zero-leak economy"和去中心化，未做合规护栏 |
+| 访问入口 | Swap: https://aerodrome.finance/swap ｜ Liquidity: https://aerodrome.finance/liquidity ｜ Dashboard: https://aerodrome.finance/dash |
+
+⚠️ 前端拦截未实测——如果你在某些地区访问前端被拦，说明有地域限制。合约层（直接调 Router）应该不受限。
 
 ## 9. 待确认清单
 
