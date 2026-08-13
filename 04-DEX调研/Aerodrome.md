@@ -62,11 +62,38 @@ DEX 协议底层**不是生息资产**，而是流动性池（LP）里的 token 
 
 ## 5. 链上机制与凭证代币
 
-⬜ **未做**。待补内容：
-- **5.1 合约清单**：Router / PoolFactory / Gauge 等关键合约地址
-- **5.2 池型机制**：stable vs volatile 的曲线差异、token 排序规则
-- **5.3 LP 凭证**：LP token（ERC-20）还是 uniV3-style NFT？仓位如何表达
-- **5.4 swap 路由**：单跳 / 多跳 / 跨池路由的链上事件结构
+### 5.1 合约清单（2026-08-12 实测提取）
+
+| 合约 | 地址 | 说明 |
+|------|------|------|
+| **Swap Router** | `0xcAF22ce31298cf2bf1d152862f80216478ad7c67` | swap 操作入口，selector `0x3593564c` |
+| **Liquidity Router** | `0xcf77a3ba9a5ca399b7c97c74d54e5b1beb874e43` | add/remove liquidity 入口，selector `0x5a47ddc3`，**与 swap Router 分开** |
+| **USDC** | `0x833589fcd6edb6e08f4c7c32d4f71b54bda02913` | Base 链 USDC（6 位小数） |
+| **AERO** | `0x940181a94a35a4569e4529a3cdfb74e38fd98631` | Aerodrome 治理代币 |
+| **WETH** | `0x4200000000000000000000000000000000000006` | Base 链 WETH（系统预部署） |
+| **wBLT** | `0x4e74d4db6c0726ccded4656d0bce448876bb4c7a` | Wrapped BMX Liquidity（多跳中转 token） |
+| **USDC/AERO volatile 池** | `0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d` | LP token = `Volatime AMM - USDC/AERO`（ERC-20） |
+| 测试钱包 | `0x9da44afe5ba28aa42301c626155ea66eb544c33c` | 与 Morpho/Renzo 测试同一钱包 |
+
+### 5.2 池型机制
+
+- **volatile 池**：恒定乘积曲线（x*y=k），如 USDC/AERO。LP token 名为 `Volatile AMM - <token0>/<token1>`
+- **stable 池**：稳定曲线，同类资产（USDC/USDT 等），LP token 名为 `Stable AMM - ...`
+- 池型判定：LP token name 前缀（`Volatile AMM` / `Stable AMM`）或合约 ABI
+
+### 5.3 LP 凭证（已实测确认）
+
+🔴 **V2 LP 凭证是 ERC-20，不是 NFT**：
+- add liquidity 时池合约 `mint from 0x0` 铸造 LP token（标准 ERC-20）
+- 读 LP 仓位用 `balanceOf(user)`
+- 与 V3（Slipstream）的 NFT 凭证根本不同——V3 要按 tokenId 枚举 NFT
+
+### 5.4 swap 路由（已实测确认）
+
+- **多跳 swap**：一笔 tx 经过多个 V2 池逐跳兑换（实测 3 跳：ETH→WETH→wBLT→AERO）
+- 每个池发 `Swap(sender=router, to=下一跳, amount0In/Out, amount1In/Out)` 事件
+- Router 最后发 `UniversalRouterSwap` 聚合事件（不含金额，金额在池级 Swap 事件里）
+- 🔴 **sender 是 Router 不是用户**——解析要读 `to` / recipient 字段
 
 ## 6. 数据接入要点
 
@@ -97,12 +124,12 @@ DEX 解析的关键坑（首笔实测已确认 + 预判待补）：
 
 | 维度 | 可行性 | 取数方式 | 备注 |
 |------|:---:|---------|------|
-| 实时解析 | ⬜ | 待测 | swap 余额 / LP 仓位实时读取 |
-| 交易历史解析 | ⬜ | 待测 | swap / add / remove / claim 四类事件 |
-| 池子自发现 | ⬜ | 待测 | PoolFactory 事件枚举 / gauge 注册表 |
-| 成交量 / TVL | ⬜ | 待测 | DEX 核心指标，与 RWA 的 APY 不同维度 |
-| 费率历史 | ⬜ | 待测 | swap event 里的 amountIn/amountOut 反推 |
-| PNL | ⬜ | 待测 | LP 侧：手续费收益 − IL（无常损失） |
+| 实时解析 | 🟡 | LP 仓位 `balanceOf(user)`（ERC-20）；swap 余额读 token 合约 | LP 凭证已确认 ERC-20；V3 的 NFT 待测 |
+| 交易历史解析 | 🟡 | swap（池级 Swap 事件）+ add liquidity（mint from 0x0）已实测；remove liquidity / claim 待测 | sender 是 Router 不是用户 |
+| 池子自发现 | 🟡 | PoolFactory 事件枚举；LP token name 前缀判定池型（Volatile/Stable AMM） | 已确认 USDC/AERO 池地址 |
+| 成交量 / TVL | 🟡 | swap 事件 amountIn/amountOut 累加；池 reserve0/reserve1 算 TVL | 已实测 3 跳 swap |
+| 费率历史 | 🟡 | swap 事件 amountIn/amountOut 反推 fee | volatile 池 fee 待确认 |
+| PNL | ⬜ | LP 侧：手续费收益 − IL | 需 remove liquidity 实测验证 IL |
 
 ### 6.4 需向项目方 / 文档索取
 
@@ -154,8 +181,17 @@ DEX 协议通常无 KYC、非托管：
 ## 10. 参考链接
 
 - 产品页：https://aerodrome.finance
-- 文档：待补
-- Basescan：待补（合约地址实测后填）
+- Swap：https://aerodrome.finance/swap
+- Liquidity（含 Slipstream/V3）：https://aerodrome.finance/liquidity
+- Vote：https://aerodrome.finance/vote ｜ Lock：https://aerodrome.finance/locks ｜ Incentivize：https://aerodrome.finance/incentivize
+- Dashboard：https://aerodrome.finance/dash ｜ Launch pool：https://aerodrome.finance/launch
+- 文档：https://aerodrome.finance/docs
+- GitHub：https://github.com/aerodrome-finance
+- Basescan：
+  - Swap Router：https://basescan.org/address/0xcAF22ce31298cf2bf1d152862f80216478ad7c67
+  - Liquidity Router：https://basescan.org/address/0xcf77a3ba9a5ca399b7c97c74d54e5b1beb874e43
+  - USDC/AERO 池：https://basescan.org/address/0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d
+  - 测试钱包：https://basescan.org/address/0x9da44afe5ba28aa42301c626155ea66eb544c33c
 
 ## 11. 实测截图
 
