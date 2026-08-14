@@ -1,7 +1,8 @@
 # USDai — Arbitrum 合成美元（AI 信贷收益）
 
-> **状态**：⬜ 本周待实测 ｜ **调研时间**：2026-08-14 ｜ **解析类型**：待定（预判 A 类 NAV 累积，sUSDai）
-> **调研质量**：中（官网 + Arbiscan 合约已确认，未连钱包实测）
+> **状态**：🟡 Swap 已实测（2026-08-14）｜ **调研时间**：2026-08-14
+> **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
+> 页面实际 Tab：**Swap / Redeem / Stake / Bridge**（Buy 走 Swap；Swap 走 LI.FI 路由，可跨链）
 
 ## 0. 一句话结论
 
@@ -29,6 +30,21 @@ USD.AI = **合成美元协议**：USDai 1:1 由稳定币储备（PYUSD 为核心
 | 1 | **Buy / Mint USDai**（小额 USDC） | app.usd.ai → Buy | 汇率、数量 |
 | 2 | **Earn / Stake → sUSDai** | Earn | APY、份额 |
 | 3 | **Redeem / Unstake** | Positions → redeem | 收回数量、是否排队 |
+
+### 2.1 ✅ 实测交易（2026-08-14；只记哈希+截图，解析留给解析同学）
+
+| # | 操作（UI 视角） | tx hash | 截图 |
+|:---:|---------------|---------|------|
+| 1 | **Swap** 1 USDC（Ethereum）→ 1.0003 USDai（Arbitrum，跨链；路由 OKX Dex Aggregator / LI.FI；步骤：Swap → Approve PYUSD → Buy USDai） | `0xdd19f67e5872e6a63cdc978b7b825be5458daa5aa4c09ab9c480133d779cd1cf` | [截图](截图/USDai-swap-20260814.png) |
+
+### 2.2 操作覆盖（页面可点击交易）
+
+| 交易类型 | 已测 | 哈希 |
+|---------|:---:|------|
+| Swap（Buy USDai，跨链） | ✅ | `0xdd19f6…` |
+| Redeem | ⬜ | —（未测） |
+| Stake | ⬜ | —（未测） |
+| Bridge | ⬜ | —（未测） |
 
 每笔操作后把 **tx hash** 和截图一起给我。
 
