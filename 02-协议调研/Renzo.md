@@ -142,7 +142,7 @@ Program log: Initializing vault staker withdrawal ticket at address
 
 ## 6. 数据接入要点
 
-### 6.1 ✅ 实测交易全集（2026-08-10，UTC）
+### 6.1 ✅ 实测交易全集（2026-08-10 ~ 08-14，UTC）
 
 | # | 时间 | 操作（UI 视角） | 交易类型 | tx hash | 链上结果 |
 |:---:|------|---------------|---------|---------|---------|
@@ -152,6 +152,9 @@ Program log: Initializing vault staker withdrawal ticket at address
 | 4 | 08:10:59 | Withdraw 0.1 份额 | 🔴 **赎回-提交（进队列）** | `0x0798eff3319f8be06efa061e450f7584b9d8410512589ba804ea2f38bee90c82` | ezUSDC1 **−0.1**（用户→WithdrawQueue）<br>🔴 **无 USDC 到账** |
 | 5 | 08:11:59 | Stake 0.00001 ETH | **质押（即时 mint）** | `0xda2a5ba5045bdea792bde33261a1b713000292ca53170495a19a4878de6c0699` | 方法 **`depositETH`**<br>ezETH **+0.000009229160829871**（from `0x0`） |
 | 6 | 13:17:27 | **Solana** Withdraw 0.15 ezSOL | 🔴 **赎回-入队（转入票据账户）** | `4D5miJ2EKobo13nVMS556xuZrPT3m61fKigNHJoXxvXWSVqArKbDmRMLjjhALaiuzM37LVnNkPfHmWWHcvg61b8t` | 指令 **`EnqueueWithdrawal`**<br>ezSOL 0.153050077 → 0.003050077<br>🔴 0.15 转入新建 ticket `2TmT9mRER…FCN2`<br>🔴 **无 JitoSOL 到账**｜详见 §5.4 |
+| 7 | 2026-08-14 02:48:11 | Stake 0.01 ETH | **质押（即时 mint）** | `0xe344fa28d327dba03e1ef4530dfa3e4d4c54f3a6f97c29855f94bead5c6566d2` | to `0x74a09653…e99ef5`，value **0.01 ETH**<br>ezETH **+0.00922781358695485**（from `0x0`，decimals 18）<br>⚠️ 用户随附截图为 **Solana 侧 ezSOL Stake 页**（0.02 JitoSOL → 0.019607 ezSOL，见 §11）；**该哈希本身是 Ethereum 侧 ezETH 质押**，Solana 侧这笔 stake 未上链（截图连接钱包 `2NCfm72…YdYX` ≠ 08-10 测试钱包 `9Gu4W2…MhgS`，见 §9-1e） |
+| 8 | 2026-08-14 03:29:41 | （Solana，无 UI 截图） | 🔴 **赎回-入队？（第 2 笔，转全部剩余）** | `2oFvBFwvZsjjq6EDC2nmEjFSTeyqm8UFnTB17DTzifFX8yny6Sj4ncn2AGVw1WuoSJTQ8JT7gD29n5iwz1cGSPtb` | CreateIdempotent（ezSOL ATA）+ `transfer` **0.003050077 ezSOL**（用户全部剩余余额 → 新账户 `EfCMyCyo…`）<br>⚠️ 类型按金额推断为赎回入队，待 UI 确认 |
+| 9 | 2026-08-14 03:29:56 | （Solana，无 UI 截图） | ✅ **claim（赎回到账）** | `28fmyJUDVNS7Ep79EcUPMAKz2acn9yfqr2yBcMFVduqkLnmffd1mHJh9GcxrFHJPcny7roSUdS2quY4SNLbGRaUN` | `burn` **0.1497 ezSOL**（08-10 ticket）+ 用户实收 **0.150468116 JitoSOL**（= UI 预览 0.15046 ✅）+ fee **0.00015×2**（=0.0003 ≈ 0.2%，**§9-1d 差额即此**）+ closeAccount |
 
 **交叉验证**：ezETH 实得 0.000009229160829871 ÷ 0.00001 ETH = **0.9229**；UI 报价 **1 ETH = 0.92292 ezETH**，UI 预估收到 **0.00000922 EZETH** ✅ 完全吻合。
 
@@ -199,8 +202,9 @@ Program log: Initializing vault staker withdrawal ticket at address
 |---|------|------------|
 | 1 | ~~协议表写 `SOLRenzo` 但实测是 Ethereum~~ → ✅ **已解决**：Renzo 确有 Solana 产品 **ezSOL**（Staking 页，需连 Solana 钱包才显示），2026-08-10 已实测赎回，见 §5.4。<br>⚠️ **仍需与需求方确认接入范围**：Renzo 一家有 **ezUSDC1（ETH 金库）/ ezETH（ETH 质押）/ ezSOL（Solana）** 三条机制各异的线，`SOLRenzo` 是否仅指 ezSOL | 提需求方 / DeX 项目侧 |
 | 1b | 🔴 **ezSOL 的 withdrawal ticket PDA 枚举方式**（Jito Vault 程序 `Vau1t6sL…`，512 字节数据结构）—— **赎回等待期内读取用户资产的唯一入口** | 项目方 / Jito Vault 文档 |
-| 1c | 🔴 **ezSOL claim（领取 JitoSOL）的样本与等待时长** | Linnea 补做（UI 有 Withdrawals 页可看队列） |
-| 1d | UI Receive 0.15046 与汇率反推 0.150761 差 0.2% 的原因（赎回费？滑点？） | 等 claim 到账后反推 / 问项目方 |
+| 1c | ~~🔴 **ezSOL claim（领取 JitoSOL）的样本与等待时长**~~ → ✅ **已解决**（2026-08-14 补）：claim 样本 `28fmyJUD…`，08-10 入队 → 08-14 claim，**等待约 4 天**；burn 0.1497 ezSOL → 实收 0.150468116 JitoSOL | 已实测 |
+| 1d | ~~UI Receive 0.15046 与汇率反推 0.150761 差 0.2% 的原因~~ → ✅ **已解决**：差额 = **fee 0.00015×2 = 0.0003**（claim 链上两笔 fee 转账）；UI 预览 0.15046 = 实收 0.150468116 ✅ | 已实测 |
+| 1e | ⚠️ **ezSOL stake（Solana 侧）的链上哈希仍缺**：08-14 补的 `0xe344…66d2` 经链上核实是 **Ethereum 侧 ezETH 质押**（0.01 ETH → 0.00922781358695485 ezETH）；截图那笔 0.02 JitoSOL stake 未上链（截图连接钱包 `2NCfm72…YdYX` 在 08-14 无签名记录）。如需 Solana 侧 stake 样本需补真实签名 | 用户 / Linnea 补真实签名 |
 | 2 | 🔴 WithdrawQueue 的 claim 交易样本（Ethereum 侧 ezUSDC1，本次只做到提交，没等到到账） | Linnea 补做 |
 | 3 | 份额价格链上取数函数 | Etherscan Read Contract / 项目方 |
 | 4 | ezUSDC1 是否 ERC-4626 | 实测 `asset()` / `convertToAssets()` |
@@ -218,6 +222,7 @@ Program log: Initializing vault staker withdrawal ticket at address
 | 文件 | 内容 | 状态 |
 |------|------|------|
 | ![Renzo ezSOL 赎回](截图/Renzo-ezSOL-赎回-20260810.png) | **ezSOL / JITO**：TVL $2.82M ｜ APY 5.40% ｜ Auto-compound ｜ Withdraw 0.15 ezSOL → Receive 0.15046 JitoSOL ｜ 汇率 1 ezSOL = 1.00507 JitoSOL ｜ 余额 0.15305 ｜ 底部 **NCNs / Withdrawals** 两个入口 | ✅ 已落盘 |
+| ![Renzo ezSOL stake](截图/Renzo-ezSOL-stake-20260814.png) | **ezSOL / JITO**（Stake 页，网络 **Solana**，2026-08-14 10:48 截取）：TVL $2.82M ｜ APY 5.40% ｜ Auto-compound ｜ Stake **0.02 JitoSOL** → **0.019607 ezSOL** ｜ 汇率 1 ezSOL = 1.019998 JitoSOL ｜ 连接钱包 `2NCfm72…YdYX` | ✅ 已落盘 |
 | ezUSDC1 deposit / withdraw 授权 / ezETH 质押（3 张） | Ethereum 侧操作截图 | ⚠️ **原图未落盘**（会话图片缓存已被系统清理）。UI 数值已逐项抄录进本页 §5.2 / §6.1，需要原图请重新截取 |
 
 ---
