@@ -1,7 +1,8 @@
 # MarginFi — Solana 借贷池
 
-> **状态**：⬜ 本周待实测 ｜ **调研时间**：2026-08-14 ｜ **解析类型**：待定（借贷份额，预判 A/B 类）
-> **调研质量**：低（官网探测；⚠️ **app.marginfi.com 已显示迁移到 Project 0（app.0.xyz）**，旧 app 可能停用，实测前先确认哪个入口可用）
+> **状态**：🟡 Supply/Withdraw 已实测（2026-08-14）｜ **调研时间**：2026-08-14
+> **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图；**链上解析由解析同学做，本页不做深度解析**
+> ⚠️ app.marginfi.com 已显示迁移到 Project 0（app.0.xyz），本次实测入口以截图为准（截图待补）
 
 ## 0. 一句话结论
 
@@ -28,6 +29,23 @@ marginfi 是 Solana 借贷协议。**⚠️ 官网已挂迁移公告指向 Proje
 | 0 | 确认入口 | app.marginfi.com vs app.0.xyz | 哪个能操作、URL |
 | 1 | **Supply**（小额 USDC） | Earn / Supply | 资产、数量、APY |
 | 2 | **Withdraw**（全撤） | Withdraw | 收回数量 |
+
+### 2.1 ✅ 实测交易（2026-08-14，UTC；只记哈希+截图，解析留给解析同学）
+
+| # | 时间 | 操作（UI 视角） | 交易签名 |
+|:---:|------|---------------|---------|
+| 1 | 05:36:50 | **Supply**（USDC） | `24FEn81SV2o84U4neRRCwdatpZRRV7b8M1tQCtQd4dxJJjfwrsRpEaoXU33F7ktvEfaBEBAPUGLJUhY2izrrs75G` |
+| 2 | 05:37:45 | **Withdraw** | `59AKZXhdFyb5Xrb1sqrKcxLXZy2G21RFSrgAz2eKJveFEkF46Laup677dQCTJamJnZ2CPBR5wYk1Dzv58zaPUSob` |
+
+⚠️ 这两笔截图未提供，待补。
+
+### 2.2 操作覆盖（页面可点击交易）
+
+| 交易类型 | 已测 | 哈希 |
+|---------|:---:|------|
+| Supply | ✅ | `24FEn8…` |
+| Withdraw | ✅ | `59AKZX…` |
+| Borrow / Repay | ⬜ | —（需抵押，未测） |
 
 每笔操作后把 **Solana 签名** 和截图一起给我。
 

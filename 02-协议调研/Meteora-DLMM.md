@@ -1,7 +1,7 @@
 # Meteora DLMM — Solana 集中流动性 AMM
 
-> **状态**：⬜ 本周待实测 ｜ **调研时间**：2026-08-14 ｜ **解析类型**：待定（LP 份额型，预判 C 类）
-> **调研质量**：低（仅官网探测，未连钱包实测）
+> **状态**：🟡 Add/Remove 流动性已实测（2026-08-14）｜ **调研时间**：2026-08-14
+> **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图；**链上解析由解析同学做，本页不做深度解析**
 
 ## 0. 一句话结论
 
@@ -28,6 +28,21 @@ Meteora 是 Solana 上的流动性协议，**DLMM = Dynamic Liquidity Market Mak
 | 1 | **Add Liquidity**（小额） | app.meteora.ag → 选 DLMM 池 → Add | 池名、价格区间、两边数量、预估 APY |
 | 2 | **Remove Liquidity**（全撤） | 我的仓位 → Remove | 收回两边数量 + 手续费 |
 | 3 | （可选）claim fees | 仓位页 | 手续费金额 |
+
+### 2.1 ✅ 实测交易（2026-08-14，UTC；只记哈希+截图，解析留给解析同学）
+
+| # | 时间 | 操作（UI 视角） | 交易签名 | 截图 |
+|:---:|------|---------------|---------|------|
+| 1 | 05:33:33 | **Add Liquidity**（wSOL + USDC → DLMM 池） | `27r1L31orn5tFgiy8kH2mMLLEAzgEnwV35cjLMnYbrtsCuuFRqX7XVgSUaS5woFwQ7pkf6nErqPXr9UrrPBMDQwr` | [截图](截图/Meteora-DLMM-add-20260814.png) |
+| 2 | 05:34:39 | **Remove Liquidity** | `5dFFUCEzCGQvJZo1AtUQbh5ujdJZpgz2hxLycfKrj3ta8AQNXm4LV7LRMfLeRBHrz2fsMuiMdVd5r6uCKQMgVepR` | ⬜ 待补 |
+
+### 2.2 操作覆盖（页面可点击交易）
+
+| 交易类型 | 已测 | 哈希 |
+|---------|:---:|------|
+| Add Liquidity | ✅ | `27r1L3…` |
+| Remove Liquidity | ✅ | `5dFFUC…` |
+| claim fees | ⬜ | —（可选，未测） |
 
 每笔操作后把 **Solana 签名** 和截图一起给我。
 

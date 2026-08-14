@@ -1,7 +1,8 @@
 # Theo — BSC RWA（thBILL / thGOLD / thUSD）
 
-> **状态**：⬜ 本周待实测 ｜ **调研时间**：2026-08-14 ｜ **解析类型**：待定（预判 A 类 NAV 累积）
-> **调研质量**：低（docs 探测；⚠️ **app.theo.xyz 探测 403**，需浏览器打开确认真实入口）
+> **状态**：🟡 Deposit 已实测（2026-08-14）｜ **调研时间**：2026-08-14
+> **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图；**链上解析由解析同学做，本页不做深度解析**
+> ⚠️ 链修正：截图实测 Network = **Ethereum**（原计划 BSC，已修正）
 
 ## 0. 一句话结论
 
@@ -12,7 +13,7 @@ Theo = **机构级 RWA 协议**：把 T-Bill（thBILL）、黄金（thGOLD）、
 | 字段 | 值 |
 |------|-----|
 | 协议 | Theo（theo.xyz） |
-| 链 | **BSC**（多 L1/L2 部署） |
+| 链 | **Ethereum**（截图实测；原计划 BSC，已修正；docs 称多 L1/L2 部署） |
 | 产品 | thBILL / thGOLD / thUSD（选 BSC 上可操作的 1 个） |
 | 网页入口 | https://app.theo.xyz （⚠️ 探测 403，浏览器确认；docs：https://docs.theo.xyz） |
 | Supply Coins | 待确认（USDC / USDT？） |
@@ -28,6 +29,20 @@ Theo = **机构级 RWA 协议**：把 T-Bill（thBILL）、黄金（thGOLD）、
 | 0 | 打开 app.theo.xyz 确认真实入口 | 浏览器 | 入口 URL、BSC 网络 |
 | 1 | **Mint / Buy**（小额） | 选 thXXX → mint | 汇率、数量 |
 | 2 | **Redeem** | redeem | 收回数量、是否排队 |
+
+### 2.1 ✅ 实测交易（2026-08-14；只记哈希+截图，解析留给解析同学）
+
+| # | 操作（UI 视角） | tx hash | 截图 |
+|:---:|---------------|---------|------|
+| 1 | **Deposit** 2 USDC → ~1.97 sthUSD（APY 5.40%，Lockup None，Vault `0xA808Bc9775cb41c52C7842f8b50427fE7A770326`） | `0x08e36a18194199110164e9d0469671b92486588c2a9ad91dbcca505c4aead3e9` | [截图](截图/Theo-sthUSD-deposit-20260814.png) |
+
+### 2.2 操作覆盖（页面可点击交易）
+
+| 交易类型 | 已测 | 哈希 |
+|---------|:---:|------|
+| Deposit（USDC→sthUSD） | ✅ | `0x08e36a…` |
+| Redeem | ⬜ | —（未测） |
+| Swap（页面顶部入口） | ⬜ | —（未测） |
 
 每笔操作后把 **tx hash** 和截图一起给我。
 
