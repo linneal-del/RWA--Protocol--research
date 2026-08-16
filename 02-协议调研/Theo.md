@@ -49,6 +49,17 @@ Theo = **机构级 RWA 协议**：把 T-Bill（thBILL）、黄金（thGOLD）、
 | **Claim**（cooldown 5 天后领取） | ⬜ | —（Earn 页第三个 tab，需等 08-21 后才能点） |
 | Bridge（Swap 页第二个 tab） | ⬜ | —（未测） |
 
+### 2.3 📎 公开样本交易（**非本人钱包**，供解析同学取样用）
+
+本人 Claim 需等 cooldown 到 2026-08-21，以下为链上公开地址做的同类型交易。均在 **Ethereum**，Vault `0xA808Bc9775cb41c52C7842f8b50427fE7A770326`。
+
+| 类型 | 说明 | tx hash |
+|------|------|---------|
+| **Claim / redeem**（cooldown 后领取） | 08-12 01:47:11，方法 `redeem` | `0x11ba0945a519a5e01416b6cb297de7d713cd6e0e7f58d5ad74b19bd70151b8ab` |
+| **withdraw** | 08-15 12:39:11，方法 `withdraw` | `0xc087ee2ca8d430ea71f57dac86ffdc38650cac0e180cc482bd1886ae3ef875bb` |
+
+Vault 合约出现过的全部方法：`approve / initiateRedeem / redeem / withdraw / transfer / setYield`（`setYield` 为项目方操作）。
+
 **页面实际 tab**：Earn 页 = DEPOSIT / REDEEM / CLAIM；Swap 页 = SWAP / BRIDGE。
 **产品线**：thUSD / thBILL / thGOLD（本次只测 thUSD 线；Earn 页另有 Core 3-mo 6.50% / Core 6-mo 7.20% / Boost 11.00% 三个锁仓档未测）。
 

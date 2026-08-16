@@ -53,6 +53,23 @@ USD.AI = **合成美元协议**：USDai 1:1 由稳定币储备（PYUSD 为核心
 
 > 🔎 **核查说明**（2026-08-16）：Ethereum 上的 `depositWithPermit`(StakingRouter) 与 `initiateRedeem` 两笔属于 **Theo**（sthUSD/thUSD），不是 USDai。Solana 钱包 `BpexTtBq…` 无 USDai 记录（USDai 为 EVM 资产）。
 
+### 2.3 📎 公开样本交易（**非本人钱包**，供解析同学取样用）
+
+本人未做 Stake / Redeem，以下为链上公开地址做的同类型交易，可直接拿去解析。均在 **Arbitrum**。
+
+**关键合约**：USDai `0x0A1a1A107E45b7Ced86833863f482BC5f4ed82EF` ｜ sUSDai（Staked USDai）`0x0B2b2B2076d95dda7817e785989fE353fe955ef9`
+
+| 类型 | 说明 | tx hash |
+|------|------|---------|
+| **Stake** | 08-15 23:06:41，铸出 **6.809189 sUSDai**，方法 `execute302` | `0xe59a6e765b91d605bc191f7cc9126d7d60f2e3f8fc8a0bbba8bf8df9cb576487` |
+| **Stake**（跨链复合） | 08-15 23:13:39，USDai 2.0 → sUSDai 1.8091869882461753，方法 `compose302`（LayerZero compose，桥+质押一笔完成） | `0xc773b61d5e52b6eeccae688024fac00fba207affdd5e54c318c0165e8b401114` |
+| **Stake**（本地复合） | 08-15 23:02:31，USDai 2.0 → sUSDai 1.8091899112767407，方法 `localCompose` | `0x50f6a9c7863c237ec15ecb54c4aa79a35cb29ecc88d7603ce889079e8d899d40` |
+| **requestRedeem**（申请赎回） | 08-15 07:04:43，直接调 sUSDai 合约 | `0x214b6407466200467d73cb2283fb148fa173945dd058755ce621bfac1c3da9b9` |
+| **redeem**（赎回执行） | 08-15 04:20:23，直接调 sUSDai 合约 | `0x4d9c464a6a092c41404e71eda13978d9ab6331862993b15af25e5909950b4154` |
+| **Redeem 销毁腿** | 08-16 02:21:24，销毁 **738.019092 sUSDai** | `0x67c9fb032b38a9ca144c7ca1c92a0ea6644901aa061618b04ae3c21375b26d49` |
+
+⚠️ **Stake 不直连 sUSDai 合约**：sUSDai 合约本身只见到 `approve / transfer / requestRedeem / redeem` 四种方法，质押走 LayerZero 的 `compose302 / execute302 / localCompose` 代理路径。
+
 每笔操作后把 **tx hash** 和截图一起给我。
 
 ## 3. 待确认清单
