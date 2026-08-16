@@ -34,15 +34,23 @@ Theo = **机构级 RWA 协议**：把 T-Bill（thBILL）、黄金（thGOLD）、
 
 | # | 操作（UI 视角） | tx hash | 截图 |
 |:---:|---------------|---------|------|
-| 1 | **Deposit** 2 USDC → ~1.97 sthUSD（APY 5.40%，Lockup None，Vault `0xA808Bc9775cb41c52C7842f8b50427fE7A770326`） | `0x08e36a18194199110164e9d0469671b92486588c2a9ad91dbcca505c4aead3e9` | [截图](截图/Theo-sthUSD-deposit-20260814.png) |
+| 1 | 08-14 · **Deposit** 2 USDC → ~1.97 sthUSD（APY 5.40%，Lockup None，Vault `0xA808Bc9775cb41c52C7842f8b50427fE7A770326`） | `0x08e36a18194199110164e9d0469671b92486588c2a9ad91dbcca505c4aead3e9` | [截图](截图/Theo-sthUSD-deposit-20260814.png) |
+| 2 | 08-16 10:28:23 · **Swap** 0.2 USDC → 0.200069 thUSD（Rate 1 USDC = 1.0003 thUSD，Slippage 0.02%，Network Ethereum） | `0xfff629f07f99bb575cb97340651f909a5536267461648a1881069c582c257889` | [截图](截图/Theo-thUSD-swap-20260816.png) |
+| 3 | 08-16 · **Deposit** 0.2 thUSD → ~0.2 sthUSD（Earn 页，Lockup None，Vault `0xA808…0326`，UI 显示 Done） | ⚠️ 截图内 tx 为 `0xa631…4551`（未提供完整哈希） | [截图](截图/Theo-sthUSD-deposit-20260816.png) |
+| 4 | 08-16 10:30:23 · **Redeem / Begin Unstake** 0.2 thUSD（销毁 0.196958 sthUSD，进入 **5 天 cooldown**，之后才可 Claim） | `0x1c1f0e76d5915f1739a4fa849cd8e22004255fb6f58b59484b5a3076d17267f2` | [截图](截图/Theo-sthUSD-unstake-20260816.png) |
 
 ### 2.2 操作覆盖（页面可点击交易）
 
 | 交易类型 | 已测 | 哈希 |
 |---------|:---:|------|
-| Deposit（USDC→sthUSD） | ✅ | `0x08e36a…` |
-| Redeem | ⬜ | —（未测） |
-| Swap（页面顶部入口） | ⬜ | —（未测） |
+| Swap（USDC→thUSD） | ✅ | `0xfff629…` |
+| Deposit（thUSD→sthUSD 质押） | ✅ | `0x08e36a…`（08-14 版，USDC 直投）；08-16 版哈希待补 |
+| Redeem / Begin Unstake | ✅ | `0x1c1f0e…` |
+| **Claim**（cooldown 5 天后领取） | ⬜ | —（Earn 页第三个 tab，需等 08-21 后才能点） |
+| Bridge（Swap 页第二个 tab） | ⬜ | —（未测） |
+
+**页面实际 tab**：Earn 页 = DEPOSIT / REDEEM / CLAIM；Swap 页 = SWAP / BRIDGE。
+**产品线**：thUSD / thBILL / thGOLD（本次只测 thUSD 线；Earn 页另有 Core 3-mo 6.50% / Core 6-mo 7.20% / Boost 11.00% 三个锁仓档未测）。
 
 每笔操作后把 **tx hash** 和截图一起给我。
 

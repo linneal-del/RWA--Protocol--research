@@ -35,15 +35,19 @@ USD.AI = **合成美元协议**：USDai 1:1 由稳定币储备（PYUSD 为核心
 
 | # | 操作（UI 视角） | tx hash | 截图 |
 |:---:|---------------|---------|------|
-| 1 | **Swap** 1 USDC（Ethereum）→ 1.0003 USDai（Arbitrum，跨链；路由 OKX Dex Aggregator / LI.FI；步骤：Swap → Approve PYUSD → Buy USDai） | `0xdd19f67e5872e6a63cdc978b7b825be5458daa5aa4c09ab9c480133d779cd1cf` | [截图](截图/USDai-swap-20260814.png) |
+| 1 | 08-14 · **Swap** 1 USDC（Ethereum）→ 1.0003 USDai（Arbitrum，跨链；路由 OKX Dex Aggregator / LI.FI；步骤：Swap → Approve PYUSD → Buy USDai） | `0xdd19f67e5872e6a63cdc978b7b825be5458daa5aa4c09ab9c480133d779cd1cf` | [截图](截图/USDai-swap-20260814.png) |
+| 2 | 08-16 10:22:59 · **Swap 第 1 腿**（USDC → PYUSD，走 LI.FI Diamond `0x89c6340B1a1f`，方法 `callDiamondWithEIP2612Signature`） | `0xb0ffa4ce7642e963919e…`（前缀，完整哈希待补） | [截图](截图/USDai-swap-3USDC-20260816.png) |
+| 3 | 08-16 10:24:23 · **Swap 第 2 腿 / Buy USDai**（销毁 4.0 PYUSD，to `0xa2c323fe…`；UI 报价 3 USDC → 3.0001 USDai，Rate 1 USDC = 1.000037 USDai，Max Slippage 0.1%，路由 Bitget） | `0x4b4f139f59dcdb26b50495ae58e9e5443847cb410420a8499cfd073e0260ff87` | 同上 |
+
+⚠️ **Swap 是两腿交易**：UI 上一次 Swap（USDC→USDai 跨链）在链上拆成 LI.FI swap（USDC→PYUSD）+ Buy USDai（PYUSD→USDai）两笔，且**目标链是 Arbitrum**。
 
 ### 2.2 操作覆盖（页面可点击交易）
 
 | 交易类型 | 已测 | 哈希 |
 |---------|:---:|------|
-| Swap（Buy USDai，跨链） | ✅ | `0xdd19f6…` |
+| Swap（Buy USDai，跨链） | ✅ | `0xdd19f6…`（08-14）、`0x4b4f13…`（08-16） |
 | Redeem | ⬜ | —（未测） |
-| Stake | ⬜ | —（未测） |
+| Stake（USDai → sUSDai，APY 8.9%） | ⬜ | —（未测） |
 | Bridge | ⬜ | —（未测） |
 
 每笔操作后把 **tx hash** 和截图一起给我。
