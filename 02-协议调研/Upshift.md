@@ -1,8 +1,8 @@
-# Upshift — BSC 机构级收益金库
+# Upshift — 机构级收益金库（⚠️ 不支持 BSC，实际可用链见 §2.4）
 
 > **状态**：⬜ 待实测 ｜ **调研时间**：2026-08-18
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
-> **本次目标链**：**BSC**（chainId 56）
+> **本次目标链**：原定 **BSC** —— 🔴 **实测确认 app 不支持 BSC**（2026-08-18 截图 `Upshift-链筛选无BSC-20260818.png`），见 §2.4
 
 ## 0. 一句话结论
 
@@ -13,7 +13,7 @@ Upshift 是 **August Digital** 旗下的 DeFi 金库基础设施：机构/фinte
 | 字段 | 值 |
 |------|-----|
 | 协议 | Upshift（app.upshift.finance，由 **August / August Digital** 提供底层） |
-| 链 | **BSC（本次目标）**；官方多链：Ethereum / Base / Avalanche / Solana / Sui / Stellar / Monad / Flare / Ink / Mezo / Citrea / Plasma / Fluent / Hyperliquid L1 |
+| 链 | 🔴 **无 BSC**。app 链筛选实有：**Ethereum / Fluent / Stellar / Monad / HyperEVM(Display only) / Solana / Flare Mainnet / Citrea / Sui**（2026-08-18 截图确认） |
 | 产品 | 收益金库（Vault），份额型；另有 RWA 赎回通道 |
 | **操作入口** | **Deposit（金库列表/存款）**：https://app.upshift.finance ｜ **RWA Redeem**：https://app.upshift.finance/rwa-redeem ｜ **Portfolio（持仓/赎回）**：https://app.upshift.finance/portfolio ｜ Points：https://app.upshift.finance/points ｜ Leaderboard：https://app.upshift.finance/leaderboard ｜ Referrals：https://app.upshift.finance/referrals |
 | 金库页 URL 格式 | `https://app.upshift.finance/pools/{chainId}/{vault合约地址}` — **BSC 的 chainId = 56** |
@@ -76,7 +76,20 @@ Upshift 是 **August Digital** 旗下的 DeFi 金库基础设施：机构/фinte
 | 赎回-领取 claim | ⬜ | ✅ |
 | instantRedeem | ⬜ | ✅ |
 | **RWA Redeem** | ⬜ | ⬜ **待定位合约** |
-| **BSC 上的金库** | ⬜ | ⬜ **app 未见 BSC 金库**（截图显示 Network=Ethereum，金库均为 ETH/Monad/Flare）|
+| **BSC 上的金库** | ❌ | ❌ **页面无 BSC，无法提供哈希** —— 见 §2.4 |
+
+### 2.4 🔴 BSC 不在支持范围（2026-08-18 页面确认）
+
+app 的**链筛选下拉**完整列表（截图 `Upshift-链筛选无BSC-20260818.png`）：
+
+**Ethereum / Fluent / Stellar / Monad / HyperEVM（标注 Display only）/ Solana / Flare Mainnet / Citrea / Sui**
+
+🔴 **没有 BSC / BNB Smart Chain 选项** —— 即使钱包面板 Network 已切到 *BNB Smart Chain*，金库列表里也筛不出任何 BSC 金库。
+→ **结论：Upshift 在 BSC 上没有可操作的金库，该链无法提供任何交易哈希。** 若需覆盖 Upshift，应改用 **Ethereum**（金库最多，8 个）。
+⚠️ 注：DeFiLlama 的协议页把 `Binance` 列为支持链，与 app 实际不符，**以 app 为准**。
+
+**Featured vaults（页面首屏，均非 BSC）**：Axis Origin USDx $67.35M / 18.00% Target ｜ NEMO ETH Prime $5.54M / 18.75% ｜ Sentora USD $46.76M / 6.88% ｜ Flare XRP Yield Vault $33.53M / 1.03%
+**金库分类页签**：All vaults / Lending / DeFi Yield / Pre-deposit / **Sui DeFi** / Recently…
 
 ## 3. 待确认清单
 
