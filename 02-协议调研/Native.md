@@ -92,6 +92,24 @@ Explorer 页标题即 **"Native chain explorer"**（截图 `Native-explorer-链-
 
 **协议方运维方法**（非用户操作，解析应排除）：`setTrustedOperator` / `transferOwnership` / `setMinRedeemInterval` / `setRedeemCooldownExempt`
 
+#### ⚠️ Native 有「新旧两代」合约，别混用
+
+链上排查（2026-08-18）发现 Ethereum 上存在多套 Native 合约，**大部分属于已停用的旧版 RFQ AMM**：
+
+| 代际 | 合约 | 地址 | 最近活动 | 状态 |
+|------|------|------|---------|------|
+| 旧版 | **Pool factory**（ERC1967Proxy，`createNewPool`） | `0x85b0f66e83515ff4e825dfcaa58e040e08278ef9`（**BSC 同地址**） | 2024-01-24 | ⛔ 停用 |
+| 旧版 | NativeRouter（`tradeRFQT`） | `0x0f9f2366C6157F2aCD3C2bFA45Cd9031c152D2Cf` | 2025-10-24 | ⛔ 低频 |
+| 旧版 | NativeRfqPool ×4 | `0x1688A23F…` / `0xC61fb63D…` / `0xD87F3e74…` / `0x7aEac7Eb…` | 2024 年 | ⛔ 停用 |
+| 旧版 | NativePool ×5 | `0xA7E69a85…` 等 | 2023 年 | ⛔ 停用 |
+| **当前** | **NativeLPToken**（`deposit`/`redeem`） | `0xDd3DC634C127c999643c99b115Eca98fa14B7958` 等 5 个 | 2025-07 ~ 2026-07 | ✅ 用户存取走这里 |
+| **当前** | CreditPoolFacet（Diamond） | `0x59c73861…` / `0x3283f3C5…` / `0x2bf7E1df…` / `0x4C158bfE…` / `0x05c55c35…` | — | ✅ Credit Pool 逻辑 |
+
+🔴 **解析同学注意**：DeFiLlama 的 `native` 适配器仍指向**旧版 factory** `0x85b0f66e…`（口径 = 做市商库存），与当前 **Credit Pool**（`native-credit-pool`，用户存款）不是同一套东西，**两者 TVL 不可混算**。
+
+**Activate Account / Deposit 入金合约：仍未定位。** 已排除的路径：① Explorer 里的 10 个 Signer 地址在 Ethereum 上**零交易**（属 Native 链专属账户，与 EVM 钱包分离）；② 旧版 NativeVault / NativeGateway / NativeDepositVault 均无近期活动。
+→ **下一步**：需要一个**真实做过入金的 EVM 地址**才能反查（本人钱包 ETH 不足未能开户）。
+
 ### 2.3 操作覆盖
 
 | 交易类型 | 本人实测 | 公开样本 |

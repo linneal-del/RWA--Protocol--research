@@ -88,6 +88,25 @@ app 的**链筛选下拉**完整列表（截图 `Upshift-链筛选无BSC-2026081
 → **结论：Upshift 在 BSC 上没有可操作的金库，该链无法提供任何交易哈希。** 若需覆盖 Upshift，应改用 **Ethereum**（金库最多，8 个）。
 ⚠️ 注：DeFiLlama 的协议页把 `Binance` 列为支持链，与 app 实际不符，**以 app 为准**。
 
+#### ✅ 官方 API 二次证实（权威证据）
+
+Upshift 官方金库 API：`https://api.augustdigital.io/api/v1/tokenized_vault?status=active&load_subaccounts=false&load_snapshots=false`
+
+拉取全部 **81 个活跃金库**，按 `chain` 字段统计：
+
+| chain | 链 | 金库数 |
+|:---:|------|:---:|
+| 1 | **Ethereum** | **37** |
+| 143 | Monad | 10 |
+| 8453 | Base | 7 |
+| 999 | Hyperliquid | 5 |
+| −1 / −2 / −3 | Solana / Stellar / Sui | 4 / 3 / 4 |
+| 25363 / 4114 / 14 | Fluent / Citrea / Flare | 2 / 2 / 2 |
+| 43114 / 9745 / 196 / 4217 / 11155111 | Avax / Plasma / X Layer / 其他 / Sepolia | 各 1 |
+| **56** | **BSC** | **0** ❌ |
+
+🔴 **`chain=56` 活跃金库数 = 0** —— API 与 UI 完全一致，**Upshift 在 BSC 上确无金库，本链无法交付任何哈希**。
+
 **Featured vaults（页面首屏，均非 BSC）**：Axis Origin USDx $67.35M / 18.00% Target ｜ NEMO ETH Prime $5.54M / 18.75% ｜ Sentora USD $46.76M / 6.88% ｜ Flare XRP Yield Vault $33.53M / 1.03%
 **金库分类页签**：All vaults / Lending / DeFi Yield / Pre-deposit / **Sui DeFi** / Recently…
 
