@@ -16,7 +16,7 @@ Upshift 是 **August Digital** 旗下的 DeFi 金库基础设施：机构/фinte
 | 链 | 🔴 **无 BSC**。app 链筛选实有：**Ethereum / Fluent / Stellar / Monad / HyperEVM(Display only) / Solana / Flare Mainnet / Citrea / Sui**（2026-08-18 截图确认） |
 | 产品 | 收益金库（Vault），份额型；另有 RWA 赎回通道 |
 | **操作入口** | **Deposit（金库列表/存款）**：https://app.upshift.finance ｜ **RWA Redeem**：https://app.upshift.finance/rwa-redeem ｜ **Portfolio（持仓/赎回）**：https://app.upshift.finance/portfolio ｜ Points：https://app.upshift.finance/points ｜ Leaderboard：https://app.upshift.finance/leaderboard ｜ Referrals：https://app.upshift.finance/referrals |
-| 金库页 URL 格式 | `https://app.upshift.finance/pools/{chainId}/{vault合约地址}` — **BSC 的 chainId = 56** |
+| 金库页 URL 格式 | `https://app.upshift.finance/pools/{chainId}/{vault合约地址}` — 实见 chainId：**1**(Ethereum)、14(Flare)、143(Monad)、25363 |
 | Supply Coins | 按金库而定（稳定币为主，如 AUSD / USDC） |
 | Coins Integrated | 金库份额代币（如 earnAUSD），带 Share Price |
 | 平台规模 | Total Deposited **$464,016,716**（2026-08-18 UI）｜ 累计 500M+ 存款、40+ 金库（2025-04 起）、60k+ 存款人、$50B 交易量 |
@@ -31,8 +31,8 @@ Upshift 是 **August Digital** 旗下的 DeFi 金库基础设施：机构/фinte
 
 | # | 操作 | 入口路径 | 截图要点 |
 |---|------|---------|---------|
-| 0 | 切到 **BSC** 网络，筛出 BSC 金库 | app 首页 → 链筛选 | 金库名、TVL、APY、Share Price、金库地址 |
-| 1 | **Deposit**（小额） | 选 BSC 金库 → Deposit | 存入资产/数量、收到份额、Share Price |
+| 0 | 选链（**BSC 不可选**，建议 Ethereum）筛出金库 | app 首页 → 链筛选 | 金库名、TVL、APY、Share Price、金库地址 |
+| 1 | **Deposit**（小额） | 选金库 → Deposit | 存入资产/数量、收到份额、Share Price |
 | 2 | **Withdraw / Redeem** | Portfolio → 该金库 → 赎回 | 收回数量、是否排队/cooldown |
 | 3 | **RWA Redeem**（如可用） | /rwa-redeem | 页面有无可赎回标的 |
 
@@ -95,7 +95,7 @@ app 的**链筛选下拉**完整列表（截图 `Upshift-链筛选无BSC-2026081
 
 | # | 问题 | 怎么查 |
 |---|------|--------|
-| 1 | BSC 上有哪几个金库、地址各是什么 | app 切 BSC 后看 `/pools/56/0x…` |
+| 1 | ✅ **已解决**：BSC 无金库（页面链筛选无该选项，见 §2.4） | 2026-08-18 截图确认 |
 | 2 | 赎回是即时还是排队（有无 cooldown） | 实测 |
 | 3 | 地域限制是否影响本地访问 | 浏览器打开确认 |
 | 4 | RWA Redeem 与普通 Redeem 的区别 | UI / 文档 |
