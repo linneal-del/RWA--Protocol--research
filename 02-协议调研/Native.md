@@ -3,6 +3,7 @@
 > **状态**：⬜ 待实测 ｜ **调研时间**：2026-08-18
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
 > **本次目标链**：**BSC / Ethereum**
+> 🔴 **重大发现**：Native 的下单/成交在 **Native 自有链**上（50ms 出块、24h 1300 万笔），ETH/BSC 上只有 Pool 存取与入金 —— 见 §2.1.1
 
 ## 0. 一句话结论
 
@@ -51,6 +52,30 @@ Native 是**把定价与结算解耦**的流动性基础设施：自建撮合引
 
 🔴 **链上看不出的三件事**：① **Activate Account 一次性开户费**（$1）是交易前置条件；② **Deposit（充值到交易账户）** 与 **Pool Supply（做 LP）** 是两个完全不同的入口；③ 交易走订单簿撮合，不是 AMM swap。
 
+### 2.1.1 🔴🔴 Native 有自己的链（Native Core appchain）——解析口径的根本分叉
+
+Explorer 页标题即 **"Native chain explorer"**（截图 `Native-explorer-链-20260818.png`）：
+
+| 指标 | 值（2026-08-18 UI 快照） |
+|------|------|
+| Avg TPS · 24h | **151.85** |
+| **Block Time · 24h** | **50.00 ms** |
+| Transactions · 24h | **13,119,938** |
+| Active markets | **58** |
+| 最新区块高度 | 162,441,067（每块 5~10 笔） |
+| 交易 Type | **Batch order** / **Oracle** |
+
+**交易详情页字段**（截图 `Native-batchorder详情-20260818.png`）：Tx Hash / **Submit Status** / **Action**（Batch order）/ **Signer** / Block / **Tx Index** / Timestamp（毫秒级）/ **Nonce** / **Expires After (ms)** / Events。
+
+🔴 **结论：Native 的下单/成交发生在 Native 自己的链上，不在 Ethereum / BSC**。
+- 扫 Ethereum / BSC 永远抓不到 Native 的成交记录 —— 只能抓到 **Pool 存取**（LP）和 **Deposit 入金**
+- Native 链的 tx hash 也是 `0x`+64 hex，**但和 EVM 主网哈希不在同一命名空间**，解析侧不能混着查
+- 查询入口：`https://app.native.org/explorer/tx/{hash}`（页面可访问，未找到公开 JSON API）
+- 交易带 **Nonce + Expires After** 字段 → 订单有效期机制，非 EVM 常规语义
+
+**Native 链交易样本（Batch order）**：`0x1c4da30f572a904c1880ee36eef9f5320b10e69eb70224f4727eff23c11fb51a`
+（Signer `0x28229fae4b…2632bd6a`，Block #162441401，Tx Index 8，2026-08-17 17:07:50.960 UTC，20 个 Events）
+
 ### 2.2 📎 公开样本交易（**非本人钱包**，供解析同学取样用）
 
 **已定位合约（Ethereum）**：
@@ -73,7 +98,8 @@ Native 是**把定价与结算解耦**的流动性基础设施：自建撮合引
 |---------|:---:|:---:|
 | **Activate Account**（开户，$1） | ⬜ | ⬜ 待定位 |
 | **Deposit**（充值进交易账户） | ⬜ | ⬜ 待定位 |
-| **Trade / 下单**（Limit / Market，Buy/Sell） | ⬜ | ⬜ 待定位（订单簿撮合，可能不逐笔上链） |
+| **Trade / 下单**（Limit / Market，Buy/Sell） | ⬜ | ✅ **Native 链** `0x1c4da3…`（Batch order）｜⚠️ 不在 ETH/BSC 上 |
+| Oracle（喂价，非用户操作） | — | 📌 Explorer 里另一类 Type，解析应排除 |
 | **Pool Supply** | ⬜ | ✅ `0xb6522e…` |
 | **Pool Withdraw / redeem** | ⬜ | ✅ `0x7b1a43…` |
 
