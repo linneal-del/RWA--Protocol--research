@@ -36,22 +36,47 @@ Upshift 是 **August Digital** 旗下的 DeFi 金库基础设施：机构/фinte
 | 2 | **Withdraw / Redeem** | Portfolio → 该金库 → 赎回 | 收回数量、是否排队/cooldown |
 | 3 | **RWA Redeem**（如可用） | /rwa-redeem | 页面有无可赎回标的 |
 
-### 2.1 ✅ 实测交易（只记哈希+截图，解析留给解析同学）
+### 2.1 📷 页面结构（2026-08-18 截图确认）
 
-| # | 时间 | 操作（UI 视角） | 链 | tx hash | 截图 |
-|:---:|------|---------------|---|---------|------|
-| ⬜ | | 待实测 | | | |
+| 位置 | 内容 |
+|------|------|
+| 顶部导航 | **Deposit** / **RWA Redeem** / **Portfolio** / Points / Leaderboard / Referrals |
+| 钱包面板 | EVM / Solana / Stellar 三类；实测钱包 `0x9DA4…44c33c`，Network = **Ethereum** |
+| Deposit 弹窗 | Deposit With（选币）→ Receive in（金库份额）；显示 **Total APY / Slippage / Rewards**；例：Axis Origin USDx，1 USDx = **0.998880** Axis Origin USDx，Total APY 18.00% |
+| 金库筛选 | All vaults / Lending / DeFi Yield / Pre-deposit / Sui D…（共 3 页） |
+| 金库样例 | **Axis Origin USDx** $67.35M / 18.00% Target（DeFi Yield, Pre-deposit）｜ **NEMO ETH Prime** $5.55M / 18.75% 30D APY |
+| **Portfolio 页签** | **Active positions / Pending Withdrawals / History** + All chains / All tokens 筛选 |
 
-### 2.2 操作覆盖（页面可点击交易）
+🔴 **关键**：Portfolio 有 **Pending Withdrawals** 页签 → **赎回是排队制**（链上对应 `requestRedeem` → `claim` 两步），另有 `instantRedeem` 即时赎回通道。
 
-| 交易类型 | 已测 | 哈希 |
-|---------|:---:|------|
-| Deposit（存入金库） | ⬜ | — |
-| Withdraw / Redeem | ⬜ | — |
-| RWA Redeem | ⬜ | —（需确认 BSC 上是否有标的） |
-| approve（授权，前置） | ⬜ | — |
+### 2.2 📎 公开样本交易（**非本人钱包**，供解析同学取样用）
 
-**页面实际导航**：Deposit / RWA Redeem / Portfolio / Points / Leaderboard / Referrals（后三个非交易类）。
+以下为链上扫 Upshift **Ethereum** 8 个金库合约得到的方法全集与样本哈希（本人未做交易）。
+
+**已扫金库**：`0x3cC0D33B…32167`、`0x74aD2F78…3718b`、`0x955256B3…D8522`、`0xAD958C4c…f595F`、`0xc824A08d…8859fD`(HGETH)、`0xcd69123b…0De54`、`0xe1B4d34E…6c2e`(AGETH)
+
+| 交易类型 | 链上方法 | 样本 tx hash |
+|---------|---------|-------------|
+| **Deposit（存入金库）** | `deposit` | `0xc4e86fca6c450fdc8ab05b0a6b920b4de47e80de2739cac1a670f3857624411e` |
+| **Deposit（子账户）** | `depositToSubaccount` | `0x8441029649aa96d5464eb9900b5b2d94cf8d22484fc98a6bbef2aedbd0c18785` |
+| **赎回-申请**（进 Pending Withdrawals） | `requestRedeem` | `0x31aa09e200d05975f5e472715f08a7ed4fac0f8d5e2db03024bcc68d6b926a64` |
+| **赎回-领取**（排队后到账） | `claim` | `0x49ad91a269f3b7268308b43d4c27659b1d7aa4190b1df7f1dca9ea4b04c86978` |
+| **即时赎回** | `instantRedeem` | `0x640827eeba0a17aeba2c241656371d34f35edb14f681e4ab4fdaea4c6a3f2002` |
+| approve（前置授权） | `approve` | `0xf51f60088b004ef55aea40df99f8c3f13196f135face78ceee0f00bd91e78373` |
+| 份额转账 | `transfer` | `0x6243232374e4157f47046b9a39ca2965e8f3cfbbb94c7253af4509c30ecca51e` |
+
+**协议方运维方法**（非用户操作，解析时应排除）：`chargeManagementFee` / `chargePerformanceFees` / `collectFees` / `processAllClaimsByDate` / `updateTotalAssets`
+
+### 2.3 操作覆盖
+
+| 交易类型 | 本人实测 | 公开样本 |
+|---------|:---:|:---:|
+| Deposit | ⬜ | ✅ |
+| 赎回-申请 requestRedeem | ⬜ | ✅ |
+| 赎回-领取 claim | ⬜ | ✅ |
+| instantRedeem | ⬜ | ✅ |
+| **RWA Redeem** | ⬜ | ⬜ **待定位合约** |
+| **BSC 上的金库** | ⬜ | ⬜ **app 未见 BSC 金库**（截图显示 Network=Ethereum，金库均为 ETH/Monad/Flare）|
 
 ## 3. 待确认清单
 
