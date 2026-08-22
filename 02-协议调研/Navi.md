@@ -74,16 +74,31 @@ Navi 是 SUI 上的头部借贷协议（Protocol TVL **$143.24M**），用户操
 | Borrow | ⬜ | ✅ `HrKxM1…` |
 | Repay | ⬜ | ✅ `GNZVeN…` |
 | Claim 奖励 | ⬜ | ✅ `4xnpkQ…` |
-| Earn Vaults 存取 | ⬜ | ⬜ 待取样 |
-| Swap / Optimize | ⬜ | ⬜ 待取样 |
+| **Earn Vaults / Multiply** | ⬜ | ⬜ 待取样（页面已确认为独立入口，见 §2.2.1） |
+| **Optimize（迁仓）** | ⬜ | ⬜ 待取样（页面已确认会发链上交易） |
+| Swap | ⬜ | ⬜ 待取样 |
 
-⚠️ **页面截图待补**：操作清单来自导航结构，**尚未实地截图确认各页可点击按钮**（如 Vaults 存取是否独立入口、Optimize 是否产生链上交易）。
+### 2.2.1 📷 页面结构（2026-08-22 截图确认，钱包 `0x274…9b0e`）
+
+**顶部导航**：Earn🔥 / Borrow / Portfolio / Swap / **Optimize** / Copilot / Reward Hub🔥 / …
+
+| 页面 | 关键内容 | 截图 |
+|------|---------|------|
+| **Earn** | 金库列表 | [截图](截图/Navi-earn-20260822.png) |
+| **Earn Vault 详情（Multiply）** | 🔴 **独立的「Multiply」循环杠杆入口**：TVL **$2.33M**（2.81M SUI）｜ Base APR **5.61%**（另有 Supply APR / Borrow APR）｜ **Min Investment 3 SUI** ｜ **Withdraw Fee 0.16%** ｜ 🔴 **Withdraw Period 14:00 UTC Daily**（每日固定窗口才能取）｜ 说明文字：该循环策略**免除 borrow / performance / flash loan 三项费用** | [截图](截图/Navi-EarnVault-Multiply-20260822.png) |
+| **Borrow（USDC 市场）** | **Borrow Position 弹窗含 Borrow / Repay 两个 tab**；Borrow from = **Main Market**（可下拉切市场）｜ **Borrow Fee 0.3%** ｜ Borrow APR 6.938% ｜ 显示 Main Market HF（健康因子）｜ 无抵押时按钮为 *Insufficient collateral*。市场数据：Total Supply $26.21M / Total Borrow $21.07M | [截图](截图/Navi-borrow-repay弹窗-20260822.png) |
+| **Optimize** | ✅ **会产生链上交易**：Supply / Borrow 两个 tab，Before(SUI) → After(**suiUSDT APR 16.409%**)，带 **Max Slippage 0.5%**，本质是**跨协议/跨资产的仓位迁移**（非纯展示页） | [截图](截图/Navi-optimize-20260822.png) |
+
+🔴 **链上看不出的三件事**：
+1. **Earn Vault 的 Multiply 是独立产品**（循环杠杆），有 **每日 14:00 UTC 的取款窗口** 和 3 SUI 起投门槛 —— 链上只看到存取，看不到"只能在某时段取"
+2. **Borrow 与 Repay 在同一个弹窗的两个 tab**，且借款收 **0.3% Borrow Fee**（对应链上 `BorrowFeeDeposited` 事件）
+3. **Optimize 是一次"迁仓"操作**，UI 上是一个按钮，链上很可能拆成 withdraw + swap + deposit 多步 —— 解析时容易误判成三笔独立行为
 
 ## 3. 待确认清单
 
 | # | 问题 | 怎么查 |
 |---|------|--------|
-| 1 | Earn Vaults 的存取是否走不同模块 | 截图 + 链上取样 |
-| 2 | Optimize / Copilot 是否产生链上交易 | 页面确认 |
+| 1 | Earn Vaults(Multiply) 存取走哪个模块 | ✅ 页面已确认为独立入口；链上取样待补 |
+| 2 | ✅ **已确认：Optimize 会产生链上交易**（带滑点设置的迁仓）；Copilot 待确认 | 2026-08-22 截图 |
 | 3 | `entry_deposit` 与 `deposit_with_account_cap` 的使用场景差异 | 文档 / 实测 |
 | 4 | Swap 走的是 Navi 自有还是聚合器 | 实测交易 |

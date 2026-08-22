@@ -61,13 +61,21 @@ Robinhood Chain 上部署的是**标准 Uniswap V2**（LP 凭证为 `UNI-V2` ERC
 | 减流动性 Burn | ⬜ | ✅ `0xb05b1b…` |
 | approve（前置授权） | ⬜ | ⬜ 标准 ERC-20，未单独取样 |
 
-⚠️ **页面截图待补**：本页操作类型来自 Uniswap V2 标准合约推定，**尚未用 app.uniswap.org 实地截图确认 Robinhood Chain 在前端是否可选、有无额外入口**。
+### 2.1.1 📷 前端确认（2026-08-22 截图）
+
+✅ **app.uniswap.org 的网络选择器里能选到 Robinhood Chain**，且标记为「**新**」（截图 `UniswapV2-Robinhood链可选-20260822.png`）。
+
+- 网络列表分组：**有余额**（Base / Arbitrum）+ **其他网络**（**Robinhood Chain 新** / Unichain / …）
+- 该链已有代币在前端可选，如 **USDG**（`0x5fc5…d168`）
+- 前端导航：探索 / 发行(Beta) / 流动性池 / 投资组合；交易面板支持**跨链兑换**
+
+→ **结论：Robinhood Chain 在 Uniswap 官方前端已正式支持，用户可直接在 app.uniswap.org 上操作，无需直连合约。**
 
 ## 3. 待确认清单
 
 | # | 问题 | 怎么查 |
 |---|------|--------|
-| 1 | app.uniswap.org 前端是否支持切到 Robinhood Chain | 浏览器截图确认 |
+| 1 | ✅ **已确认支持**，网络选择器内标「新」 | 2026-08-22 截图 |
 | 2 | 4 套 Factory / 3 套 Router02 哪套是官方主用 | 比对 Pair 的 factory() |
 | 3 | 样本里 3 个非标 Router 是什么（聚合器？） | 读合约 |
 | 4 | Robinhood Chain 上是否也有 Uniswap V3/V4 | Factory 搜索 |
