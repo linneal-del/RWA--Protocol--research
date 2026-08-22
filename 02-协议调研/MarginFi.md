@@ -41,6 +41,19 @@ marginfi 是 Solana 借贷协议。**⚠️ 官网已挂迁移公告指向 Proje
 | 3 | 08-16 | **Stake / Mint LST**（Stake SOL 页，LST POOL 5.18% APY，0.2 SOL ≈$15.02 → 0.1301 LST ≈$15.00，预估年化 0.0104 SOL） | `4bpVzJzHzmicwdvZ1qNpSmqDwTURfTCgBjDPx3ap265P9gZta3xGwiwRkTv2Po4QaWimLs9zxgsriJpZmnwm64cn` | [截图](截图/MarginFi-LST-stake-20260816.png) |
 | 4 | 08-16 | **Instant Unstake**（0.1 LST ≈$11.55 → 0.1537 SOL ≈$11.54，Rate 1 LST = 1.537 SOL，Price impact 0.17%，Max slippage 1.00%） | `4gknTGwA5JdA65ichSdwNQyftb6q3BschXKKyjtmCXqwm8ZqaRharVXvvGjh5keH3fiXaUGjNCqgFdXRFuYcJh1h` | [截图](截图/MarginFi-LST-instantunstake-20260816.png) |
 
+### 2.1.1 📷 LST Pool 页面结构（2026-08-22 截图确认）
+
+截图 `MarginFi-unstake延迟档-20260822.png`：
+
+| 项 | 值 |
+|---|---|
+| 页签 | **STAKE / UNSTAKE / DEPOSIT** 三个 |
+| LST Pool | APY **4.92%** ｜ TOTAL STAKED **97.80K SOL ($9.16M)** ｜ 30D AVG APY 5.25% ｜ YOUR STAKE 0.04634 SOL |
+| 🔴 **INSTANT UNSTAKE 开关** | **Off 时**：*receive SOL in 1-2 days at the epoch boundary*（延迟档）；On 时即时到账 |
+| 赎回参数 | RATE **1 LST = 1.5382 SOL** ｜ TIME TO UNSTAKE **~14H 52M** ｜ **UNSTAKE FEE 0.10%** |
+
+🔴 **同一个 UNSTAKE 按钮、一个开关决定两种链上行为** —— 即时档 vs 等 epoch，解析侧要按链上指令区分，不能只看"用户点了 Unstake"。
+
 ### 2.2 操作覆盖（页面可点击交易）
 
 | 交易类型 | 已测 | 哈希 |
@@ -49,7 +62,8 @@ marginfi 是 Solana 借贷协议。**⚠️ 官网已挂迁移公告指向 Proje
 | Withdraw | ✅ | `59AKZX…`（无截图） |
 | Stake / Mint LST | ✅ | `4bpVzJ…` |
 | Instant Unstake | ✅ | `4gknTG…` |
-| Unstake（1–2 days，延迟档） | ⬜ | —（Unstake 弹窗第二个 tab，未测） |
+| Unstake（1–2 days，延迟档） | 🟡 | **页面已确认存在**（截图 `MarginFi-unstake延迟档-20260822.png`）：UNSTAKE 页有 **INSTANT UNSTAKE 开关**，关闭即为「1–2 天后按 epoch 边界到账」；**交易哈希待补** |
+| Deposit（LST Pool 第三个 tab） | ⬜ | —（截图确认存在 STAKE / UNSTAKE / **DEPOSIT** 三个 tab，未测） |
 | **Borrow / Repay** | ❌ | **页面上没有该入口，无法提供哈希**（2026-08-16 用户实地确认；marginfi 借贷已迁移 Project 0） |
 
 每笔操作后把 **Solana 签名** 和截图一起给我。
