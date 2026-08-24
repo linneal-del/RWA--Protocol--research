@@ -59,6 +59,23 @@ Navi 是 SUI 上的头部借贷协议（Protocol TVL **$143.24M**），用户操
 
 **`incentive_v3` 模块出现过的全部函数**：`entry_deposit` / `deposit_with_account_cap` / `withdraw_v2` / `borrow_v2` / `entry_repay` / `claim_reward` / `claim_reward_entry` / `liquidation_v2`
 
+#### 📎 Earn Vault（Multiply）样本 —— 独立 package
+
+**Vault package**：`0xfba9e78742d8f3edeb405561b954846ce3e60cab64dac00e600d50bb4923be0f`
+（另有记录器包 `0x7007493dab46ed15f0d28b41b39b71f9314c520cd8349e01cb3bf46f7cb5fba5`）
+
+| 交易类型 | Move 调用 | 样本 digest |
+|---------|----------|------------|
+| **Vault 存款** | `operation::batch_execute_deposit` | `9kdSs9LBmYq6EzAvJScx2Xno12zgqc2QAjk52CRXq5Zt`（08-19 03:38） |
+| **Vault 取款** | `operation::batch_execute_withdraw` | `6DorEAhaYmipxVojtRbF4BZvAUtSN9RbiXFDeTFzfRxY`（08-19 03:42） |
+| 运营方代存 | `operation::deposit_by_operator` | 同上 |
+| 存取手续费归集 | `vault::deposit_withdraw_fee_collected` + `vault_manage::retrieve_deposit_withdraw_fee_by_operator` | 同上 |
+
+🔴🔴 **链上与 UI 互相印证的关键机制**：Vault 存取的函数名是 **`batch_execute_*`** 和 **`deposit_by_operator`** —— 说明**用户的存取请求由运营方批量执行**，而不是用户自己直接发起。这正好解释了 UI 上那句 **"Withdraw Period 14:00 UTC Daily"**（每日固定窗口批量处理）。
+→ **解析要点**：Vault 交易的 **signer 是 operator，不是用户**；按 signer 归属仓位会全错，必须解析交易内的受益人参数。
+
+**Vault 其余函数**（keeper 记账，非用户操作，应排除）：`vault::update_coin_type_asset_value` / `vault::update_free_principal_value` / `vault_oracle::update_price` / `curator_position::update_curator_position_value` / `curator_position::validate_curator_position_value` / `receipt_adaptor::update_receipt_value` / `zo_adaptor::update_zo_position_value` / `vault_event_recorder::record_vault_status` / `vault_operation_recorder::record_operation`
+
 🔴 **解析要点（观察，非深度解析）**：
 1. **存款有两个入口函数** —— `entry_deposit`（普通）与 `deposit_with_account_cap`（带账户凭证），**别只认一个**
 2. **借款会额外抛 `BorrowFeeDeposited`** —— 借款费单独计，不要算进本金
@@ -74,9 +91,10 @@ Navi 是 SUI 上的头部借贷协议（Protocol TVL **$143.24M**），用户操
 | Borrow | ⬜ | ✅ `HrKxM1…` |
 | Repay | ⬜ | ✅ `GNZVeN…` |
 | Claim 奖励 | ⬜ | ✅ `4xnpkQ…` |
-| **Earn Vaults / Multiply** | ⬜ | ⬜ 待取样（页面已确认为独立入口，见 §2.2.1） |
-| **Optimize（迁仓）** | ⬜ | ⬜ 待取样（页面已确认会发链上交易） |
-| Swap | ⬜ | ⬜ 待取样 |
+| **Earn Vaults / Multiply 存款** | ⬜ | ✅ `9kdSs9…`（`batch_execute_deposit`） |
+| **Earn Vaults / Multiply 取款** | ⬜ | ✅ `6DorEA…`（`batch_execute_withdraw`） |
+| **Optimize（迁仓）** | ⬜ | ⬜ **未捕获**：按 Storage 对象扫 10 页未见专用函数，疑与 withdraw+swap+deposit 组合在同一笔内，需本人实测定位 |
+| Swap | ⬜ | 🟡 链上可见大量 `pool::swap` / `router::swap` / `swap_router::swap_exact_input`，但**多为套利机器人借闪电贷所发**，非 Navi Swap 页用户行为，未单独归因 |
 
 ### 2.2.1 📷 页面结构（2026-08-22 截图确认，钱包 `0x274…9b0e`）
 
@@ -98,7 +116,7 @@ Navi 是 SUI 上的头部借贷协议（Protocol TVL **$143.24M**），用户操
 
 | # | 问题 | 怎么查 |
 |---|------|--------|
-| 1 | Earn Vaults(Multiply) 存取走哪个模块 | ✅ 页面已确认为独立入口；链上取样待补 |
+| 1 | ✅ **已确认**：Vault 走独立 package `0xfba9e787…`，函数 `operation::batch_execute_deposit/withdraw` | 2026-08-24 链上取样 |
 | 2 | ✅ **已确认：Optimize 会产生链上交易**（带滑点设置的迁仓）；Copilot 待确认 | 2026-08-22 截图 |
 | 3 | `entry_deposit` 与 `deposit_with_account_cap` 的使用场景差异 | 文档 / 实测 |
 | 4 | Swap 走的是 Navi 自有还是聚合器 | 实测交易 |

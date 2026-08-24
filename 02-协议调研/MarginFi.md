@@ -62,8 +62,8 @@ marginfi 是 Solana 借贷协议。**⚠️ 官网已挂迁移公告指向 Proje
 | Withdraw | ✅ | `59AKZX…`（无截图） |
 | Stake / Mint LST | ✅ | `4bpVzJ…` |
 | Instant Unstake | ✅ | `4gknTG…` |
-| Unstake（1–2 days，延迟档） | 🟡 | **页面已确认存在**（截图 `MarginFi-unstake延迟档-20260822.png`）：UNSTAKE 页有 **INSTANT UNSTAKE 开关**，关闭即为「1–2 天后按 epoch 边界到账」；**交易哈希待补** |
-| Deposit（LST Pool 第三个 tab） | ⬜ | —（截图确认存在 STAKE / UNSTAKE / **DEPOSIT** 三个 tab，未测） |
+| Unstake（1–2 days，延迟档） | 🟡 | **页面已确认存在**（截图）；🔴 **链上未捞到样本** —— 扫 LST Stake Pool `DqhH94Pj…` 最近 70 笔交易，全部是 DEX 路由 swap，未出现 `WithdrawStake`。说明**实际用户几乎都走即时档**，延迟档需本人实测才能拿到哈希 |
+| Deposit（LST Pool 第三个 tab） | ⬜ | 同上，`DepositStake` 在近 70 笔中亦未出现，需本人实测 |
 | **Borrow / Repay** | ❌ | **页面上没有该入口，无法提供哈希**（2026-08-16 用户实地确认；marginfi 借贷已迁移 Project 0） |
 
 每笔操作后把 **Solana 签名** 和截图一起给我。
@@ -74,4 +74,4 @@ marginfi 是 Solana 借贷协议。**⚠️ 官网已挂迁移公告指向 Proje
 |---|------|--------|
 | 1 | 旧 app 是否还能出交易？迁移后份额是否互通 | 浏览器实测 |
 | 2 | 份额凭证（bank token）mint 地址、汇率机制（NAV 累积？） | 交易内 token 账户 |
-| 3 | marginfi program 地址 | 交易内确认 |
+| 3 | ✅ **已确认**：LST 是标准 **SPL Stake Pool**，程序 `SPoo1Ku8WFXoNDMHPsrGSTSG1Y47rzgn41SLUNakuHy`，池账户 `DqhH94PjkZsjAqEze2BEkWhFQJ6EyU6MdtMphMgnXqeK`，LST mint `LSTxxxnJzKDFSLr4dUkPcmCf5VyryEqzPLz5j4bpxFp`；Stake 指令 = `DepositSol` | 2026-08-24 链上确认 |
