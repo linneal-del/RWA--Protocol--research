@@ -67,9 +67,23 @@ Merkl 是**激励分发基础设施**（Angle Labs 出品），项目方在上�
 | **Claim（Base）** | ⬜ | ✅ `0xc98370…` |
 | **Claim（BNB Chain）** | ⬜ | ✅ `0x656a77…` |
 | **Claim（Robinhood Chain）** | ⬜ | ✅ `0xb5f444…` |
+| **OperatorToggled（授权代领）** | ⬜ | ✅ `0x24f819…`（Ethereum） |
 | 创建激励活动（项目方侧） | ⬜ | ✅ 见 §2.3 |
 
-**✅ 用户侧可点击的交易类型（Claim）四链已全覆盖。**
+### 🔴 2026-08-26 补充：Distributor 上还有第二个用户侧操作
+
+对 Distributor 合约做**全事件扫描**（不只筛 Claimed）后发现，除 `Claimed` 外还有两类事件：
+
+| topic0 | 判定 | Ethereum 近 3000 块 | Base 近 3000 块 | 样本 tx |
+|--------|------|:---:|:---:|---------|
+| `0xf7a40077…3992683` | **Claimed（用户领奖）** | 270 次 | 248 次 | 见上表 |
+| `0x42343f44…36cc95c` | 🔴 **OperatorToggled（用户授权操作员代领）** —— topics = [user, operator]，data = true/false | **309 次**（比 Claimed 还多） | 4 次 | `0x24f81909a4077521f220dcbed69e64737a3014df619ddc3c119cfd86f1562f3e` |
+| `0x23aa2e4f…c34aef62e` | 协议方更新 Merkle 树（selector `0xd9c98087`，keeper 运维） | 1 次 | — | `0x30b9f7ade7f7b0010d8ca7253230362a27ada0e9b09fa595cc987b17bb6bd541` |
+
+🔴 **`OperatorToggled` 是被遗漏的用户侧动作**：用户（样本里是个 **Gnosis Safe 多签**，走 `execTransaction`）授权某个地址代自己领奖。Ethereum 上比 Claim 还频繁。
+→ **对解析同学**：① 这类交易的 `from` 是用户/多签，不是 Merkl；② 被授权的 operator 之后发起的 Claim，**受益人不是签名者** —— 归属要读 Claimed 事件里的 user 字段，不能按 tx.from 归属。
+
+**✅ 用户侧交易类型（Claim + OperatorToggled）已覆盖，四链 Claim 样本齐全。**
 
 ## 2.3 项目方侧合约方法（`0x8BB4C975…`，Ethereum 实测）
 
@@ -117,5 +131,5 @@ Merkl 是**激励分发基础设施**（Angle Labs 出品），项目方在上�
 | 1 | ✅ **已确认**：Opportunity 页唯一行动按钮是 **Lend ↗**，且为**外链跳转到底层协议**（本例 Morpho on Base）；Merkl 自身用户操作只有 Claim | 2026-08-26 截图 |
 | 2 | Claim 是否支持一次领多链/多 token | 读 `claim` 函数签名 |
 | 3 | Robinhood Chain 上 Merkl 在给哪些协议发激励 | API `campaigns?chainId=4663` |
-| 5 | Dashboard 页（用户持仓/待领奖励）有无额外可点击操作 | 连钱包后截图 |
+| 5 | Dashboard 页有无「授权代领 / Claim」以外的按钮（`OperatorToggled` 在前端哪里触发？） | 连钱包后截图 |
 | 4 | 是否需要把项目方侧（createCampaign）也纳入接入范围 | 需求方对齐 |
