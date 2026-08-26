@@ -1,6 +1,6 @@
 # wBETH — Wrapped Beacon ETH（币安 ETH 流动性质押）
 
-> **状态**：🟡 存入铸造已取到公开样本（2026-08-26）｜ **调研时间**：2026-08-26
+> **状态**：✅ 链上铸造样本 + 页面结构均已确认，**UI 与链上汇率交叉验证一致**（2026-08-26）｜ **调研时间**：2026-08-26
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
 > **目标链**：**Ethereum**
 
@@ -17,7 +17,7 @@ wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH�
 | **合约地址** | `0xa2E3356610840701BDf5611a53974510Ae27E2e1` |
 | 代币 | name **Wrapped Beacon ETH** ｜ symbol **WBETH** ｜ decimals 18 |
 | 总供应 | **3,175,308.53 wBETH**（2026-08-26 链上快照） |
-| **操作入口** | https://www.binance.com/en/wbeth （币安站内） |
+| **操作入口** | https://www.binance.com/en/wbeth ｜ 实际页面 = 币安 **Simple Earn → ETH Staking**（站内 CEX 操作，见 §2.4） |
 | 解析类型 | **A 类（NAV 累积）** —— 汇率随质押收益上涨，余额不变 |
 | 接入情况 | 待定 |
 
@@ -55,13 +55,40 @@ wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH�
 | 链上赎回 | ❌ | ❌ **协议无此链上入口** |
 | ERC-20 转账 | ⬜ | ⬜ 标准，未单独取样 |
 
-⚠️ **页面截图待补**：尚未实地打开 binance.com/en/wbeth 确认前端有哪些可点击操作（是否有站内申购/赎回、是否有链上 wrap 入口）。
+## 2.4 📷 页面结构（2026-08-26 截图确认）
+
+截图 `wBETH-币安ETHStaking-20260826.png` —— 页面即币安 **Simple Earn → ETH Staking**（非独立 DApp）：
+
+| 项 | 内容 |
+|---|---|
+| 站内导航 | Overview / **Simple Earn** / Advanced Earn / Loan / VIP Earn |
+| 弹窗页签 | **ETH Staking** / Product Rules |
+| 唯一操作按钮 | **Subscribe（申购）** |
+| **Conversion Ratio** | **1 ETH ≈ 0.90487395 WBETH** |
+| Reference APR | **2.2%** |
+| 计息规则 | Stake Date 08/26 22:52 → **Rewards Start Accruing 08/27 08:00 AM**（🔴 **次日 8 点才起息**，非即时） |
+| 需勾选 | Binance ETH Staking Service Agreement |
+| 池子规模 | Total Value Staked **250,916.42 ETH** |
+
+🔴 **申购是站内（CEX）操作，不产生用户钱包的链上交易** —— 用户在 binance.com 点 Subscribe，链上不会出现该用户地址的交易。§2.1 那笔链上 `deposit` 是**别人直接与合约交互**产生的，两条路径并存。
+
+### ✅ 汇率交叉验证（UI 与链上完全吻合）
+
+| 来源 | 数值 |
+|------|------|
+| UI Conversion Ratio | 1 ETH = 0.90487395 WBETH → **1 WBETH = 1.105126 ETH** |
+| 链上样本反推 | 0.0085 ETH ÷ 0.007691428647718743 wBETH = **1.105126 ETH** |
+
+→ **小数点后 6 位完全一致**，NAV 反推口径可靠。🔴 **绝不能按 1 wBETH = 1 ETH 处理。**
+
+⚠️ **赎回入口本次未截到** —— 用户反馈页面上"没有别的"操作，赎回可能在 Simple Earn 的持仓页（My Staked ETH）而非本页。待补。
 
 ## 3. 待确认清单
 
 | # | 问题 | 怎么查 |
 |---|------|--------|
-| 1 | 币安站内页面有哪些可点击操作 | 浏览器截图 |
+| 1 | ✅ **已确认**：页面唯一操作是 **Subscribe（申购）**，属站内 CEX 行为不上链 | 2026-08-26 截图 |
 | 2 | `deposit` 的 referral 参数用途 | 合约 / 文档 |
-| 3 | 汇率的链上读取函数（`exchangeRate()` 未命中标准签名） | 读合约 ABI |
+| 3 | 汇率链上读取函数（`exchangeRate()` 未命中标准签名）—— 已可用「存入量÷得到量」反推，与 UI 一致 | 读合约 ABI 补正式取数口径 |
+| 5 | **赎回入口在哪个页面**（本次未截到，疑在 Simple Earn 持仓页） | 浏览器补截图 |
 | 4 | BNB Chain 侧部署是否同一套逻辑 | 链上比对 |
