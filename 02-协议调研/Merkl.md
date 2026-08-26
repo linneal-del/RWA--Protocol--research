@@ -1,6 +1,6 @@
 # Merkl — 多链激励分发（Ethereum / BSC / Base / Robinhood Chain）
 
-> **状态**：✅ **四条链的用户侧 claim 样本已全部取到**（2026-08-26）｜ **调研时间**：2026-08-26
+> **状态**：✅ **已完成** —— 四链 claim 样本全覆盖 + 页面机制已确认（Merkl 是激励层，用户侧仅 Claim 上链）｜ **调研时间**：2026-08-26
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
 > **目标链**：**Ethereum(1) / BNB Chain(56) / Base(8453) / Robinhood Chain(4663)**
 
@@ -84,13 +84,38 @@ Merkl 是**激励分发基础设施**（Angle Labs 出品），项目方在上�
 
 📌 **对解析同学**：**用户领奖（Distributor）和项目方建活动（Creator）是两个合约、两类行为**，不要混在一起统计。项目方侧的这些方法属于运营动作，通常应排除在用户行为之外。
 
-⚠️ **页面截图待补**：尚未实地打开 app.merkl.xyz 确认前端有哪些可点击入口（Claim 之外是否还有 Stake / Deposit 类操作、活动列表长什么样）。
+## 2.4 📷 页面结构（2026-08-26 截图确认）—— 🔴🔴 Merkl 是"激励层"，不是存取型协议
+
+截图 `Merkl-opportunity页-20260826.png`（一个 Opportunity 详情页）：
+
+| 项 | 内容 |
+|---|---|
+| 顶部导航 | **Opportunities** / **Dashboard** / More / Connect |
+| 本例活动 | *Deposit USDe as collateral on USDe/USDC 91.5%* —— **底层协议是 Morpho on Base** |
+| 右侧数据 | **Merkl APR 4.5%** ｜ DAILY REWARDS **$40.82K**（up to $96.26K）｜ **TVL $331.11M** |
+| What you need / earn | USDe on Base → 赚 USDe on Base |
+| 活动信息 | Dates **20 Aug → 27 Aug 2026** ｜ Reward chain **Base** ｜ Distribution strategy **Capped Reward Rate** ｜ APR cap 4.5% ｜ Max daily rewards $96.26K ｜ Total reward **345.205K USDe** ｜ **Campaign ID `0xfc6d…568e`** |
+| 规则 | Blacklist 5（黑名单地址） |
+| 辅助入口 | Simulate a deposit ｜ View campaign details ｜ Past rewards 9 ｜ 1 active / 0 upcoming / 9 past |
+| **唯一行动按钮** | **Lend ↗** |
+
+🔴🔴 **最关键的机制（链上绝对看不出来）**：页面上那个 **Lend ↗ 按钮是外链跳转**，点击后**离开 Merkl、跳到底层协议**——本例跳到 `app.morpho.org/base/variable/0x54cf9be5…/usde-usdc#market`（Morpho 的市场页）。
+
+→ **用户为了赚 Merkl 奖励而做的存款/做市交易，链上归属的是底层协议（Morpho / Uniswap / Aerodrome…），不是 Merkl。**
+→ **Merkl 自己产生的用户侧链上交易，有且只有 `Claim` 一种。**
+
+**对解析同学的口径结论**：
+1. Merkl **不是**存取型协议，不要给它建"存款/取款"交易类型
+2. 用户在 Merkl 页面点 Lend 产生的那笔交易，应归到**底层协议**账下
+3. Merkl 侧只需解析 **Distributor 的 Claim**（`0x3Ef3D8bA…9Ae`）
+4. **Campaign ID**（如 `0xfc6d…568e`）是 Merkl 的活动标识，可用于把奖励归因到具体活动
 
 ## 3. 待确认清单
 
 | # | 问题 | 怎么查 |
 |---|------|--------|
-| 1 | app.merkl.xyz 前端除 Claim 外还有哪些可点击操作 | 浏览器截图 |
+| 1 | ✅ **已确认**：Opportunity 页唯一行动按钮是 **Lend ↗**，且为**外链跳转到底层协议**（本例 Morpho on Base）；Merkl 自身用户操作只有 Claim | 2026-08-26 截图 |
 | 2 | Claim 是否支持一次领多链/多 token | 读 `claim` 函数签名 |
 | 3 | Robinhood Chain 上 Merkl 在给哪些协议发激励 | API `campaigns?chainId=4663` |
+| 5 | Dashboard 页（用户持仓/待领奖励）有无额外可点击操作 | 连钱包后截图 |
 | 4 | 是否需要把项目方侧（createCampaign）也纳入接入范围 | 需求方对齐 |
