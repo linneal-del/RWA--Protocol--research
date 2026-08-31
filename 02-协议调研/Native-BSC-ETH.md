@@ -1,6 +1,6 @@
 # Native — BSC / ETH 链上撮合交易 + 借贷型流动性池
 
-> **状态**：⬜ 待实测 ｜ **调研时间**：2026-08-18
+> **状态**：🟡 BSC 侧 Pool 提取两步已实测（2026-09-01）｜ Ethereum 侧 Pool 存取有公开样本 ｜ **调研时间**：2026-08-18 ~ 09-01
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
 > **本次目标链**：**BSC / Ethereum**
 > 🔴 **重大发现**：Native 的下单/成交在 **Native 自有链**上（50ms 出块、24h 1300 万笔），ETH/BSC 上只有 Pool 存取与入金 —— 见 §2.1.1
@@ -107,7 +107,41 @@ Explorer 页标题即 **"Native chain explorer"**（截图 `Native-explorer-链-
 
 🔴 **解析同学注意**：DeFiLlama 的 `native` 适配器仍指向**旧版 factory** `0x85b0f66e…`（口径 = 做市商库存），与当前 **Credit Pool**（`native-credit-pool`，用户存款）不是同一套东西，**两者 TVL 不可混算**。
 
-**Activate Account / Deposit 入金合约：仍未定位。** 已排除的路径：① Explorer 里的 10 个 Signer 地址在 Ethereum 上**零交易**（属 Native 链专属账户，与 EVM 钱包分离）；② 旧版 NativeVault / NativeGateway / NativeDepositVault 均无近期活动。
+## 2.5 🔴 BSC 侧实测（2026-09-01）—— 更正此前判断 + 发现提取排队机制
+
+⚠️ **更正**：本文档此前写过"BSC 上只找到一个 LP 合约且 30 万块无日志"，**那个判断是错的** —— 当时我拿 Ethereum 的 NativeLPToken 地址去 BSC 查，地址根本不对。**BSC 上有活跃池子。**
+
+### 页面实况（截图 `Native-BSC-Pool-20260901.png`，Pool 页筛选 BNB Chain）
+
+| 项 | 值 |
+|---|---|
+| Available Liquidity | **$20.90M** ｜ Supply APY **up to 4.93%** ｜ Utilization **39.1%**（$9.60M 已用） |
+| BNB Chain 池子 | **USDT**（APY 3.14%，24h 量 $7.30M，总存款 2,370,031）、**WBNB**（1.80%）、STONEUSD、USD1、CRCLon、SPCXon、MUon、CANP… |
+| 本人持仓 | USDT 池 **My Deposit 1.4906**，按钮变成 **Manage**（其他池是 Supply） |
+| 🔴 **提取状态** | **"1.0205 withdrawing · 2d 23h"** —— 提取要**排队等约 3 天** |
+
+### ✅ 本人实测两笔（BSC）
+
+| # | 时间(UTC) | 操作 | 合约 | selector | tx hash |
+|:---:|------|------|------|---------|---------|
+| 1 | 08-31 15:33:40 | **发起提取**（把 1.0 wNLP-USDT 交给队列合约） | **wNLP-USDT-Queue** `0xb88791ef86d10037f7481b4e3fcbca5bb4162bfa` | `0x9ee679e8` | `0xbbbd4b6414151da956dee2e0aed025c7fe0f984a4bda9650aa3a2a975e4286cc` |
+| 2 | 08-31 15:32:45 | **领取提取**（销毁 0.5 wNLP-USDT → 到账 USDT） | 同上 | `0x6e66d84a` | `0x26520ef82e7e2b680fb37d833db0cd2ad3e5688c218c594efc121b2272531a49` |
+
+**第 2 笔的资金流**：
+- 销毁 **0.5 wNLP-USDT**
+- 池子 `0xba8db0ca…` 转出 **0.5102283808797224 USDT**
+- 用户收到 **0.5100193926588171 USDT**
+- 手续费 **0.000208988220905393 USDT** → `0x6044eef7…`（约 **0.041%**）
+
+### 🔴🔴 对解析同学最重要的三条
+
+1. **提取是两步、跨天完成**：先 `0x9ee679e8`（份额进队列），等约 **3 天**后再 `0x6e66d84a`（拿钱）。**中间这几天用户既没有 LP 份额、也没收到钱** —— 必须有"提取中"状态，否则用户会看到资产凭空消失。这和仓库里 Renzo / Upshift 记过的排队赎回是同一类坑。
+2. **队列是独立合约**：`wNLP-USDT-Queue` `0xb88791ef…`，**每个币种一个队列合约**（名字带币种），不是统一入口。
+3. **领取时扣约 0.041% 手续费**，走 `0x6044eef7…`。算用户实收不能用池子转出的数。
+
+📌 UI 上按钮会变：**没存过 = Supply，存过 = Manage**（Manage 里才有提取入口）。
+
+**Activate Account / Deposit（交易账户入金）合约：仍未定位。** 已排除的路径：① Explorer 里的 10 个 Signer 地址在 Ethereum 上**零交易**（属 Native 链专属账户，与 EVM 钱包分离）；② 旧版 NativeVault / NativeGateway / NativeDepositVault 均无近期活动。
 → **下一步**：需要一个**真实做过入金的 EVM 地址**才能反查（本人钱包 ETH 不足未能开户）。
 
 ### 2.3 操作覆盖
@@ -118,7 +152,9 @@ Explorer 页标题即 **"Native chain explorer"**（截图 `Native-explorer-链-
 | **Deposit**（充值进交易账户） | ⬜ | ⬜ 待定位 |
 | **Trade / 下单**（Limit / Market，Buy/Sell） | ⬜ | ✅ **Native 链** `0x1c4da3…`（Batch order）｜⚠️ 不在 ETH/BSC 上 |
 | Oracle（喂价，非用户操作） | — | 📌 Explorer 里另一类 Type，解析应排除 |
-| **Pool Supply** | ⬜ | ✅ `0xb6522e…` |
+| **Pool Supply** | ⬜ | ✅ `0xb6522e…`（ETH） |
+| **Pool 发起提取（BSC）** | ✅ `0xbbbd4b…` | — |
+| **Pool 领取提取（BSC）** | ✅ `0x26520e…` | — |
 | **Pool Withdraw / redeem** | ⬜ | ✅ `0x7b1a43…` |
 
 ⚠️ **本人钱包 `0x9DA4…c33c` 未开户**（ETH 余额 0.000119，不足 0.000524 开户费），故交易类操作无本人样本。
