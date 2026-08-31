@@ -1,6 +1,6 @@
 # Lombard — LBTC（比特币流动性质押）· Ethereum
 
-> **状态**：🟡 页面结构已确认 + 链上质押/赎回样本已取到（2026-09-01）
+> **状态**：🟡 全部页面结构已确认（LBTC/Strategies/Bridge/Swap/Deposit）+ 铸造与赎回链上样本已取到（2026-09-01）
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
 > **目标链**：**Ethereum**（LBTC 另有 BSC 等多链部署）
 
@@ -62,12 +62,46 @@ Lombard 把比特币变成能生息的资产：你把 BTC 打给它，它在以�
 | 提示 | *"This trade has a high price impact"* —— 小额兑换滑点很大 |
 | 本次结果 | 用户取消（*Failed to swap. User rejected the request*），**无哈希** |
 
-### 2.3 其他入口（未测）
+### 2.3 LBTC 页（截图 `Lombard-LBTC页-20260901.png`）
+
+**LBTC 是由 Bitwise 管理的策略产品**（页面标 *STRATEGY MANAGED BY BITWISE*，Bitwise 管理规模 $9B+）。
+
+| 项 | 值 |
+|---|---|
+| TVL | **$678.0M** |
+| Target APY | **2.5%**（实际 0.07%，30 天滚动 · **以 BTC 结算**） |
+| 🔴 **操作按钮** | **Deposit** 和 **Withdraw** 两个 |
+| 页内页签 | Overview / How it works / Utilize across DeFi / Terms / Risk / **Flow of Funds** |
+| 透明度 | Chainlink Proof of Reserves + Bitwise 风险指标，有 Transparency dashboard |
+
+### 2.4 Strategies 页 —— 🔴 有三个独立产品，不止 LBTC
+
+截图 `Lombard-strategies-20260901.png`。总 TVL **$845.8M**，覆盖 **50+ 协议**（Aave / Morpho / Jupiter / Spark）、**10 条链**（ETH / SOL / BASE / BSC / SUI / AVAX）。
+
+| 产品 | 类型 | 说明 | Target APY | TVL | 按钮 |
+|------|------|------|:---:|---:|------|
+| **LBTC** | YIELD | 存 BTC 换 LBTC，接入 DeFi | **2.5%** | $678.0m | Deposit / Learn More |
+| **Bitcoin Earn** | VAULT | 一次存入，分散策略，BTC 计价收益 | **4.5%** | $71.9m | Deposit / Learn More |
+| **Bitcoin Onchain Credit Strategy** | CREDIT | 为 Flow Traders 的稳定币贷款做承销，收固定溢价 | **4%** | $34.2m | Deposit / Learn More |
+
+📌 §2.1 那个 Deposit 流程的目的地写的是 **Bitcoin Earn**，说明**三个产品共用同一套 BTC 存入通道**，只是资产路径终点不同。
+
+### 2.5 Bridge 页（截图 `Lombard-bridge-20260901.png`）
+
+| 项 | 内容 |
+|---|---|
+| 方向 | From **Ethereum** → To **Solana**（两边都可下拉切链） |
+| 资产 | LBTC |
+| 需填 | **Recipient**（目标链地址，跨到 Solana 要填 Solana 地址） |
+| 提示 | *"All bridging activities are fully traceable between networks"* |
+| 按钮 | Continue |
+
+📌 **跨链是 EVM 交易**（从 Ethereum 出发那笔），和 §2.1 的 BTC 存入不是一回事。
+
+### 2.6 其他入口（未测）
 
 | 入口 | 说明 |
 |------|------|
-| **Strategies** | 策略页，疑似金库存取 |
-| **Bridge** | LBTC 跨链 |
 | **Rewards** | 领奖励 |
 | **Portfolio** | 持仓查看（应该不产生交易） |
 | **$BARD** | 代币页 |
@@ -96,16 +130,20 @@ Lombard 把比特币变成能生息的资产：你把 BTC 打给它，它在以�
 | 交易类型 | 本人实测 | 公开样本 | 说明 |
 |---------|:---:|:---:|------|
 | **Deposit（BTC→LBTC）** | ⬜ | ✅ `0xc1f33d…` | ⚠️ 用户侧动作在**比特币网络**，以太坊只有协议铸币 |
-| **赎回（LBTC→BTC）** | ⬜ | ✅ `0xfdcff5…` | |
+| **赎回 / Withdraw（LBTC→BTC）** | ⬜ | ✅ `0xfdcff5…` | LBTC 页有独立 Withdraw 按钮 |
 | **Swap（USDC↔LBTC）** | ❌ 取消了 | ⬜ 待取样 | 页面可点，是 EVM 交易 |
-| Strategies | ⬜ | ⬜ | 未测 |
-| Bridge | ⬜ | ⬜ | 未测 |
+| **Bridge（LBTC 跨链）** | ⬜ | ⬜ 待取样 | 页面可点，从 ETH 出发那笔是 EVM 交易 |
+| **Bitcoin Earn 存入**（VAULT） | ⬜ | ⬜ 待取样 | Strategies 页独立产品，4.5% APY |
+| **Bitcoin Onchain Credit 存入**（CREDIT） | ⬜ | ⬜ 待取样 | Strategies 页独立产品，4% APY |
 | Rewards（领奖励） | ⬜ | ⬜ | 未测 |
 
 ## 5. 待办
 
-| # | 事项 | 谁做 |
-|---|------|------|
-| 1 | Swap 补一笔成功的（上次取消了） | 你 |
-| 2 | Strategies / Bridge / Rewards 三个页面截图，看有哪些可点操作 | 你 |
-| 3 | 上述三类的链上样本 | 我（拿到页面结构后去捞） |
+| # | 事项 | 谁做 | 状态 |
+|---|------|------|------|
+| 1 | Swap 补一笔成功的（上次取消了） | 你 | ⬜ |
+| 2 | Bridge 做一笔（ETH→其他链） | 你 | ⬜ |
+| 3 | Bitcoin Earn / Onchain Credit 两个产品的存入 | 你 | ⬜ |
+| 4 | Rewards 页截图 | 你 | ⬜ |
+| 5 | ~~Strategies / Bridge 页面结构~~ | — | ✅ 已确认（§2.4 / §2.5） |
+| 6 | Swap / Bridge / 两个策略产品的链上样本 | 我 | ⬜ 等页面确认后去捞 |

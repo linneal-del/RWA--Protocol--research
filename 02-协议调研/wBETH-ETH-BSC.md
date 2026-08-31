@@ -83,6 +83,39 @@ wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH�
 
 ⚠️ **赎回入口本次未截到** —— 用户反馈页面上"没有别的"操作，赎回可能在 Simple Earn 的持仓页（My Staked ETH）而非本页。待补。
 
+## 2.5 🔴 BSC 侧结论：页面上没有入口，链上也没有本地铸造（2026-09-01 确认）
+
+### 页面确认（用户实地查看）
+
+⚠️ 原图未落盘（会话缓存已清），以下为逐项抄录：
+
+Binance ETH Staking 弹窗的 **Stake Amount 下拉框只有两个选项：`ETH` 和 `BETH`** —— **没有 BSC / BNB Chain 网络选项**。整个申购流程绑定在以太坊资产上。
+
+| 当次快照 | 值 |
+|---|---|
+| Conversion Ratio | 1 ETH ≈ **0.9046016 WBETH** → 1 WBETH ≈ **1.105457 ETH** |
+| Reference APR | **2.21%** |
+| 最小申购 | **0.0001 ETH** |
+| 计息规则 | Stake Date 08/31 23:48 → Rewards Start Accruing **09/01 08:00 AM**（仍是次日 8 点起息） |
+| Total Value Staked | **251,573.04 ETH** |
+
+### 链上确认
+
+| 检查项 | 结果 |
+|--------|------|
+| BSC 上的 wBETH 合约地址 | 与以太坊**同地址** `0xa2E3356610840701BDf5611a53974510Ae27E2e1`，symbol `wBETH` / name `Wrapped Binance Beacon ETH` ✅ 合约存在 |
+| BSC 上的**本地铸造**（`Transfer from 0x0`） | 🔴 **近 15 万个区块 0 条** |
+| BSC 上的转账活跃度 | 近 2000 块仅 **1 笔**（`0x7d5a67c9886978af99e3b145794cfd4f8351d3a7916f6ba52cab65ac29b3dc96`），非常冷清 |
+
+### 🔴 结论
+
+**wBETH 在 BSC 上不构成一个可调研的协议入口**：
+1. **页面无 BSC 选项** —— 用户无法在 BSC 上申购或赎回
+2. **链上无本地铸造** —— BSC 上的 wBETH 是**从以太坊桥过去的**，不是在 BSC 铸的
+3. BSC 侧唯一能看到的动作是**普通 ERC-20 转账**，而且量极小
+
+→ 按交付口径记为：**BSC 链页面无该协议入口，无法提供交易哈希**。若需覆盖 wBETH，应以 **Ethereum** 为准（ETH 侧的 deposit 样本见 §2.1）。
+
 ## 3. 待确认清单
 
 | # | 问题 | 怎么查 |
