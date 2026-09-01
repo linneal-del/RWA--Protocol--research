@@ -1,6 +1,6 @@
 # Lombard — LBTC（比特币流动性质押）· Ethereum
 
-> **状态**：🟡 全部页面结构已确认（LBTC/Strategies/Bridge/Swap/Deposit）+ 铸造与赎回链上样本已取到（2026-09-01）
+> **状态**：✅ Swap/Bitcoin Earn 存入 本人实测已补（2026-09-01）；Bridge、Onchain Credit、Rewards 待补
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
 > **目标链**：**Ethereum**（LBTC 另有 BSC 等多链部署）
 
@@ -125,15 +125,28 @@ Lombard 把比特币变成能生息的资产：你把 BTC 打给它，它在以�
 
 📌 这跟仓库里 `Morpho-Base-Katana.md` 记过的坑是同一类（那边是 performance fee 被误判成申购）。
 
+## 3.1 ✅ 本人实测（2026-09-01）
+
+| # | 操作 | 合约 | tx hash | 结果 |
+|:---:|------|------|---------|------|
+| 1 | **Swap USDC→LBTC** | LI.FI `0x1231deb6…` sel `0x5fd9ae2e` | `0x4a13011fa35faca9f349fabceb49fbdb5ba0ff084e9943ee8105d8ef59ada8f5` | 5 USDC → 0.00006362 LBTC |
+| 2 | **Swap USDC→LBTC**（第 2 笔） | 同上 | `0x78764aed8998ed6ab42748b686b820ca1f87592618633973b0106c74c2b29e9e` | 10 USDC → 0.00012733 LBTC |
+| 3 | **Bitcoin Earn 存入**（Strategies→Bitcoin Earn） | `0x3a4baabf…` sel `0x90d25074` | `0x608149b74895570700873ebdf5f0e90900a4931cc3b99ce08abc911e476c0467` | 0.00011 LBTC → 铸 **BTCe**（Vault shares，1 BTC=0.9714 BTCe） |
+
+🔴 **发现**：
+1. **Swap 走 LI.FI 聚合器**（`0x1231deb6f5749ef6ce6943a275a1d3e7486f4eae`，sel `0x5fd9ae2e`）—— 和 USDai 的 Swap 是**同一个 LI.FI 合约**。解析时这类 swap 归属要看聚合器上下文。
+2. **Bitcoin Earn 的凭证是 BTCe（Vault shares）**，存 LBTC 换 BTCe，汇率 1 BTC = 0.9714 BTCe（即 1 BTCe ≈ 1.0246 LBTC，NAV 累积）。截图 `Lombard-BitcoinEarn存入-20260901.png`。
+3. Bitcoin Earn 也支持存 BTC（走比特币网络）或存 LBTC（EVM），两种入口。取回见截图 `Lombard-BitcoinEarn取回-20260901.png`（Withdraw tab，LBTC 计价）。
+
 ## 4. 操作覆盖
 
 | 交易类型 | 本人实测 | 公开样本 | 说明 |
 |---------|:---:|:---:|------|
 | **Deposit（BTC→LBTC）** | ⬜ | ✅ `0xc1f33d…` | ⚠️ 用户侧动作在**比特币网络**，以太坊只有协议铸币 |
 | **赎回 / Withdraw（LBTC→BTC）** | ⬜ | ✅ `0xfdcff5…` | LBTC 页有独立 Withdraw 按钮 |
-| **Swap（USDC↔LBTC）** | ❌ 取消了 | ⬜ 待取样 | 页面可点，是 EVM 交易 |
+| **Swap（USDC↔LBTC）** | ✅ `0x4a1301…` `0x78764a…` | — | 走 LI.FI 聚合器 |
 | **Bridge（LBTC 跨链）** | ⬜ | ⬜ 待取样 | 页面可点，从 ETH 出发那笔是 EVM 交易 |
-| **Bitcoin Earn 存入**（VAULT） | ⬜ | ⬜ 待取样 | Strategies 页独立产品，4.5% APY |
+| **Bitcoin Earn 存入**（VAULT） | ✅ `0x608149…` | — | 存 LBTC 铸 BTCe（Vault shares）|
 | **Bitcoin Onchain Credit 存入**（CREDIT） | ⬜ | ⬜ 待取样 | Strategies 页独立产品，4% APY |
 | Rewards（领奖励） | ⬜ | ⬜ | 未测 |
 

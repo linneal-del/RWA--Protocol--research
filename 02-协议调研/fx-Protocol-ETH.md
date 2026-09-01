@@ -61,12 +61,20 @@ f(x) 页面导航：**Trade（杠杆）/ fxSAVE / fxMINT / Earn / fxUSD Bridge /
 | **Earn 解押+提取** | ✅ `0x53f3a8…` | — |
 | **fxSAVE 存入** | ✅ `0x1f3ccd…` | — |
 | fxSAVE 取出 | ⬜ | ⬜ 待补 |
-| **杠杆开/平仓（Trade）** | ⬜ 只到 Preview 未提交 | ⬜ 待补 |
-| approve ×3 | ✅ | — |
+| **杠杆开多（Trade，xPOSITION）** | ✅ `0x24acba…` | — |
+| approve ×4 | ✅ | — |
+
+### 追加实测（2026-09-01 16:03）
+| # | 操作 | tx hash | 结果 |
+|:---:|------|---------|------|
+| 9 | **approve USDC**（给杠杆合约 `0x33636d49…`） | `0x400031419b0be5c6dda93c9077026eab9f6755b996ec30aad580f5bac4086314` | 前置 |
+| 10 | **杠杆开多 BTC**（Trade 页 Long，5 USDC 保证金 @ 5.12x，sel `0xef9e1aa7`） | `0x24acba5528caa8d0507bf7a82f132e22c7c3cdd89cc646bd3a5c4724804ad91e` | 铸 20.619 fxUSD 建 xPOSITION 多头 |
+
+🔴 **杠杆开多和 fxMINT 铸币是同一个 selector `0xef9e1aa7`**（都是 mint fxUSD）—— 区别在**目标合约**：fxMINT 走 `0x33…cc708`（fxSAVE/mint 合约），杠杆走另一个 position 合约。截图 `fx-杠杆开多BTC-5x-20260901.png` 显示持仓面板有 **Repay / Add Collateral / TP/SL / Adjust Leverage** 四个管理按钮，说明杠杆头寸是可管理的独立仓位。
 
 **页面实际导航**：Trade / fxSAVE / fxMINT / Earn / fxUSD Bridge / Lock / Stats / Leaderboard。
 
-⚠️ 还差：**杠杆真开一笔**（上次停在 Preview）、fxSAVE 取出、fxUSD 赎回。
+⚠️ 还差：**杠杆平仓 / Repay / Add Collateral**、fxSAVE 取出、fxUSD 赎回。
 
 ## 3. 待确认清单
 
