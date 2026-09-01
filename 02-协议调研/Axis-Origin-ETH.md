@@ -7,7 +7,10 @@
 
 **Axis Origin USDx** 单独作为一个协议调研（需求方 2026-09-01 明确要求分开算）。它托管在 **Upshift（August Digital）平台**上，用户通过 Upshift 前端操作，用的是 Upshift 那套金库合约，但作为独立条目跟踪。
 
-🔴 **当前是 Pre-deposit（预存）阶段**：TVL 已达 **$67.58M**，但**还没开放赎回**（Upshift API `instant_redeem` 为空，金库合约近 10 万块无份额铸造/销毁事件）。预存阶段的存款可能走特殊记账，不是常规的 ERC-4626 `deposit`。
+🔴 **当前存取都被暂停**（2026-09-01 页面确认，截图见文末）：页面横幅 *"Deposits & Withdrawals Disabled — until 4 September 2026, 14:00 UTC"*，标签 *Withdrawals paused / Pre-deposit*。本人尝试存 5 USDC 被拒：*"Deposits are currently paused for this vault."*
+→ 所以链上现在**一条用户交易都没有**，要等 **9/4 14:00 UTC 之后**才能做第一笔。
+
+**页面确认的参数**（截图 `Axis-存取暂停-20260901.png`）：TVL **$67.58M** ｜ Share price **1.0045 USDx** ｜ Target APY **18.00%** ｜ 存款币种 USDT/USDC（存入时 swap 成 USDx，1 USDC≈0.9999 USDx，max 1% 滑点）｜ **提取周期 7 天** ｜ Vault `0xAD95…595F` ｜ receipt = Axis Origin USDx。
 
 ⚠️ 排除项：`axisorigin.com`（动画工作室）、`axis.money`（待售域名）都**不是**这个协议，别被搜索结果带偏。
 
