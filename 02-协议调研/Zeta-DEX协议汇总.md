@@ -1,6 +1,6 @@
 # ZetaChain 链 DEX 协议汇总（Zuno / EddyFinance / iZiSwap / DYORSwap / Zedaswap）
 
-> **状态**：🟡 5 个协议 × 3 类核心交易（Swap / 加流动性 / 减流动性）公开样本已齐；🔴 前端可用性差：5 个协议里只有 iZiSwap 前端能打开并切到 Zeta，其余 4 个前端域名失效 / 被 Cloudflare 拦截 / 域名待售
+> **状态**：🟡 5 个协议 × 3 类核心交易（Swap / 加流动性 / 减流动性）公开样本已齐；🔴 前端可用性差：5 个协议里 iZiSwap、DYORSwap 前端可用（DYORSwap 需真实浏览器），Zuno / EddyFinance / Zedaswap 前端域名失效或待售
 > **调研时间**：2026-09-29
 > **交付口径**：每个协议 = 需要调研的协议 + 页面操作截图 + 对应行为的交易 hash + 背景信息；**不做链上深度解析**（解析由解析同学做）
 > **链**：**ZetaChain**（chainId **7000**）
@@ -12,7 +12,7 @@
 ZetaChain 入选 **5 / 12** 个协议，入选交易量覆盖率 **99.7%**（链总日交易量仅 **$5,458**，Confluence 子页数据，来源 GeckoTerminal）。链级 **OKX 支持 ✅ / Ave 支持 ✅**；协议级 5 个协议 **Ave 均不支持**，OKX 支持的是 EddyFinance、iZiSwap、DYORSwap、Zedaswap（Zuno 仅靠交易量入选，占 64.1%）。池型：**Zuno = Uniswap V3 分叉**，**iZiSwap = DL-AMM（离散流动性，自有合约体系）**，**EddyFinance / DYORSwap / Zedaswap = Uniswap V2 分叉**。
 
 🔴 **本次发现**：
-1. 前端大面积不可用（2026-09-29 实测）：Zuno `app.zunodex.xyz` 无 DNS 解析；EddyFinance `eddy.finance` 整个域名 NXDOMAIN；Zedaswap `zedaswap.xyz` 跳转 GoDaddy 域名待售页；DYORSwap `dyorswap.finance` 被 Cloudflare 人机验证拦截（非无头浏览器可能能进）。
+1. 前端大面积不可用（2026-09-29 实测）：Zuno `app.zunodex.xyz` 无 DNS 解析；EddyFinance `eddy.finance` 整个域名 NXDOMAIN；Zedaswap `zedaswap.xyz` 跳转 GoDaddy 域名待售页；DYORSwap `dyorswap.finance` 无头浏览器会被 Cloudflare 拦截，但用真实 Chrome 能正常打开并锁定 Zeta（2026-09-29 已补截 swap 页 / 加流动性页）。
 2. 大部分 swap 样本的 `to` 是聚合器 / 套利合约（OKX DexRouter、Sushi RedSnwapper、MEV 合约等），不是协议自家 Router——**解析必须以 Pool 事件为准**。
 3. ⚠️ 取数坑：iZiSwap / DYORSwap / Zedaswap 的 2024 年早期交易，blockpi / drpc / thirdweb 等公共 RPC 的 `eth_getTransactionReceipt` 返回 `null`（allthatnode archive 报 `LegacyTx` 解码错误），**只有 zetascan Blockscout API 能查到**。
 
@@ -207,7 +207,7 @@ iZiSwap 是 iZUMi Finance 推出的 DEX，最早部署在 BNB Chain，采用 DL-
 |------|-----|
 | 协议类型 | **Uniswap V2 分叉**（`DYORFactory` / `DYORRouter`，LP 代币名 `DYOR LPs`，ERC-20） |
 | 官网 | https://dyorswap.finance |
-| **操作入口** | https://dyorswap.finance/swap?chainId=7000 ｜ https://dyorswap.finance/liquidity?chainId=7000 （`chainId` 参数用于指定链，DefiLlama 登记的 Mode 入口即 `?chainId=34443`）｜ ⚠️ 2026-09-29 无头浏览器访问被 **Cloudflare 人机验证拦截**，页面内容未能确认 |
+| **操作入口** | https://dyorswap.finance/swap?chainId=7000 ｜ https://dyorswap.finance/liquidity?chainId=7000 （`chainId` 参数用于指定链，DefiLlama 登记的 Mode 入口即 `?chainId=34443`）｜ ✅ 2026-09-29 用真实 Chrome 打开，`?chainId=7000` 可锁定 Zeta（默认币 ZETA）；V2 页签 → Add Liquidity 为加流动性入口 `https://dyorswap.finance/add/?chainId=7000`（无头浏览器会被 Cloudflare 拦截） |
 | Factory | `DYORFactory` `0xa1da7a7eb5a858da410de8fbc5092c2079b58413` |
 | Router | `DYORRouter` `0xcf9dc9afb93bd3ef4fb3cc4df7843abc3c9e169a`（6 条样本全部直连） |
 | 示例 pool | `0x8536CB49c858DCA1Dd9f7de434B6D63B524984D3`（$ZHIB/WZETA） |
@@ -242,8 +242,8 @@ DYORSwap 是多链部署的 V2 AMM + Launchpad（DefiLlama 另登记 DyorSwap La
 
 | 交易类型 | 公开样本 hash | 截图 | 备注 |
 |---------|--------------|:---:|------|
-| Swap | `0x54f3d13c…` 等 4 条 | 🟡 交易详情 ✅ / 前端 ⬜（CF 拦截，存证图 `DYORSwap-Zeta-前端CF拦截-20260929.png`） | `swapExactTokensForETHSupportingFeeOnTransferTokens` 等 |
-| 加流动性 | `0xb4561cb0…` | 🟡 交易详情 ✅ / 前端 ⬜ | `addLiquidityETH` |
+| Swap | `0x54f3d13c…` 等 4 条 | ✅ 交易详情 + 前端 `DYORSwap-Zeta-swap页-20260929.png`（ZETA→DYOR，未连钱包不出报价） | `swapExactTokensForETHSupportingFeeOnTransferTokens` 等 |
+| 加流动性 | `0xb4561cb0…` | ✅ 交易详情 + 前端 `DYORSwap-Zeta-流动性页-20260929.png`（DYOR-ZETA LP） | `addLiquidityETH` |
 | 减流动性 | `0xa6cc25d1…` | ✅ 交易详情 | `removeLiquidityETHWithPermit` |
 
 ---
@@ -306,7 +306,7 @@ ZedaSwap 是 ZetaChain 生态早期（2024-02 上线）的 V2 AMM，自称"超�
 | Zuno | ⬜ 域名无解析，无法截 | `Zuno-Zeta-swap交易/加流动性交易/减流动性交易-20260929.png` |
 | EddyFinance | ⬜ 域名 NXDOMAIN，无法截 | `EddyFinance-Zeta-swap交易/加流动性交易/减流动性交易-20260929.png` |
 | iZiSwap | `iZiSwap-Zeta-swap页-20260929.png`、`iZiSwap-Zeta-流动性页-20260929.png` | `iZiSwap-Zeta-swap交易/加流动性交易/减流动性交易-20260929.png` |
-| DYORSwap | `DYORSwap-Zeta-前端CF拦截-20260929.png`（存证） | `DYORSwap-Zeta-swap交易/加流动性交易/减流动性交易-20260929.png` |
+| DYORSwap | `DYORSwap-Zeta-swap页-20260929.png`、`DYORSwap-Zeta-流动性页-20260929.png`（真实 Chrome 补截）；无头浏览器拦截存证 `DYORSwap-Zeta-前端CF拦截-20260929.png` | `DYORSwap-Zeta-swap交易/加流动性交易/减流动性交易-20260929.png` |
 | Zedaswap | `Zedaswap-Zeta-域名待售-20260929.png`（存证） | `Zedaswap-Zeta-swap交易/加流动性交易/减流动性交易-20260929.png` |
 
 ## 8. 待办 / 缺口
@@ -315,7 +315,7 @@ ZedaSwap 是 ZetaChain 生态早期（2024-02 上线）的 V2 AMM，自称"超�
 |---|------|------|
 | 1 | 🔴 Zuno（占 64%）前端 app.zunodex.xyz 无法解析，操作入口与 Router 无法确认 | 查 @zuno_dex 推特确认新域名后补 swap/流动性页截图 |
 | 2 | 🔴 EddyFinance 域名 NXDOMAIN、Zedaswap 域名待售 | 两者疑似停运，建议与下游确认是否仍需接入 |
-| 3 | DYORSwap 前端 CF 拦截 | 用真实浏览器手动打开 `?chainId=7000` 截图 |
+| 3 | ~~DYORSwap 前端 CF 拦截~~ | ✅ 2026-09-29 已用真实 Chrome 补截 |
 | 4 | iZiSwap 前端不能用 URL 参数锁链 | 截图需手动切链；Pools 列表截图时仍在 Loading，可重截 |
 | 5 | Zuno DefiLlama TVL $52 vs GeckoTerminal $58.5K 差异大 | ⚠️ 待核（可能 DefiLlama 适配器未覆盖其池子） |
 | 6 | iZiSwap 示例 pool 的 tokenX 未读出（`tokenX()` revert） | ⚠️ 待查 |

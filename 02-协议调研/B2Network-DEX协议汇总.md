@@ -148,7 +148,7 @@ pair `0x3d5ACB…` token0 = B2Baby、token1 = WBTC。「买」= 付 WBTC 得 B2B
 |------|-----|
 | 类型 | DEX，多链部署；B² 上找到的是 V2 fork（LP 代币 `DYOR LPs` / `DYOR-LP`，事件 topic0 与标准 V2 一致）。前端另有 Positions（V3）页签，B² 上是否有 V3 部署 ⚠️ 待查 |
 | 官网 | https://dyorswap.finance |
-| **操作入口** | https://dyorswap.finance/swap ｜ https://dyorswap.finance/liquidity （⚠️ 2026-09-29 截图时默认网络是 **X Layer（显示 OKB）**，未连钱包无法切到 B²） |
+| **操作入口** | https://dyorswap.finance/swap ｜ https://dyorswap.finance/liquidity （🔴 2026-09-29 用真实 Chrome 复核：**前端已不支持 B²**——`?chainId=223` 加载后被自动改写为 `chainId=196`（X Layer），而同样方式 `?chainId=7000`（Zeta）/ `81457`（Blast）均能锁定，说明 B² 已从前端链列表中移除） |
 | Factory | `0x2ccadb1e437aa9cdc741574bda154686b1f04c09`（示例 pair 的 `factory()` 返回值） |
 | Router | `0x5F6cC7a76c15eEb976c60abdc71A7D349e02D763` |
 | 示例 pair | `0xAa282723ca21776F427A5f2c8A4FdcE0027E4c7F`（**Bitleaf / WBTC**，swap + 减流动性样本）｜ `0xD35366F95D309a2ED7C66CF63E4A262E67d560a8`（加流动性样本所在 pair） |
@@ -191,7 +191,7 @@ pair `0xAa2827…` token0 = Bitleaf、token1 = WBTC。「买」= 付 BTC 得 Bit
 | Swap 卖 ×2 | ✅ `0x8d5dd4…` / `0x98755f…` | — | 2024-05 历史交易 |
 | 加流动性 | ✅ `0x46cd4f…` | ✅ | 2024-04 历史交易 |
 | 减流动性 | ✅ `0xdd8cc5…` | ✅ | 2024-04 历史交易 |
-| 前端 swap 页 / 流动性页 | — | 🟡 | 已截图，但页面默认 X Layer，**未显示 B²** |
+| 前端 swap 页 / 流动性页 | — | 🔴 | 前端已移除 B²（chainId=223 被改写为 X Layer），无法截 B² 前端；现有截图作为存证 |
 
 ---
 
@@ -229,7 +229,7 @@ pair `0xAa2827…` token0 = Bitleaf、token1 = WBTC。「买」= 付 BTC 得 Bit
 |---|------|------|
 | 1 | 🔴 MagicSwap 前端域名失效 + 链上 2 个多月无交易，建议业务确认是否仍接入 | 📌 待确认 |
 | 2 | 🔴 DYORSwap 在 B² 上 2024-06 后无交易，建议业务确认是否仍接入 | 📌 待确认 |
-| 3 | DYORSwap 前端截图未显示 B²：需要用户连钱包、手动切到 B² 后补截 | ⬜ |
+| 3 | DYORSwap 前端已不支持 B²（2026-09-29 真实 Chrome 复核，chainId=223 被改写为 X Layer），前端截图无法补；结合链上 pair 最后交易在 2024-06，建议与下游确认 B² 上的 DYORSwap 是否还需接入 | 🔴 |
 | 4 | MagicSwap 买入样本走的 `0x0bf56B5d…` 是什么合约（聚合器 / 旧版 Router） | ⚠️ 待查 |
 | 5 | DYORSwap 在 B² 上有没有 V3（前端有 Positions 页签） | ⚠️ 待查 |
 | 6 | DYORSwap / MagicSwap 只抽查了浏览器搜索返回的前 11 个 pair，可能还有其他 pair 有较新的交易 | ⚠️ 待补 |
