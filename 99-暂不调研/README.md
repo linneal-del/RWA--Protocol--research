@@ -15,6 +15,7 @@
 | DigiFT | pEAK | 仅合格投资者；无稳定 APY | [DigiFT.md](DigiFT.md) |
 | Asseto | NGI+ | 私募基建股权，季度估值 vs 天级 NAV 曲线结构性冲突 | [Asseto.md](Asseto.md) |
 | Ethena | ? | 产品指向未定义（CSV 该行几乎全空） | [Ethena.md](Ethena.md) |
+| Dogechain / Babylon（扩链 DEX） | — | Dogechain 2026-08-08 永久关停；Babylon 为 Cosmos BTC 质押链，无可适配 DEX（2026-09-29 补） | [Dogechain-Babylon-暂不调研说明.md](Dogechain-Babylon-暂不调研说明.md) |
 
 > ⚠️ 这 9 篇的内容截至 2026-07-31，**TVL / APY / 链部署都是当时的快照**，重新启用前要复核。
 >
