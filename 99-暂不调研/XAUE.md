@@ -46,7 +46,7 @@ XAU₮（Tether Gold，1 XAU₮ = 1 金衡盎司实物黄金）
        └─ 底层黄金储备被部署到 DeFi 协议：借贷、staking、提供流动性
 ```
 
-⚠️ **注意与 [Unitas.md](Unitas.md)（XGLD）的高度相似性**：两者都是"XAUt + DeFi 收益"，**是同质竞品**。差异：
+⚠️ **注意与 [Unitas.md](../02-协议调研/2026-08/Unitas-BSC.md)（XGLD）的高度相似性**：两者都是"XAUt + DeFi 收益"，**是同质竞品**。差异：
 
 | | Unitas XGLD | XAUE |
 |---|---|---|
@@ -89,7 +89,7 @@ XAU₮（Tether Gold，1 XAU₮ = 1 金衡盎司实物黄金）
 
 ### 6.2 关键取数口径 —— 两个特殊问题
 
-**① 三段换算 + 双计价（同 [Unitas.md](Unitas.md) 的问题）**
+**① 三段换算 + 双计价（同 [Unitas.md](../02-协议调研/2026-08/Unitas-BSC.md) 的问题）**
 
 ```
 XAUE 的美元价值 = XAUE 数量 × (储备 XAU₮ / 总供应 XAUE) × XAU₮/USD 价格

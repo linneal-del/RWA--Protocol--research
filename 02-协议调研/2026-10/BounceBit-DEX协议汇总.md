@@ -29,15 +29,15 @@
 
 | 行为 | tx hash | 截图 |
 |---|---|---|
-| Swap 买（WBB→BBTC） | [0x196a15a728d13f00b69eda5ad8bfd1711b1ecfc800a202e81aee05096f960b11](https://bbscan.io/tx/0x196a15a728d13f00b69eda5ad8bfd1711b1ecfc800a202e81aee05096f960b11) | [交易页](截图/BitSwapV3-BounceBit-swap交易-20260929.png) |
+| Swap 买（WBB→BBTC） | [0x196a15a728d13f00b69eda5ad8bfd1711b1ecfc800a202e81aee05096f960b11](https://bbscan.io/tx/0x196a15a728d13f00b69eda5ad8bfd1711b1ecfc800a202e81aee05096f960b11) | <img src="截图/BitSwapV3-BounceBit-swap交易-20260929.png" width="320" alt="交易页"> |
 | Swap 买（WBB→BBTC） | [0x4c9a456ef0c9190eb11e52a93838cfac53929a7ea29680d826d9139b23e30c23](https://bbscan.io/tx/0x4c9a456ef0c9190eb11e52a93838cfac53929a7ea29680d826d9139b23e30c23) | |
 | Swap 卖（BBTC→WBB） | [0xa5996a4995eaf0bf40501a17efcc3575c243742e3c0e7f4b745d0c9d61fc0177](https://bbscan.io/tx/0xa5996a4995eaf0bf40501a17efcc3575c243742e3c0e7f4b745d0c9d61fc0177) | |
 | Swap 卖（BBTC→WBB） | [0x8ec352e0de4eb72dbe7a044ba487ab0a93c71ee06e04b22d7771c762733223b7](https://bbscan.io/tx/0x8ec352e0de4eb72dbe7a044ba487ab0a93c71ee06e04b22d7771c762733223b7) | |
-| 加流动性（建池 + 首次 Mint） | [0xc4644b42ff7063220d4a215344a634a8c81cc6ff2f0950c04aa41af41cc72668](https://bbscan.io/tx/0xc4644b42ff7063220d4a215344a634a8c81cc6ff2f0950c04aa41af41cc72668) | [交易页](截图/BitSwapV3-BounceBit-加流动性交易-20260929.png) |
+| 加流动性（建池 + 首次 Mint） | [0xc4644b42ff7063220d4a215344a634a8c81cc6ff2f0950c04aa41af41cc72668](https://bbscan.io/tx/0xc4644b42ff7063220d4a215344a634a8c81cc6ff2f0950c04aa41af41cc72668) | <img src="截图/BitSwapV3-BounceBit-加流动性交易-20260929.png" width="320" alt="交易页"> |
 | 加流动性（IncreaseLiquidity，所属池未确认） | [0x061de6fa9557e820f9d929fee6fe1f523cb611c4091f58795103178a814ff329](https://bbscan.io/tx/0x061de6fa9557e820f9d929fee6fe1f523cb611c4091f58795103178a814ff329) | |
-| 减流动性 | [0xca6812ba7aa8406277df8b44a6ed236e768f2f674cd568c94fcd672a304b7dcc](https://bbscan.io/tx/0xca6812ba7aa8406277df8b44a6ed236e768f2f674cd568c94fcd672a304b7dcc) | [交易页](截图/BitSwapV3-BounceBit-减流动性交易-20260929.png) |
+| 减流动性 | [0xca6812ba7aa8406277df8b44a6ed236e768f2f674cd568c94fcd672a304b7dcc](https://bbscan.io/tx/0xca6812ba7aa8406277df8b44a6ed236e768f2f674cd568c94fcd672a304b7dcc) | <img src="截图/BitSwapV3-BounceBit-减流动性交易-20260929.png" width="320" alt="交易页"> |
 
-前端截图：[swap 页](截图/BitSwapV3-BounceBit-swap页-20260929.png) ｜ [流动性页](截图/BitSwapV3-BounceBit-流动性页-20260929.png)（存证：DEX 入口已下线）
+前端截图：<img src="截图/BitSwapV3-BounceBit-swap页-20260929.png" width="320" alt="swap 页"> ｜ <img src="截图/BitSwapV3-BounceBit-流动性页-20260929.png" width="320" alt="流动性页">（存证：DEX 入口已下线）
 
 ⚠️ 开发注意：Swap 同时经 SwapRouter 和 `0xC2984d09…`（execute）两个入口，按池子事件解析；token0 = BBTC、token1 = WBB。
 
@@ -55,12 +55,12 @@
 
 | 行为 | tx hash | 截图 |
 |---|---|---|
-| Swap 买（BB→BBUSD） | [0x3453f7b65f0e86b069f0a625b2a470ae160ec942c2a5ec53b2f647f22cf7f13d](https://bbscan.io/tx/0x3453f7b65f0e86b069f0a625b2a470ae160ec942c2a5ec53b2f647f22cf7f13d) | [交易页](截图/BitSwapV2-BounceBit-swap交易-20260929.png) |
+| Swap 买（BB→BBUSD） | [0x3453f7b65f0e86b069f0a625b2a470ae160ec942c2a5ec53b2f647f22cf7f13d](https://bbscan.io/tx/0x3453f7b65f0e86b069f0a625b2a470ae160ec942c2a5ec53b2f647f22cf7f13d) | <img src="截图/BitSwapV2-BounceBit-swap交易-20260929.png" width="320" alt="交易页"> |
 | Swap 买（BB→BBUSD） | [0xc83b5e4eca93a1a7b07e8fa1b81077d72cc6ef42588b3417138e7c4ad39d0dbb](https://bbscan.io/tx/0xc83b5e4eca93a1a7b07e8fa1b81077d72cc6ef42588b3417138e7c4ad39d0dbb) | |
 | Swap 卖（BBUSD→BB） | [0x9a935cd22739e89df4ce5056e6161d84a25fdad474d8cea1cabfbe5a00e61ff8](https://bbscan.io/tx/0x9a935cd22739e89df4ce5056e6161d84a25fdad474d8cea1cabfbe5a00e61ff8) | |
 | Swap 卖（BBUSD→BB） | [0x032b479140b4823661c8645fdafca985f3f41d9769ada8749b9c18be3353e046](https://bbscan.io/tx/0x032b479140b4823661c8645fdafca985f3f41d9769ada8749b9c18be3353e046) | |
-| 加流动性 | [0xf776c5085054f5184ceefccf0133854071c1c352381b2315d5e370a476705260](https://bbscan.io/tx/0xf776c5085054f5184ceefccf0133854071c1c352381b2315d5e370a476705260) | [交易页](截图/BitSwapV2-BounceBit-加流动性交易-20260929.png) |
-| 减流动性 | [0xd7396372b696aad9cb8078b305754603e8957602f3ee28f189ae582cd035f881](https://bbscan.io/tx/0xd7396372b696aad9cb8078b305754603e8957602f3ee28f189ae582cd035f881) | [交易页](截图/BitSwapV2-BounceBit-减流动性交易-20260929.png) |
+| 加流动性 | [0xf776c5085054f5184ceefccf0133854071c1c352381b2315d5e370a476705260](https://bbscan.io/tx/0xf776c5085054f5184ceefccf0133854071c1c352381b2315d5e370a476705260) | <img src="截图/BitSwapV2-BounceBit-加流动性交易-20260929.png" width="320" alt="交易页"> |
+| 减流动性 | [0xd7396372b696aad9cb8078b305754603e8957602f3ee28f189ae582cd035f881](https://bbscan.io/tx/0xd7396372b696aad9cb8078b305754603e8957602f3ee28f189ae582cd035f881) | <img src="截图/BitSwapV2-BounceBit-减流动性交易-20260929.png" width="320" alt="交易页"> |
 
 前端截图：无（与 V3 共用前端，已下线，见 §1 存证图）
 

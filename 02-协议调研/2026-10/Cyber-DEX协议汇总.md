@@ -27,15 +27,15 @@
 | 行为 | tx hash | 截图 |
 |---|---|---|
 | Swap 买（WETH→CYBER） | [0xcbab557ebd995728c6fb9e0f34f054a1b8045519f608b1abe20561553f192c9f](https://cyberscan.co/tx/0xcbab557ebd995728c6fb9e0f34f054a1b8045519f608b1abe20561553f192c9f) | |
-| Swap 买（WETH→CYBER） | [0x3e58f50c37854a1affac3f4470b3f803f2baf9600d0966def33e72376542fd77](https://cyberscan.co/tx/0x3e58f50c37854a1affac3f4470b3f803f2baf9600d0966def33e72376542fd77) | [交易页](截图/CyberSwap-Cyber-swap交易-20260929.png) |
+| Swap 买（WETH→CYBER） | [0x3e58f50c37854a1affac3f4470b3f803f2baf9600d0966def33e72376542fd77](https://cyberscan.co/tx/0x3e58f50c37854a1affac3f4470b3f803f2baf9600d0966def33e72376542fd77) | <img src="截图/CyberSwap-Cyber-swap交易-20260929.png" width="320" alt="交易页"> |
 | Swap 卖（CYBER→WETH） | [0xacc8b6da7243d0a6f38fa5778210b67ede1bbd5a4b5b979de2d927cbecef468d](https://cyberscan.co/tx/0xacc8b6da7243d0a6f38fa5778210b67ede1bbd5a4b5b979de2d927cbecef468d) | |
 | Swap 卖（CYBER→WETH） | [0x49040374da6f65cd756c431ad9ac78580d751729561fe53475b1a88d690b4978](https://cyberscan.co/tx/0x49040374da6f65cd756c431ad9ac78580d751729561fe53475b1a88d690b4978) | |
 | Swap 卖（多跳，Confluence 原样本，同笔还经池子 `0x0dA461…`） | [0x0eb55bf68be9cf25337162154df3a9e4344fe2fb0cfa339e52622402d558cacf](https://cyberscan.co/tx/0x0eb55bf68be9cf25337162154df3a9e4344fe2fb0cfa339e52622402d558cacf) | |
-| 加流动性（Mint） | [0xd780db089dd106a2c081010092a0634b8ec49b3d3417ce0c144084f5444e5d27](https://cyberscan.co/tx/0xd780db089dd106a2c081010092a0634b8ec49b3d3417ce0c144084f5444e5d27) | [交易页](截图/CyberSwap-Cyber-加流动性交易-20260929.png) |
-| 减流动性（Burn） | [0xb1622996d2c1fa15362b6f025b5e9be51ac6c62db88088672a2a5069a138822d](https://cyberscan.co/tx/0xb1622996d2c1fa15362b6f025b5e9be51ac6c62db88088672a2a5069a138822d) | [交易页](截图/CyberSwap-Cyber-减流动性交易-20260929.png) |
+| 加流动性（Mint） | [0xd780db089dd106a2c081010092a0634b8ec49b3d3417ce0c144084f5444e5d27](https://cyberscan.co/tx/0xd780db089dd106a2c081010092a0634b8ec49b3d3417ce0c144084f5444e5d27) | <img src="截图/CyberSwap-Cyber-加流动性交易-20260929.png" width="320" alt="交易页"> |
+| 减流动性（Burn） | [0xb1622996d2c1fa15362b6f025b5e9be51ac6c62db88088672a2a5069a138822d](https://cyberscan.co/tx/0xb1622996d2c1fa15362b6f025b5e9be51ac6c62db88088672a2a5069a138822d) | <img src="截图/CyberSwap-Cyber-减流动性交易-20260929.png" width="320" alt="交易页"> |
 | 限价单挂单（AddLimitOrder，参考） | [0xf5bcb86f91a52b4cf7662af4e7b4896acddfe7a2144ff882804edc481ca99f24](https://cyberscan.co/tx/0xf5bcb86f91a52b4cf7662af4e7b4896acddfe7a2144ff882804edc481ca99f24) | |
 
-前端截图：[swap 页](截图/CyberSwap-Cyber-swap页-20260929.png) ｜ [流动性页](截图/CyberSwap-Cyber-流动性页-20260929.png)
+前端截图：<img src="截图/CyberSwap-Cyber-swap页-20260929.png" width="320" alt="swap 页"> ｜ <img src="截图/CyberSwap-Cyber-流动性页-20260929.png" width="320" alt="流动性页">
 
 ⚠️ 开发注意：
 - **不是 Uniswap V3 fork，是 iZiSwap 架构**：事件用 `tokenX/tokenY`、`leftPoint/rightPoint`，Swap topic0 为 `0x0fe977d6…`（非 V3 的 `0xc42079f9…`），方向看 `sellXEarnY`（false=买 CYBER，true=卖）；另有 AddLimitOrder / DecLimitOrder / CollectLimitOrder 限价单事件。

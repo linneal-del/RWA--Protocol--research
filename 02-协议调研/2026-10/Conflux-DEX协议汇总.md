@@ -26,14 +26,14 @@
 
 | 行为 | tx hash | 截图 |
 |---|---|---|
-| Swap | [0xc4984d86d7472ec7d6e566cba3087c2c34c55e69727b64681b13f69863794b96](https://evm.confluxscan.io/tx/0xc4984d86d7472ec7d6e566cba3087c2c34c55e69727b64681b13f69863794b96) | [交易页](截图/Swappi-Conflux-swap交易-20260929.png) |
+| Swap | [0xc4984d86d7472ec7d6e566cba3087c2c34c55e69727b64681b13f69863794b96](https://evm.confluxscan.io/tx/0xc4984d86d7472ec7d6e566cba3087c2c34c55e69727b64681b13f69863794b96) | <img src="截图/Swappi-Conflux-swap交易-20260929.png" width="320" alt="交易页"> |
 | Swap | [0xa69fbf57d3d11d8d9238a99302553ca1326004c57a1b6383d15701de44c3fa51](https://evm.confluxscan.io/tx/0xa69fbf57d3d11d8d9238a99302553ca1326004c57a1b6383d15701de44c3fa51) | |
 | Swap | [0x67d2337cbfcbb8dec14949e62f6b474a1285f8cf16b22b6ffaf67c18418ed20b](https://evm.confluxscan.io/tx/0x67d2337cbfcbb8dec14949e62f6b474a1285f8cf16b22b6ffaf67c18418ed20b) | |
 | Swap | [0x53208770bea29fda5c76442638f85048e6ea9e042540bfa5629006e5d7f96866](https://evm.confluxscan.io/tx/0x53208770bea29fda5c76442638f85048e6ea9e042540bfa5629006e5d7f96866) | |
-| 加流动性 | [0x688b937f06b7d995d929c28c4b8edde9cb2d0814ef96d8712b5836c1d3a41ca0](https://evm.confluxscan.io/tx/0x688b937f06b7d995d929c28c4b8edde9cb2d0814ef96d8712b5836c1d3a41ca0) | [交易页](截图/Swappi-Conflux-加流动性交易-20260929.png) |
-| 减流动性 | [0xd74f6737649bd542450d6943909eb8f08d95caf743a3cd4a1e90d2bd6aa8fd5e](https://evm.confluxscan.io/tx/0xd74f6737649bd542450d6943909eb8f08d95caf743a3cd4a1e90d2bd6aa8fd5e) | [交易页](截图/Swappi-Conflux-减流动性交易-20260929.png) |
+| 加流动性 | [0x688b937f06b7d995d929c28c4b8edde9cb2d0814ef96d8712b5836c1d3a41ca0](https://evm.confluxscan.io/tx/0x688b937f06b7d995d929c28c4b8edde9cb2d0814ef96d8712b5836c1d3a41ca0) | <img src="截图/Swappi-Conflux-加流动性交易-20260929.png" width="320" alt="交易页"> |
+| 减流动性 | [0xd74f6737649bd542450d6943909eb8f08d95caf743a3cd4a1e90d2bd6aa8fd5e](https://evm.confluxscan.io/tx/0xd74f6737649bd542450d6943909eb8f08d95caf743a3cd4a1e90d2bd6aa8fd5e) | <img src="截图/Swappi-Conflux-减流动性交易-20260929.png" width="320" alt="交易页"> |
 
-前端截图：[swap 页](截图/Swappi-Conflux-swap页-20260929.png) ｜ [流动性页](截图/Swappi-Conflux-流动性页-20260929.png)
+前端截图：<img src="截图/Swappi-Conflux-swap页-20260929.png" width="320" alt="swap 页"> ｜ <img src="截图/Swappi-Conflux-流动性页-20260929.png" width="320" alt="流动性页">
 
 ⚠️ 开发注意：Swap 样本多数经 OKX DexRouter 等聚合器路由进来，不走 Swappi 自己的 Router，**解析请以池子事件为准，不要按 Router 白名单过滤**。
 
@@ -51,14 +51,14 @@
 
 | 行为 | tx hash | 截图 |
 |---|---|---|
-| Swap | [0x311e32dc663393e0cf4e6af6a76e4b40bb6d0c653125dfec13b6ec90670f46af](https://evm.confluxscan.io/tx/0x311e32dc663393e0cf4e6af6a76e4b40bb6d0c653125dfec13b6ec90670f46af) | [交易页](截图/WallFreeX-Conflux-swap交易-20260929.png) |
+| Swap | [0x311e32dc663393e0cf4e6af6a76e4b40bb6d0c653125dfec13b6ec90670f46af](https://evm.confluxscan.io/tx/0x311e32dc663393e0cf4e6af6a76e4b40bb6d0c653125dfec13b6ec90670f46af) | <img src="截图/WallFreeX-Conflux-swap交易-20260929.png" width="320" alt="交易页"> |
 | Swap | [0x304da94747218dd5de725bbb669fd03d845529992c2c7f0c2193f88869332ebd](https://evm.confluxscan.io/tx/0x304da94747218dd5de725bbb669fd03d845529992c2c7f0c2193f88869332ebd) | |
 | Swap | [0xf1f0280e57aa908a655071ff042260a31c3258d2d449313ec8548aab881e1795](https://evm.confluxscan.io/tx/0xf1f0280e57aa908a655071ff042260a31c3258d2d449313ec8548aab881e1795) | |
 | Swap | [0xac4a961a8a29d9d1e71cc519685cf9e41669a1666ed687d43442fa4ce3cd3a6a](https://evm.confluxscan.io/tx/0xac4a961a8a29d9d1e71cc519685cf9e41669a1666ed687d43442fa4ce3cd3a6a) | |
-| 加流动性 | [0x5d7eff13d18bd387be8fe9da23b152a33f7940e8f79273a9ca6e44ea4f093491](https://evm.confluxscan.io/tx/0x5d7eff13d18bd387be8fe9da23b152a33f7940e8f79273a9ca6e44ea4f093491) | [交易页](截图/WallFreeX-Conflux-加流动性交易-20260929.png) |
-| 减流动性 | [0x2879c1aaaae772f5c9e8a7ff546a119b2f438fe3fabef672e5d09def87ae6efd](https://evm.confluxscan.io/tx/0x2879c1aaaae772f5c9e8a7ff546a119b2f438fe3fabef672e5d09def87ae6efd) | [交易页](截图/WallFreeX-Conflux-减流动性交易-20260929.png) |
+| 加流动性 | [0x5d7eff13d18bd387be8fe9da23b152a33f7940e8f79273a9ca6e44ea4f093491](https://evm.confluxscan.io/tx/0x5d7eff13d18bd387be8fe9da23b152a33f7940e8f79273a9ca6e44ea4f093491) | <img src="截图/WallFreeX-Conflux-加流动性交易-20260929.png" width="320" alt="交易页"> |
+| 减流动性 | [0x2879c1aaaae772f5c9e8a7ff546a119b2f438fe3fabef672e5d09def87ae6efd](https://evm.confluxscan.io/tx/0x2879c1aaaae772f5c9e8a7ff546a119b2f438fe3fabef672e5d09def87ae6efd) | <img src="截图/WallFreeX-Conflux-减流动性交易-20260929.png" width="320" alt="交易页"> |
 
-前端截图：[swap 页](截图/WallFreeX-Conflux-swap页-20260929.png) ｜ [流动性页](截图/WallFreeX-Conflux-流动性页-20260929.png)
+前端截图：<img src="截图/WallFreeX-Conflux-swap页-20260929.png" width="320" alt="swap 页"> ｜ <img src="截图/WallFreeX-Conflux-流动性页-20260929.png" width="320" alt="流动性页">
 
 ⚠️ 开发注意：GeckoTerminal 没有索引 WallFreeX 的池子，池子发现要走 Factory 的 `PoolCreated` 事件。
 

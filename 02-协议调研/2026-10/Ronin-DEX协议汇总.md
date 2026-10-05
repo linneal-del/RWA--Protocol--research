@@ -26,14 +26,14 @@
 
 | 行为 | tx hash | 截图 |
 |---|---|---|
-| Swap | [0xc2f2919f389f384fc9d721dcccea39b27c89bd28b2d7d74ed116f062c265993b](https://explorer.roninchain.com/tx/0xc2f2919f389f384fc9d721dcccea39b27c89bd28b2d7d74ed116f062c265993b) | [交易页](截图/Katana-Ronin-swap交易-20260929.png) |
+| Swap | [0xc2f2919f389f384fc9d721dcccea39b27c89bd28b2d7d74ed116f062c265993b](https://explorer.roninchain.com/tx/0xc2f2919f389f384fc9d721dcccea39b27c89bd28b2d7d74ed116f062c265993b) | <img src="截图/Katana-Ronin-swap交易-20260929.png" width="320" alt="交易页"> |
 | Swap | [0x15b9f72966e427a0e06db7f88090140107ff500affdb40832260f2c24d01ba8f](https://explorer.roninchain.com/tx/0x15b9f72966e427a0e06db7f88090140107ff500affdb40832260f2c24d01ba8f) | |
 | Swap | [0x79604df938bc65e333e11150a06fb30da725a37145b00724645575d2d28c96f2](https://explorer.roninchain.com/tx/0x79604df938bc65e333e11150a06fb30da725a37145b00724645575d2d28c96f2) | |
 | Swap | [0x079283290029bd028ac3f6ab15cf4023a2015aa938c8fbc8e7f364ca453e36a7](https://explorer.roninchain.com/tx/0x079283290029bd028ac3f6ab15cf4023a2015aa938c8fbc8e7f364ca453e36a7) | |
-| 加流动性 | [0x3dc55d7b79d4c535b9dd1a68bdf1a25719552a02a8baa037a4b5f4c549ae2541](https://explorer.roninchain.com/tx/0x3dc55d7b79d4c535b9dd1a68bdf1a25719552a02a8baa037a4b5f4c549ae2541) | [交易页](截图/Katana-Ronin-加流动性交易-20260929.png) |
-| 减流动性 | [0xd29e625f2549f594171763f435bf6f2b92ae8b21e24d974b247ac0c33fce9569](https://explorer.roninchain.com/tx/0xd29e625f2549f594171763f435bf6f2b92ae8b21e24d974b247ac0c33fce9569) | [交易页](截图/Katana-Ronin-减流动性交易-20260929.png) |
+| 加流动性 | [0x3dc55d7b79d4c535b9dd1a68bdf1a25719552a02a8baa037a4b5f4c549ae2541](https://explorer.roninchain.com/tx/0x3dc55d7b79d4c535b9dd1a68bdf1a25719552a02a8baa037a4b5f4c549ae2541) | <img src="截图/Katana-Ronin-加流动性交易-20260929.png" width="320" alt="交易页"> |
+| 减流动性 | [0xd29e625f2549f594171763f435bf6f2b92ae8b21e24d974b247ac0c33fce9569](https://explorer.roninchain.com/tx/0xd29e625f2549f594171763f435bf6f2b92ae8b21e24d974b247ac0c33fce9569) | <img src="截图/Katana-Ronin-减流动性交易-20260929.png" width="320" alt="交易页"> |
 
-前端截图：无（Cloudflare 人机验证拦截，存证见 [CF 拦截页](截图/Katana-Ronin-前端CF拦截-20260929.png)）
+前端截图：无（Cloudflare 人机验证拦截，存证见 <img src="截图/Katana-Ronin-前端CF拦截-20260929.png" width="320" alt="CF 拦截页">）
 
 ⚠️ 开发注意：Swap 样本多由 MarketGateway（`0x3b3adf14…3fe3`）等游戏/市场合约发起，不走 Katana Router，**解析请以池子事件为准，不要按 Router 白名单过滤**。
 
@@ -51,12 +51,12 @@
 
 | 行为 | tx hash | 截图 |
 |---|---|---|
-| Swap | [0x42cc12aa352cf86940f11275cfd245c0edc1af71b6227be0c0ae1ca0679f4919](https://explorer.roninchain.com/tx/0x42cc12aa352cf86940f11275cfd245c0edc1af71b6227be0c0ae1ca0679f4919) | [交易页](截图/KatanaV3-Ronin-swap交易-20260929.png) |
+| Swap | [0x42cc12aa352cf86940f11275cfd245c0edc1af71b6227be0c0ae1ca0679f4919](https://explorer.roninchain.com/tx/0x42cc12aa352cf86940f11275cfd245c0edc1af71b6227be0c0ae1ca0679f4919) | <img src="截图/KatanaV3-Ronin-swap交易-20260929.png" width="320" alt="交易页"> |
 | Swap | [0xe2eb39a1f25d63dee3c3ceeb23c253d7ff3215ef45792ba719fe856cd72dc10a](https://explorer.roninchain.com/tx/0xe2eb39a1f25d63dee3c3ceeb23c253d7ff3215ef45792ba719fe856cd72dc10a) | |
 | Swap | [0x18cde454076f73f4ddc1dcae59227477d0157e5908d9299c7371c7cb95ddfe9f](https://explorer.roninchain.com/tx/0x18cde454076f73f4ddc1dcae59227477d0157e5908d9299c7371c7cb95ddfe9f) | |
 | Swap | [0xc29c7306897f2ad91bb138750f17db6c400c57ab3b500ed5026714eef1f93b8c](https://explorer.roninchain.com/tx/0xc29c7306897f2ad91bb138750f17db6c400c57ab3b500ed5026714eef1f93b8c) | |
-| 加流动性 | [0x073002b0b146336f559e51419602dec6c29d8358f1155019e8c2ff06581ba1eb](https://explorer.roninchain.com/tx/0x073002b0b146336f559e51419602dec6c29d8358f1155019e8c2ff06581ba1eb) | [交易页](截图/KatanaV3-Ronin-加流动性交易-20260929.png) |
-| 减流动性 | [0xd4e09904dc203847fb440fd38df9062ae76c3ec56a1aeb1e55caa096f829e237](https://explorer.roninchain.com/tx/0xd4e09904dc203847fb440fd38df9062ae76c3ec56a1aeb1e55caa096f829e237) | [交易页](截图/KatanaV3-Ronin-减流动性交易-20260929.png) |
+| 加流动性 | [0x073002b0b146336f559e51419602dec6c29d8358f1155019e8c2ff06581ba1eb](https://explorer.roninchain.com/tx/0x073002b0b146336f559e51419602dec6c29d8358f1155019e8c2ff06581ba1eb) | <img src="截图/KatanaV3-Ronin-加流动性交易-20260929.png" width="320" alt="交易页"> |
+| 减流动性 | [0xd4e09904dc203847fb440fd38df9062ae76c3ec56a1aeb1e55caa096f829e237](https://explorer.roninchain.com/tx/0xd4e09904dc203847fb440fd38df9062ae76c3ec56a1aeb1e55caa096f829e237) | <img src="截图/KatanaV3-Ronin-减流动性交易-20260929.png" width="320" alt="交易页"> |
 
 前端截图：无（Cloudflare 人机验证拦截）
 

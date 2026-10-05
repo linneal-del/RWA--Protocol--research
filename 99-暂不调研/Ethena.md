@@ -46,9 +46,9 @@
 | **D. USDtb** | 美债背书数字美元 | ✅ 契合 TBills 类别 | 但 USDtb 本身**不生息**（是稳定币），需确认是否有生息版 |
 
 > 📌 **另一个交叉线索**：本批多个协议**都把 Ethena 当底层组件**——
-> - [Re.md](Re.md)：闲置资金放 sUSDe
+> - [Re.md](../02-协议调研/2026-08/Re-ETH.md)：闲置资金放 sUSDe
 > - [OnRe.md](OnRe.md)：抵押品就是 sUSDe，还给 ONyc 持有人 **5x Ethena Points**
-> - [Ondo.md](Ondo.md) 的 JAAAon 与 Ethena 配置的 Centrifuge JAAA **是同一个底层 ETF**
+> - [Ondo.md](../02-协议调研/2026-08/Ondo-BSC.md) 的 JAAAon 与 Ethena 配置的 Centrifuge JAAA **是同一个底层 ETF**
 >
 > → **这意味着 Ethena 风险在我们的 RWA 产品池里是"系统性的"**：如果 sUSDe 出问题，Re 和 OnRe 会同时受影响。这一点值得在**组合层面**披露（见 [../03-参考/组合层风险与交叉依赖.md](../03-参考/组合层风险与交叉依赖.md)）。
 

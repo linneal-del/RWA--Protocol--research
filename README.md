@@ -20,10 +20,10 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 │   ├── 协议清单总览.md              ← ⭐ 7 个协议的入口 + 冲突汇总 + 优先级
 │   ├── 8月待冲刺RWA协议列表.md       # 模版来源（Scott）
 │   └── [Master] RWA Season - 产品信息.csv
-├── 02-协议调研/                     # 本轮 7 篇
-│   ├── Ember.md  Re.md  DMZ-RWAlpha.md  Nest-Credit.md
-│   ├── Unitas.md  Ondo.md  OpenTrade.md
-│   └── 截图/                        # 产品页原始截图（已内嵌到各协议文档 §5）
+├── 02-协议调研/                     # 按月份存放，每个月份文件夹自带 截图/
+│   ├── 2026-08/                     # 8 月：RWA 协议（含 7/31 首批 7 篇）+ Aerodrome DEX 调研
+│   ├── 2026-09/                     # 9 月：Axis / fx Protocol / Tori
+│   └── 2026-10/                     # 10 月：扩链 9 链 DEX 协议汇总（协议 + 合约 + hash + 截图）
 ├── 03-参考/
 │   ├── 交付研发-2026-08-03实测结果.md  ← 🔴🔴 **交付研发看这份**
 │   ├── 交付研发-交易记录表.csv          ← 🔴🔴 26 行，含验证状态与解析要点
@@ -57,15 +57,15 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 
 | 协议 | 产品 | 链 | 类别 | 解析类型 | 截图 | 当前最大卡点 | 文档 |
 |------|------|----|------|---------|:---:|------------|------|
-| Ember | **Bitwise Premium+ RWA Vault** | ETH ✅ | Private Credit | A ✅ | ✅ | 🔴 **申购是每日批处理**，PRD 缺「申购中」状态 | [Ember.md](02-协议调研/Ember.md) |
-| Re | reUSD / reUSDe | ETH ✅ | Reinsurance | A ✅ | ✅ | **解析规格已跑通 + 有真实 hash**；只差 NAV Oracle 地址 | [Re.md](02-协议调研/Re.md) |
-| DMZ (RWAlpha) | rAI Stocks basket | BNB | Stocks | **C 派息** | — | **PNL 必须含派息**，否则显示为 0；需派息 hash | [DMZ-RWAlpha.md](02-协议调研/DMZ-RWAlpha.md) |
-| Nest Credit | nOPAL | **BNB ✅** | Private Credit | A ✅ | ✅ | **地址+hash 已确认**（三链同址、decimals=6）；两种赎回费率装不下 | [Nest-Credit.md](02-协议调研/Nest-Credit.md) |
-| Unitas | XGLD | BNB ✅ | Gold | A ✅ | ✅ | **地址+hash 已确认**（decimals=6，价格源要配黄金） | [Unitas.md](02-协议调研/Unitas.md) |
-| Ondo | USDY | BNB⚠️ | TBills | **A/B 待定** | — | **是 USDY 还是 rUSDY**（决定要不要 NAV 曲线） | [Ondo.md](02-协议调研/Ondo.md) |
-| OpenTrade | PRIME+ Vault | ETH | MMF | A | — | 域名待验证；TVL=0 可能是新池子（**对我们是好事**） | [OpenTrade.md](02-协议调研/OpenTrade.md) |
+| Ember | **Bitwise Premium+ RWA Vault** | ETH ✅ | Private Credit | A ✅ | ✅ | 🔴 **申购是每日批处理**，PRD 缺「申购中」状态 | [Ember.md](02-协议调研/2026-08/Ember-ETH.md) |
+| Re | reUSD / reUSDe | ETH ✅ | Reinsurance | A ✅ | ✅ | **解析规格已跑通 + 有真实 hash**；只差 NAV Oracle 地址 | [Re.md](02-协议调研/2026-08/Re-ETH.md) |
+| DMZ (RWAlpha) | rAI Stocks basket | BNB | Stocks | **C 派息** | — | **PNL 必须含派息**，否则显示为 0；需派息 hash | [DMZ-RWAlpha.md](02-协议调研/2026-08/DMZ-RWAlpha-BSC.md) |
+| Nest Credit | nOPAL | **BNB ✅** | Private Credit | A ✅ | ✅ | **地址+hash 已确认**（三链同址、decimals=6）；两种赎回费率装不下 | [Nest-Credit.md](02-协议调研/2026-08/Nest-Credit-BSC.md) |
+| Unitas | XGLD | BNB ✅ | Gold | A ✅ | ✅ | **地址+hash 已确认**（decimals=6，价格源要配黄金） | [Unitas.md](02-协议调研/2026-08/Unitas-BSC.md) |
+| Ondo | USDY | BNB⚠️ | TBills | **A/B 待定** | — | **是 USDY 还是 rUSDY**（决定要不要 NAV 曲线） | [Ondo.md](02-协议调研/2026-08/Ondo-BSC.md) |
+| OpenTrade | PRIME+ Vault | ETH | MMF | A | — | 域名待验证；TVL=0 可能是新池子（**对我们是好事**） | [OpenTrade.md](02-协议调研/2026-08/OpenTrade-ETH.md) |
 
-> ✅ = 2026-08-02 已由产品页截图 / 链上实测确认，非文档推断。截图内嵌在各协议文档 §5，原图在 [`02-协议调研/截图/`](02-协议调研/截图/)。
+> ✅ = 2026-08-02 已由产品页截图 / 链上实测确认，非文档推断。截图内嵌在各协议文档 §5，原图在 [`02-协议调研/2026-08/截图/`](02-协议调研/2026-08/截图/)。
 
 > Master CSV 的 **Ember (Securitize)**、**FalconX nFXCF**、**Ondo QYLDon / JAAAon** 属待确认组，因主协议在范围内，保留在对应文档的子章节里。
 

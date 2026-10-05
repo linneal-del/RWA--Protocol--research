@@ -38,7 +38,7 @@ OpenTrade 是**给 fintech / 新银行做"稳定币生息"后端**的英国公�
 - **协议版本**：Flexible Term 系列跑 **V4**，USD MMF 跑 **V5**（V5 支持更灵活的资金流、更简单的可升级合约、**单一 vault 类型支持多种汇率方法**）
   → ⚠️ **PRIME+ 跑哪个版本会影响 NAV 取数方式**（V5 支持"多种汇率方法"这点尤其要问清）
 - **生态外延**：Sierra Protocol 的 SIERRA 流动性收益代币，底层就是 OpenTrade 策展的 vault（MMF + 商业票据 + 贸易融资）
-- 📌 **交叉引用**：[Ember.md](Ember.md) 的循环贷标的里有 "PRIME"，需确认是否指本产品；[Nest-Credit.md](Nest-Credit.md) 的 FALX vault 也是"与 OpenTrade 合作部署在 Plume"
+- 📌 **交叉引用**：[Ember.md](Ember-ETH.md) 的循环贷标的里有 "PRIME"，需确认是否指本产品；[Nest-Credit.md](Nest-Credit-BSC.md) 的 FALX vault 也是"与 OpenTrade 合作部署在 Plume"
 
 ## 3. 底层资产（Underlying）
 

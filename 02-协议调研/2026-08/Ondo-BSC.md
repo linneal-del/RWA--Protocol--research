@@ -45,7 +45,7 @@ Ondo 有两条产品线，**解析逻辑完全不同**：① **USDY** 是代币�
 
 ### QYLDon
 - 底层：**Global X Nasdaq 100 Covered Call ETF（QYLD）** —— 持有纳指 100 成分股 + 卖出备兑看涨期权
-- ⚠️ **注意与 [DMZ-RWAlpha.md](DMZ-RWAlpha.md) 的策略高度重叠**（都是纳指 covered call），若两个都上线，属于**同质产品**，需要产品侧决策
+- ⚠️ **注意与 [DMZ-RWAlpha.md](DMZ-RWAlpha-BSC.md) 的策略高度重叠**（都是纳指 covered call），若两个都上线，属于**同质产品**，需要产品侧决策
 
 ### JAAAon
 - 底层：**Janus Henderson AAA CLO ETF（JAAA）** —— 买入企业 CLO（贷款抵押债券）的 **AAA 级浮动利率分级**
