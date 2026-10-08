@@ -1,9 +1,9 @@
-# BounceBit — DEX 协议调研
+# BounceBit — DEX 协议调研（⛔ 停运不做）
 
 > **链**：BounceBit ｜ chainId **6001** ｜ 浏览器 https://bbscan.io ｜ RPC `https://fullnode-mainnet.bouncebitapi.com/`（停链后已无可用公开 RPC）
 > **调研日期**：2026-09-29 ｜ hash 均为链上公开交易（非本人钱包），已逐条确认成功
 
-🔴 **本链已于 2026-08-19 被攻击后停链（迁至 BNB Chain），建议不接入；以下为历史样本存档。**
+⛔ **结论：停运不做。** 本链已于 2026-08-19 被攻击后停链（BB 迁至 BNB Chain 以 BEP-20 重发），不接入、不再补采；以下仅为历史样本存档。
 
 ## 协议总览
 
@@ -70,5 +70,5 @@
 
 ## 待确认
 
-- 业务确认 BounceBit（6001）整条链标「已停运，不接入」（同 Dogechain 处理）
+- ~~业务确认是否接入~~ → 2026-10-08 已定：**停运不做**（同 Dogechain 处理）
 - BB 已迁至 BNB Chain（BEP-20），如仍需覆盖 BB，是否改在 BSC 侧跟进
