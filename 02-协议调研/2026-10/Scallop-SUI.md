@@ -120,8 +120,8 @@
 | **借款** | `borrow::borrow` | `HdqCvK1rxTF2zaHM2SJCYWYzjffqSfqoU8yvPAUb55wW` |
 | **还款** | `repay::repay` | `51W9sR4YZESMWnZnyvVGuDFmt3My5nenFFTe7zrFCvE5` |
 | 铸造存款凭证 | `mint::mint` | `2XjksTm9asJKCu8rWaNaPXBFMvJmxhpdNa1gaqWxAwG9` |
-| **清算**（非用户主动） | `liquidate::liquidate` | `GY495ncU6gGazwst9gNPk39rYih95EPfHPBLpZpR4KcF` |
-| 闪电贷借 / 还 | `flash_loan::borrow_flash_loan` / `repay_flash_loan` | `GY495ncU6gGazwst9gNPk39rYih95EPfHPBLpZpR4KcF` |
+| **清算**（非用户主动） | `liquidate::liquidate` | `GY495ncU6gGazwst9gNPk39rYih95EPfHPBLpZpR4KcF` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** |
+| 闪电贷借 / 还 | `flash_loan::borrow_flash_loan` / `repay_flash_loan` | `GY495ncU6gGazwst9gNPk39rYih95EPfHPBLpZpR4KcF` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** |
 
 #### ✅ 本人实测（2026-08-31，Lending 页 Supply/Withdraw）
 

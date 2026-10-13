@@ -134,8 +134,8 @@ Navi 是 SUI 上的头部借贷协议（Protocol TVL **$143.24M**），用户操
 | **Borrow / 借款** | `incentive_v3::borrow_v2` | `HrKxM1qgMg2oSKF824ksWbhhHtWbqhDLEiBe7jA6RnsX` | `BorrowEvent` / **`BorrowFeeDeposited`** / `PoolWithdraw` |
 | **Repay / 还款** | `incentive_v3::entry_repay` | `GNZVeN2CQvBxfGZMPAEdsQJXVbq7PdBkfwLayXhrmWAA` | `PoolDeposit` / `PoolWithdraw` / `NaviHealthFactorVerified` |
 | **Claim 奖励** | `incentive_v3::claim_reward_entry` | `4xnpkQhs4Z6sGGdyLVSUXVBDxhAmjvhq8fzvDRrPwKWE` | `RewardClaimed` |
-| **清算**（非用户主动） | `incentive_v3::liquidation_v2` | `EcsxeoZyLnJdGum5UqjbQRmXBafxSms8QjqMhDLNV8um` | — |
-| 闪电贷还款（套利机器人） | `lending::flash_repay_with_ctx` | `3oF2CaCeAXrCZxFAbYhCaNuTnFNAnBYdnxzEwjosJSzB` | 无事件 |
+| **清算**（非用户主动） | `incentive_v3::liquidation_v2` | `EcsxeoZyLnJdGum5UqjbQRmXBafxSms8QjqMhDLNV8um` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** | — |
+| 闪电贷还款（套利机器人） | `lending::flash_repay_with_ctx` | `3oF2CaCeAXrCZxFAbYhCaNuTnFNAnBYdnxzEwjosJSzB` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** | 无事件 |
 
 **`incentive_v3` 模块出现过的全部函数**：`entry_deposit` / `deposit_with_account_cap` / `withdraw_v2` / `borrow_v2` / `entry_repay` / `claim_reward` / `claim_reward_entry` / `liquidation_v2`
 

@@ -135,7 +135,7 @@ f(x) 页面导航：**Trade（杠杆）/ fxSAVE / fxMINT / Earn / fxUSD Bridge /
 | 1 | 15:37:47 | Earn | **approve USDC** | `0x0849c865d7dd554ed287f3f182ea528e6b1688481c9a4c523a4f0acfeb9a7bb6` | 前置 |
 | 2 | 15:38:11 | Earn | **质押到 fxUSD Stability Pool Gauge**（Approve&Deposit&Stake，sel `0xcd20b95e`） | `0xd0b2db450f4903f06b09a3adbcb4985cbdfe92773443d60f9e437c4c3ba19416` | 10 USDC → 9.8982 fxSP + 铸 Gauge 份额，选 wstETH 收益 |
 | 3 | 15:38:47 | Earn | **解押+提取**（Unstake&Withdraw，sel `0x00f714ce`） | `0x53f3a8c14871d2b87ec6ba9c80ee9b3237aca8197a836a7f166e4b15223994ee` | 烧 5 fxSP-Gauge → 退 5 fxSP |
-| 4 | 15:39:11 | fxSAVE | **approve** | `0xd00239241edd6bf0fd8de7e9e0ddd089fa5d8c84930c79dbea3c56d1455819ca` | 前置 |
+| 4 | 15:39:11 | ~~fxSAVE~~ Earn 稳定池 | ~~**approve**~~ ⚠️ **更正（2026-10-13 链上复核）：实为 f(x) Stability Pool `0x65C9A641…` 的 `requestRedeem`（申请赎回）**，不是 approve | `0xd00239241edd6bf0fd8de7e9e0ddd089fa5d8c84930c79dbea3c56d1455819ca` | ~~前置~~ |
 | 5 | 15:41:59 | fxSAVE | **存入 fxSAVE**（sel `0x3ea34dc0`，`depositToFxSave`） | `0x1f3ccd1d471165c2e2de204cab4cb7627a558b57e222a7eb8eddc27f61e4d353` | 5 USDC → 4.4825 fxSAVE（APY 7.49%，自动复投的 delta 中性稳定币金库） |
 | 6 | 15:42:59 | fxMINT | **铸 fxUSD（USDC 直铸）**（sel `0xef9e1aa7`，48 条 log） | `0x9a2c7ec339f1a624909f6186b0fa81c4a0513a2dbbc2891900b6fb98daaf7d72` | 铸 9.9985 fxUSD |
 | 7 | 15:43:59 | Trade | **approve xWBTC** | `0xce0438d6d3d1b1fbd595ef3ae3a91e740b61fb774421ff05d46fd0a0dcc62f30` | 前置 |

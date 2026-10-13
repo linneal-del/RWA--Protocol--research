@@ -6,7 +6,7 @@
 
 ## 交易类型覆盖（2026-10-13）
 
-前端导航：赚取（兑换 / 质押〔质押·解除质押·WITHDRAW〕/ YT 锁定 / 两个生态金库）/ 跨链 / 活动 / DeFi / 透明度。共 12 类会上链，11 类有 hash（已逐条确认成功且日志里有对应事件），另有兑换的其他币种路由和 Monad 金库跨链存入标 ⬜。
+前端导航：赚取（兑换 / 质押〔质押·解除质押·WITHDRAW〕/ YT 锁定 / 两个生态金库）/ 跨链 / 活动 / DeFi / 透明度。共 13 类会上链，12 类有 hash（2026-10-13 复核补 `claimPendleYield`）（已逐条确认成功且日志里有对应事件），另有兑换的其他币种路由和 Monad 金库跨链存入标 ⬜。
 
 | # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash |
 |---|---|---|---|---|
@@ -19,6 +19,7 @@
 | 5 | 取消冷却（重新质押） | 质押 → WITHDRAW（需连钱包） | strUSD · `cancelCooldown` | [0x873e23e451263f4d1beff035079d4579c1c1bf2150802459e10483b25908f413](https://etherscan.io/tx/0x873e23e451263f4d1beff035079d4579c1c1bf2150802459e10483b25908f413)（公开样本） |
 | 6 | YT 锁定（YT-strUSD→lYT-strUSD） | 赚取 → YT 锁定 | PendleYTLock `0x6569C554cBf71Dfcc32aEc48B0eDd2582f5C4a96` · `deposit` | [0xd49d57d103e4c589539fef66e76c2af7d6b2dea9eae4cc64331da0b9b1c994ef](https://etherscan.io/tx/0xd49d57d103e4c589539fef66e76c2af7d6b2dea9eae4cc64331da0b9b1c994ef)（公开样本） |
 | 7 | 领取 lYT 收益（strUSD） | YT 锁定（需连钱包） | PendleYTLock · `claimYield` | [0xb71f8293c6086e595a516dcf882ed4436a402bc5fbecd189bc19e6bfc524c73b](https://etherscan.io/tx/0xb71f8293c6086e595a516dcf882ed4436a402bc5fbecd189bc19e6bfc524c73b)（公开样本） |
+|  | Pendle YT 收益归集（SY-strUSD 收进锁仓合约，非领给调用者） | ⚠️ 前端入口待确认（任何地址可调用，近期 11 个不同调用方） | PendleYTLock · `claimPendleYield` | [0xa7d4fd088a65c046f19027820e87ff49a15cea814416899fa962056720d04c55](https://etherscan.io/tx/0xa7d4fd088a65c046f19027820e87ff49a15cea814416899fa962056720d04c55) |
 | 8 | 跨链 trUSD / strUSD（Ethereum→Monad） | 跨链 | Chainlink CCIP Router `0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D` · `ccipSend`（trUSD 锁入 LockRelease 池 `0x558d77ff…`） | [0xd94697354f6d7269cf2fdb87da767c54af3303f7fffca932e8cfa68804ba1093](https://etherscan.io/tx/0xd94697354f6d7269cf2fdb87da767c54af3303f7fffca932e8cfa68804ba1093)（公开样本） |
 | 9 | 生态金库存入（trUSD） | 赚取 → 生态金库 → DEPOSIT | Upshift TokenizedVault `0xcd69123b3FBBfC666E1f6a501da27B564C00De54` · `deposit`（份额 ETRUSD `0x6f20aE2C…`） | [0x744263d59e642a9b47221fa6464b19ee5111a9c249015eed17d7e7620ee4b421](https://etherscan.io/tx/0x744263d59e642a9b47221fa6464b19ee5111a9c249015eed17d7e7620ee4b421)（公开样本） |
 | 10 | 生态金库申请提取（7 天） | 生态金库 → WITHDRAW | 同上 · `requestRedeem` | [0x3da4af13db5194edbdca5a3bf5e7f10b3bc2ad8219f617648e476575730911cd](https://etherscan.io/tx/0x3da4af13db5194edbdca5a3bf5e7f10b3bc2ad8219f617648e476575730911cd)（公开样本） |
@@ -56,8 +57,8 @@
 | <img src="截图/Tori-ETH-领取YT收益交易-20261013.png" width="460"> | <img src="截图/Tori-ETH-跨链交易-20261013.png" width="460"> |
 | **9 金库存入（`0x744263…`）** | **10 金库申请提取（`0x3da4af…`）** |
 | <img src="截图/Tori-ETH-金库存入交易-20261013.png" width="460"> | <img src="截图/Tori-ETH-金库申请提取交易-20261013.png" width="460"> |
-| **11 金库到期领取（`0x103fd6…`）** | **** |
-| <img src="截图/Tori-ETH-金库领取交易-20261013.png" width="460"> |  |
+| **11 金库到期领取（`0x103fd6…`）** | **7b Pendle YT 收益归集（`0xa7d4fd…`）** |
+| <img src="截图/Tori-ETH-金库领取交易-20261013.png" width="460"> | <img src="截图/Tori-ETH-Pendle收益归集交易-20261013.png" width="460"> |
 
 ⚠️ 开发注意：
 - **兑换不是 Tori 自有铸币合约**，是 Curve trUSD/USDC 池 `0xb723a224…` 的 `exchange`（看 `TokenExchange` 事件 + 池地址）；聚合器（1inch / LiFi / CoW 等）也会路过这个池子，trUSD 合约另有机构直铸的 `mint`/`redeem`，前端不走。
