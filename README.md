@@ -22,8 +22,9 @@ Binance Web3 Wallet **RWA 理财**项目的协议调研库 —— 把「背景�
 │   └── [Master] RWA Season - 产品信息.csv
 ├── 02-协议调研/                     # 按月份存放，每个月份文件夹自带 截图/
 │   ├── 2026-08/                     # 8 月：RWA 协议（含 7/31 首批 7 篇）+ Aerodrome DEX 调研
-│   ├── 2026-09/                     # 9 月：Axis / fx Protocol / Tori
-│   └── 2026-10/                     # 10 月：扩链 9 链 DEX 协议汇总（协议 + 合约 + hash + 截图）
+│   ├── 2026-09/                     # 9 月：（本月文档已随 10 月范围移至 2026-10）
+│   └── 2026-10/                     # 10 月：Haedal / Scallop / Navi / Tori / Axis / Sanctum / Pendle(BSC) / Upshift(BSC) / f(x) / Aave V4(ARC) / wBETH
+├── 05-扩链DEX调研/                  # 扩链 9 链 DEX 协议汇总（协议 + 合约 + hash + 截图），独立于 RWA 理财线
 ├── 03-参考/
 │   ├── 交付研发-2026-08-03实测结果.md  ← 🔴🔴 **交付研发看这份**
 │   ├── 交付研发-交易记录表.csv          ← 🔴🔴 26 行，含验证状态与解析要点
