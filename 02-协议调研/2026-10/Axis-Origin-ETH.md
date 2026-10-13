@@ -58,10 +58,9 @@
 
 **Axis Origin USDx** 单独作为一个协议调研（需求方 2026-09-01 明确要求分开算）。它托管在 **Upshift（August Digital）平台**上，用户通过 Upshift 前端操作，用的是 Upshift 那套金库合约，但作为独立条目跟踪。
 
-🔴 **当前存取都被暂停**（2026-09-01 页面确认；⬜ 缺图：原截图 `Axis-存取暂停-20260901.png` 未入库，暂停已于 9/4 结束无法重截，同一 Upshift 页面 10-13 现状见 `截图/Axis-ETH-Upshift金库页-20261013.png`）：页面横幅 *"Deposits & Withdrawals Disabled — until 4 September 2026, 14:00 UTC"*，标签 *Withdrawals paused / Pre-deposit*。本人尝试存 5 USDC 被拒：*"Deposits are currently paused for this vault."*
-→ 所以链上现在**一条用户交易都没有**，要等 **9/4 14:00 UTC 之后**才能做第一笔。
+**存取现状（2026-10-13）**：赎回已开放（9/4 起，7 天队列或付约 30bps 即时赎回）；Axis 自家前端存入窗口 7/29–8/5 已关闭，Upshift 金库页仍可存入。页面现状见 `截图/Axis-ETH-Upshift金库页-20261013.png`。
 
-**页面确认的参数**（截图 `Axis-存取暂停-20260901.png` ⬜ 缺图，见上；同页面 10-13 现状 `Axis-ETH-Upshift金库页-20261013.png`）：TVL **$67.58M** ｜ Share price **1.0045 USDx** ｜ Target APY **18.00%** ｜ 存款币种 USDT/USDC（存入时 swap 成 USDx，1 USDC≈0.9999 USDx，max 1% 滑点）｜ **提取周期 7 天** ｜ Vault `0xAD95…595F` ｜ receipt = Axis Origin USDx。
+**页面参数**（2026-09-01）：TVL **$67.58M** ｜ Share price **1.0045 USDx** ｜ Target APY **18.00%** ｜ 存款币种 USDT/USDC（存入时 swap 成 USDx，1 USDC≈0.9999 USDx，max 1% 滑点）｜ **提取周期 7 天** ｜ Vault `0xAD95…595F` ｜ receipt = Axis Origin USDx。
 
 ⚠️ 排除项：`axisorigin.com`（动画工作室）、`axis.money`（待售域名）都**不是**这个协议，别被搜索结果带偏。
 

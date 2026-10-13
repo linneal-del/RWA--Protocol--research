@@ -39,7 +39,7 @@
 页面有入口但**不产生 Navi 交易**：Reward Hub（积分与兑换，链下）、Bridge 面板（外部跨链）、Copilot（多钱包看板，需登录；其 Claim 按钮未登录时无法确认调用）、Security 页（展示）。Portfolio 上的 Withdraw / Repay / Claim 复用 #2 / #4 / #5 的函数。闪电贷、清算非页面可点击操作，不计入。
 
 ⚠️ 开发注意：
-- **lending 包已升级**：前端当前调用 `0x512f2826…`，下方 §1 记录的 `0xd899cf7d…` 为早期版本，解析需覆盖全部版本。**E-mode 市场的操作全部走 `*_with_account_cap` 变体**，仓位挂在 AccountCap 子账户下，不在用户地址名下。
+- **lending 包有两个版本**：当前前端调用 `0x512f2826…`，早期版本 `0xd899cf7d…`（历史交易在此包），解析需同时覆盖。**E-mode 市场的操作全部走 `*_with_account_cap` 变体**，仓位挂在 AccountCap 子账户下，不在用户地址名下。
 - **Multiply 与外部 Volo Vault 共用一个 vault 包**（suiscan 标注 `@volosui/volo-vault`）：用户只发「申请」（`deposit/withdraw_with_auto_transfer`），资金由运营方按日 / 周批量执行（下方 §2.1 的 `9kdSs9…` / `6DorEA…` 即批量执行，signer 是运营方），解析需把申请与执行两笔交易关联。
 
 ### 截图
@@ -105,7 +105,7 @@ Navi 是 SUI 上的头部借贷协议（Protocol TVL **$143.24M**），用户操
 
 | 类型 | 值 |
 |------|-----|
-| **Package** | `0xd899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca` |
+| **Package** | 当前 `0x512f28261c1a293f49416d8885b8d5d32bde6dd68a99a0be36fe42b248e6833a`；早期版本 `0xd899cf7d2b5db716bd2cf55599fb0d5ee38a3061e7b6bb6eebf73fa5bc4c81ca`（历史交易） |
 | **Storage 对象** | `0xbb4e2f4b6205c2e2a2db47aeb4f830796ec7c005f88537ee775986639bc442fe`（类型 `…::storage::Storage`） |
 | 用户操作模块 | **`incentive_v3`** |
 | 闪电贷模块 | `lending`（`flash_loan_with_ctx` / `flash_repay_with_ctx`） |
@@ -134,8 +134,8 @@ Navi 是 SUI 上的头部借贷协议（Protocol TVL **$143.24M**），用户操
 | **Borrow / 借款** | `incentive_v3::borrow_v2` | `HrKxM1qgMg2oSKF824ksWbhhHtWbqhDLEiBe7jA6RnsX` | `BorrowEvent` / **`BorrowFeeDeposited`** / `PoolWithdraw` |
 | **Repay / 还款** | `incentive_v3::entry_repay` | `GNZVeN2CQvBxfGZMPAEdsQJXVbq7PdBkfwLayXhrmWAA` | `PoolDeposit` / `PoolWithdraw` / `NaviHealthFactorVerified` |
 | **Claim 奖励** | `incentive_v3::claim_reward_entry` | `4xnpkQhs4Z6sGGdyLVSUXVBDxhAmjvhq8fzvDRrPwKWE` | `RewardClaimed` |
-| **清算**（非用户主动） | `incentive_v3::liquidation_v2` | `EcsxeoZyLnJdGum5UqjbQRmXBafxSms8QjqMhDLNV8um` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** | — |
-| 闪电贷还款（套利机器人） | `lending::flash_repay_with_ctx` | `3oF2CaCeAXrCZxFAbYhCaNuTnFNAnBYdnxzEwjosJSzB` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** | 无事件 |
+| **清算**（非用户主动） | `incentive_v3::liquidation_v2` | `3B57yqiKgro4oyp7yq9qmUyaSLbTsF7Sc573hAzD2kF5` | — |
+| 闪电贷还款（套利机器人） | `lending::flash_repay_with_ctx` | `BfsqH9XjELYW3oQFHiVoZTFpyu61vnDaWAPjifxVeuiJ` | 无事件 |
 
 **`incentive_v3` 模块出现过的全部函数**：`entry_deposit` / `deposit_with_account_cap` / `withdraw_v2` / `borrow_v2` / `entry_repay` / `claim_reward` / `claim_reward_entry` / `liquidation_v2`
 

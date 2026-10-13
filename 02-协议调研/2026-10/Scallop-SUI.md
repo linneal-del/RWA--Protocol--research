@@ -52,7 +52,7 @@
 页面有入口但**不产生 Scallop 交易**：Tools（PTB 交易构建工具，用户自拼任意交易）、Bridge → Wormhole Connect / Portal / Sui Bridge、CEX On-Ramp / Alchemy Pay / Li.Fi（外部服务）、More → DefiLlama / Sentio（外链）、Ecosystem / Leaderboard（展示）、首页 Banner（跳 Cetus / Bucket / Kraken）。闪电贷前端不暴露（见下方 §1 页面提示），清算非用户主动操作，均不计入。
 
 ⚠️ 开发注意：
-- **`user::stake` / `user::unstake_v2` / `user::stake_with_ve_sca_v2` 属于借款激励包（borrowIncentive），不是 veSCA**：借款、还款、开债仓时前端会先把 obligation 从激励池取出、操作后再放回，同笔出现；下方 §3 表中这几个函数的归类以此为准。veSCA 的真实操作在 `ve_sca` 模块（#12～#18）。
+- **`user::stake` / `user::unstake_v2` / `user::stake_with_ve_sca_v2` 属于借款激励包（borrowIncentive）**：借款、还款、开债仓时前端会先把 obligation 从激励池取出、操作后再放回，同笔出现。veSCA 的操作在 `ve_sca` 模块（#12～#18）。
 - **Swap 由 Scallop 自有 swap 包包裹聚合 router**，用户行为以 `swap::emit_swap_event` 为准；Orderbook 直接调 DeepBook v3，链上没有 Scallop 包的痕迹。
 
 ### 截图
@@ -120,8 +120,8 @@
 | **借款** | `borrow::borrow` | `HdqCvK1rxTF2zaHM2SJCYWYzjffqSfqoU8yvPAUb55wW` |
 | **还款** | `repay::repay` | `51W9sR4YZESMWnZnyvVGuDFmt3My5nenFFTe7zrFCvE5` |
 | 铸造存款凭证 | `mint::mint` | `2XjksTm9asJKCu8rWaNaPXBFMvJmxhpdNa1gaqWxAwG9` |
-| **清算**（非用户主动） | `liquidate::liquidate` | `GY495ncU6gGazwst9gNPk39rYih95EPfHPBLpZpR4KcF` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** |
-| 闪电贷借 / 还 | `flash_loan::borrow_flash_loan` / `repay_flash_loan` | `GY495ncU6gGazwst9gNPk39rYih95EPfHPBLpZpR4KcF` ⚠️ **链上失败交易（status=FAILURE，2026-10-13 复核），不可作样本** |
+| **清算**（非用户主动） | `liquidate::liquidate` | `BHMPFRkir6YeAJnH3qCEaukkDNxXY3k86WMaDxmFHDXw` |
+| 闪电贷借 / 还 | `flash_loan::borrow_flash_loan` / `repay_flash_loan` | `8VGFcfVsWt8QyhqacN3BN1p11NT4A3wVKrfvNh7xyGgz` |
 
 #### ✅ 本人实测（2026-08-31，Lending 页 Supply/Withdraw）
 
@@ -163,18 +163,20 @@ scaSUI Price **1.0043 SUI** ｜ APR **1.316%** ｜ Total Staked **140.503K SUI**
 
 📌 两笔都附带 `weight::rebalance`（验证人权重再平衡），事件分别是 `MintEvent`+`StakingRequestEvent` / `RedeemEvent`+`UnstakingRequestEvent`。
 
-### 3 veSCA（治理质押）
+### 3 借款激励（borrowIncentive，随借贷操作自动发生）
 
 | 操作 | Move 函数 | 样本 digest |
 |------|----------|------------|
-| 质押 SCA | `user::stake` | `HdqCvK1rxTF2zaHM2SJCYWYzjffqSfqoU8yvPAUb55wW` |
-| 质押（veSCA v2） | `user::stake_with_ve_sca_v2` | `51W9sR4YZESMWnZnyvVGuDFmt3My5nenFFTe7zrFCvE5` |
-| 解押 | `user::unstake_v2` | `51W9sR4YZESMWnZnyvVGuDFmt3My5nenFFTe7zrFCvE5` |
+| obligation 放入激励池 | `user::stake` | `HdqCvK1rxTF2zaHM2SJCYWYzjffqSfqoU8yvPAUb55wW` |
+| 放入激励池（带 veSCA 加成） | `user::stake_with_ve_sca_v2` | `51W9sR4YZESMWnZnyvVGuDFmt3My5nenFFTe7zrFCvE5` |
+| 从激励池取出 | `user::unstake_v2` | `51W9sR4YZESMWnZnyvVGuDFmt3My5nenFFTe7zrFCvE5` |
+
+veSCA（治理锁仓）操作在 `ve_sca` 模块，样本见顶部「交易类型覆盖」#12～#18。
 
 🔴 **给解析同学的最重要一条**：Scallop 里 **"取款"和"解押"是完全不同的两件事** ——
 - 借贷取款 = `redeem::redeem`（拿回存的本金）
 - 流动性解押 = `liquid_staking::redeem`（scaSUI 换回 SUI）
-- 治理解押 = `user::unstake_v2`（解锁 SCA）
+- veSCA 解锁 = `ve_sca::redeem`（解锁 SCA）
 
 三个都叫"redeem/unstake"但属于三条产品线，**按函数全名区分，不能只看动词**。
 

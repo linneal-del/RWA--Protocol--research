@@ -34,12 +34,12 @@ wBETH 合约本身有以下链上交易类型（**都没有前端按钮**，只�
 | <img src="截图/wBETH-ETH-领取赎回ETH交易-20261013.png" width="460"> | <img src="截图/wBETH-ETH-转账交易-20261013.png" width="460"> |
 
 ⚠️ 开发注意：
-- **更正 §2.2「链上没有赎回」**：链上有赎回，只是频率很低（近期 wBETH 合约上仅 3 笔 `requestWithdrawEth`）。`requestWithdrawEth` 直接烧 wBETH（`Burn` + `Transfer` 到 0x0，并在 Unwrap 合约记 `RequestWithdraw`），锁定期后 `claimWithdraw` 以内部转账付 ETH，没有 token transfer。
+- **链上赎回分两步，频率很低**（近期 wBETH 合约上仅 3 笔 `requestWithdrawEth`）：`requestWithdrawEth` 直接烧 wBETH（`Burn` + `Transfer` 到 0x0，并在 Unwrap 合约记 `RequestWithdraw`），锁定期后 `claimWithdraw` 以内部转账付 ETH，没有 token transfer。
 - 用户在币安站内申购 / 赎回不会出现在其地址上；链上大量 wBETH `transfer` 来自币安热钱包（站内充提），不是协议操作。
 
 ## 0. 一句话结论
 
-wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH（1:1 锚定质押的 ETH）**加上其累积的 ETH2.0 质押收益** —— 属于 **NAV 累积型**（汇率单向上涨，不 rebase）。链上只有**一个用户动作：存 ETH 铸 wBETH**；🔴 **赎回不在链上**，需回币安站内操作。
+wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH（1:1 锚定质押的 ETH）**加上其累积的 ETH2.0 质押收益** —— 属于 **NAV 累积型**（汇率单向上涨，不 rebase）。链上用户动作：**存 ETH 铸 wBETH**、**申请赎回（`requestWithdrawEth`）→ 锁定期后领取 ETH（`claimWithdraw`）**、转账；币安站内也可申购 / 赎回（站内操作不上链）。链上赎回极少，绝大多数用户在币安站内赎回。
 
 ## 1. 基础信息
 
@@ -61,7 +61,7 @@ wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH�
 | # | 操作 | 入口 | 链上有无 |
 |---|------|------|:---:|
 | 1 | **存入 ETH 铸 wBETH** | 合约 `deposit(address referral)`，或币安站内 | ✅ 有 |
-| 2 | **赎回 wBETH → ETH** | 🔴 **币安站内（中心化）** | ❌ 链上无 |
+| 2 | **赎回 wBETH → ETH** | 合约 `requestWithdrawEth` → `claimWithdraw`（两步，有锁定期），或币安站内 | ✅ 有（频率很低） |
 | 3 | wBETH 转账 | 标准 ERC-20 | ✅ 有 |
 
 ## 2.1 📎 公开样本交易（**非本人钱包**，链上直接取样）
@@ -73,19 +73,18 @@ wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH�
 **取样方法**（可复现）：对 Ethereum RPC 调 `eth_getLogs`，`address` = wBETH 合约，`topics` = `[Transfer, 0x0]`（即 mint），扫最近 2000 个区块即可。
 ⚠️ **可用节点**：`https://rpc.flashbots.net` ✅ ｜ `publicnode` / `llamarpc` 对 `eth_getLogs` 返回 **403**，`bsc-dataseed` 系返回 `limit exceeded` —— 换节点重试，别把节点报错当成"无数据"。
 
-## 2.2 🔴 关键发现：链上没有赎回
+## 2.2 链上赎回：存在但极少
 
-扫 wBETH 合约近 **15 万个区块**（≈3 周）的 `Transfer(to=0x0)`（销毁）事件：**0 条**。
+链上赎回分两步：① `requestWithdrawEth` 烧 wBETH（`Transfer(to=0x0)` + Unwrap 合约 `RequestWithdraw` 事件）；② 锁定期满后在 UnwrapTokenProxy `0x79973d557CD9dd87eb61E250cc2572c990e20196` 调 `claimWithdraw`，以内部转账付 ETH（无 token transfer）。样本见顶部「交易类型覆盖」#2、#3。
 
-→ **wBETH 是单向铸造**：用户在链上只能存 ETH 铸 wBETH，**赎回必须回币安站内走中心化流程**（销毁不体现在链上，或由官方批量处理）。
-→ **对解析同学**：不要预期存在"链上赎回"交易类型；用户 wBETH 余额减少大概率是**转账/卖出**而非赎回。
+→ **对解析同学**：链上赎回量很小，用户 wBETH 余额减少大多是**转账 / 卖出**；赎回要按上述两步识别。
 
 ## 2.3 操作覆盖
 
 | 交易类型 | 本人实测 | 公开样本 |
 |---------|:---:|:---:|
 | 存入铸造 deposit | ⬜ | ✅ `0xde97e3…` |
-| 链上赎回 | ❌ | ❌ **协议无此链上入口** |
+| 链上赎回（申请 + 领取） | ⬜ | ✅ `0x0d57ab…` / `0x7f87d6…` |
 | ERC-20 转账 | ⬜ | ⬜ 标准，未单独取样 |
 
 ## 2.4 📷 页面结构（2026-08-26 截图确认）
@@ -114,7 +113,7 @@ wBETH 是**币安发行的 ETH 流动性质押凭证**：1 wBETH 代表 1 BETH�
 
 → **小数点后 6 位完全一致**，NAV 反推口径可靠。🔴 **绝不能按 1 wBETH = 1 ETH 处理。**
 
-⚠️ **赎回入口本次未截到** —— 用户反馈页面上"没有别的"操作，赎回可能在 Simple Earn 的持仓页（My Staked ETH）而非本页。待补。
+币安站内赎回入口在 Simple Earn 持仓页（My Staked ETH），站内操作不上链。
 
 ## 2.5 🔴 BSC 侧结论：页面上没有入口，链上也没有本地铸造（2026-09-01 确认）
 
@@ -156,5 +155,4 @@ Binance ETH Staking 弹窗的 **Stake Amount 下拉框只有两个选项：`ETH`
 | 1 | ✅ **已确认**：页面唯一操作是 **Subscribe（申购）**，属站内 CEX 行为不上链 | 2026-08-26 截图 |
 | 2 | `deposit` 的 referral 参数用途 | 合约 / 文档 |
 | 3 | 汇率链上读取函数（`exchangeRate()` 未命中标准签名）—— 已可用「存入量÷得到量」反推，与 UI 一致 | 读合约 ABI 补正式取数口径 |
-| 5 | **赎回入口在哪个页面**（本次未截到，疑在 Simple Earn 持仓页） | 浏览器补截图 |
 | 4 | BNB Chain 侧部署是否同一套逻辑 | 链上比对 |

@@ -11,7 +11,7 @@
 | # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash |
 |---|---|---|---|---|
 | 1 | Trade 开多 / 加仓（含加保证金、调杠杆） | Trade → Long → Buy/Open（Market） | Router Diamond `0x33636D49FbefBE798e15e7F356E8DBef543CC708` · `openOrAddPositionFlashLoanV2` | [0x24acba5528caa8d0507bf7a82f132e22c7c3cdd89cc646bd3a5c4724804ad91e](https://etherscan.io/tx/0x24acba5528caa8d0507bf7a82f132e22c7c3cdd89cc646bd3a5c4724804ad91e)（本人实测） |
-|  | 同上（本人记为“fxMINT USDC 直铸”，链上同一方法） |  | 同上 | [0x9a2c7ec339f1a624909f6186b0fa81c4a0513a2dbbc2891900b6fb98daaf7d72](https://etherscan.io/tx/0x9a2c7ec339f1a624909f6186b0fa81c4a0513a2dbbc2891900b6fb98daaf7d72)（本人实测） |
+|  | fxMINT 页用 USDC 铸 fxUSD（链上为 WBTCLongPool 开仓，与 Trade 开多同一方法同一池） | fxMINT → Deposit & Mint（USDC） | 同上 | [0x9a2c7ec339f1a624909f6186b0fa81c4a0513a2dbbc2891900b6fb98daaf7d72](https://etherscan.io/tx/0x9a2c7ec339f1a624909f6186b0fa81c4a0513a2dbbc2891900b6fb98daaf7d72)（本人实测） |
 | 2 | Trade 平多 / 减仓 | Trade → Long → Sell/Close；持仓面板（需连钱包） | Router Diamond `0x33636D49FbefBE798e15e7F356E8DBef543CC708` · `closeOrRemovePositionFlashLoanV2` | [0xa5b2a21cffa3df6d2695dce7e7f34366afd74e9edac44ba775ea7bb52e801c77](https://etherscan.io/tx/0xa5b2a21cffa3df6d2695dce7e7f34366afd74e9edac44ba775ea7bb52e801c77)（公开样本） |
 | 3 | Trade 开空 / 加仓 | Trade → Short → Buy/Open | Router Diamond `0x33636D49FbefBE798e15e7F356E8DBef543CC708` · `openOrAddShortPositionFlashLoan` | [0x5ffed9f47cdd139b67f3e054c8c05a9f27e94e70df9629396a331bdf3c7aa8e4](https://etherscan.io/tx/0x5ffed9f47cdd139b67f3e054c8c05a9f27e94e70df9629396a331bdf3c7aa8e4)（公开样本） |
 | 4 | Trade 平空 / 减仓 | Trade → Short → Sell/Close（需连钱包） | Router Diamond `0x33636D49FbefBE798e15e7F356E8DBef543CC708` · `closeOrRemoveShortPositionFlashLoan` | [0x44497c1fd08d4289369d614f3bac60a9d9f989f571b4b01492799ad88bf476be](https://etherscan.io/tx/0x44497c1fd08d4289369d614f3bac60a9d9f989f571b4b01492799ad88bf476be)（公开样本） |
@@ -98,7 +98,7 @@
 | <img src="截图/fx-ETH-veFXN委托交易-20261013.png" width="460"> | <img src="截图/fx-ETH-fxUSD跨链交易-20261013.png" width="460"> |
 
 ⚠️ 开发注意：
-- **Trade / fxSAVE / 稳定池存入大多走同一个 Router Diamond `0x33636D49…`，只能按方法名区分**；开多和本人记录的“fxMINT USDC 直铸”（`0x9a2c7e…`）链上同为 `openOrAddPositionFlashLoanV2`，多空与标的看目标池（WBTCLongPool `0xAB709e26Fa6B0A30c119D8c55B887DeD24952473` / WstETHLongPool `0x6Ecfa38FeE8a5277B91eFdA204c235814F0122E8` / 两个 ShortPool），加仓、加保证金、调杠杆复用 open/close 两个方法；fxMINT 页自己的铸造 / 还款走 FxMintRouter `0xB7533660…`。
+- **Trade / fxSAVE / 稳定池存入大多走同一个 Router Diamond `0x33636D49…`，只能按方法名区分**；Trade 开多与 fxMINT 页 USDC 铸 fxUSD（`0x9a2c7e…`）链上同为 `openOrAddPositionFlashLoanV2`，多空与标的看目标池（WBTCLongPool `0xAB709e26Fa6B0A30c119D8c55B887DeD24952473` / WstETHLongPool `0x6Ecfa38FeE8a5277B91eFdA204c235814F0122E8` / 两个 ShortPool），加仓、加保证金、调杠杆复用 open/close 两个方法；fxMINT 页自己的铸造 / 还款走 FxMintRouter `0xB7533660…`。
 - **取出都有“排队 / 付 1% 立即到账”两条路**：稳定池 fxSP 是 `requestRedeem`（60 分钟）→ `redeem`，或 `instantRedeem`；fxSAVE 是 `requestRedeem` → `claim`（或 Router `redeemFromFxSave` 领取后换单币），或 Router `instantRedeemFromFxSave`。
 
 ## 0. 一句话说明
@@ -135,23 +135,23 @@ f(x) 页面导航：**Trade（杠杆）/ fxSAVE / fxMINT / Earn / fxUSD Bridge /
 | 1 | 15:37:47 | Earn | **approve USDC** | `0x0849c865d7dd554ed287f3f182ea528e6b1688481c9a4c523a4f0acfeb9a7bb6` | 前置 |
 | 2 | 15:38:11 | Earn | **质押到 fxUSD Stability Pool Gauge**（Approve&Deposit&Stake，sel `0xcd20b95e`） | `0xd0b2db450f4903f06b09a3adbcb4985cbdfe92773443d60f9e437c4c3ba19416` | 10 USDC → 9.8982 fxSP + 铸 Gauge 份额，选 wstETH 收益 |
 | 3 | 15:38:47 | Earn | **解押+提取**（Unstake&Withdraw，sel `0x00f714ce`） | `0x53f3a8c14871d2b87ec6ba9c80ee9b3237aca8197a836a7f166e4b15223994ee` | 烧 5 fxSP-Gauge → 退 5 fxSP |
-| 4 | 15:39:11 | ~~fxSAVE~~ Earn 稳定池 | ~~**approve**~~ ⚠️ **更正（2026-10-13 链上复核）：实为 f(x) Stability Pool `0x65C9A641…` 的 `requestRedeem`（申请赎回）**，不是 approve | `0xd00239241edd6bf0fd8de7e9e0ddd089fa5d8c84930c79dbea3c56d1455819ca` | ~~前置~~ |
+| 4 | 15:39:11 | Earn | **稳定池申请赎回**（Stability Pool `0x65C9A641…` · `requestRedeem`，排队 60 分钟） | `0xd00239241edd6bf0fd8de7e9e0ddd089fa5d8c84930c79dbea3c56d1455819ca` | 进入赎回队列 |
 | 5 | 15:41:59 | fxSAVE | **存入 fxSAVE**（sel `0x3ea34dc0`，`depositToFxSave`） | `0x1f3ccd1d471165c2e2de204cab4cb7627a558b57e222a7eb8eddc27f61e4d353` | 5 USDC → 4.4825 fxSAVE（APY 7.49%，自动复投的 delta 中性稳定币金库） |
-| 6 | 15:42:59 | fxMINT | **铸 fxUSD（USDC 直铸）**（sel `0xef9e1aa7`，48 条 log） | `0x9a2c7ec339f1a624909f6186b0fa81c4a0513a2dbbc2891900b6fb98daaf7d72` | 铸 9.9985 fxUSD |
+| 6 | 15:42:59 | fxMINT | **用 USDC 铸 fxUSD**（链上：Router Diamond `0x33636D49…` · `openOrAddPositionFlashLoanV2`，WBTCLongPool 开仓） | `0x9a2c7ec339f1a624909f6186b0fa81c4a0513a2dbbc2891900b6fb98daaf7d72` | 铸 9.9985 fxUSD |
 | 7 | 15:43:59 | Trade | **approve xWBTC** | `0xce0438d6d3d1b1fbd595ef3ae3a91e740b61fb774421ff05d46fd0a0dcc62f30` | 前置 |
 | 8 | 15:44:11 | fxMINT | **存 WBTC 铸 fxUSD**（sel `0x216d5108`，Deposit&Mint） | `0xc918919b5642b2fda9bb627a918374a67323ceddf771ed97c493d73a1ecfd8b4` | WBTC 抵押 → 铸 1.99 fxUSD，LTV 67%→80% |
 
 🔴 **几个链上看不出的机制**：
 1. **Earn 质押是"三合一"**：approve + deposit + stake to gauge 一笔完成（sel `0xcd20b95e`），且存款时**要选收益币种**（wstETH / FXN / USD 三选一，APR 各不同）。
 2. **Earn 解押/提取有 60 分钟延迟**（截图 `fx-Earn解押提取-20260901.png`）：默认排队 60 分钟，或勾选 **"付 1% 费用立即到账"**。解析要区分这两种。
-3. **杠杆开仓**（Trade 页，截图 `fx-杠杆开多BTC-20260901.png`）：Long/Short BTC，杠杆 1.2x~7x，有 Liquidation Brake、Funding Rate —— 但**本次杠杆开仓没提交**（截图停在 Preview），无哈希；第 8 笔是 fxMINT 存 WBTC 铸 fxUSD，不是杠杆。
-4. **fxMINT 有两种铸法**：USDC 直铸（第 6 笔）/ 存 WBTC 抵押铸（第 8 笔），后者会显示 LTV 和 Liquidation Brake。
+3. **杠杆开仓**（Trade 页，截图 `fx-杠杆开多BTC-20260901.png`）：Long/Short BTC，杠杆 1.2x~7x，有 Liquidation Brake、Funding Rate —— 实测见追加第 10 笔 `0x24acba…`。
+4. **fxMINT 有两种铸法，链上走不同合约**：用 USDC 铸（第 6 笔）= Router Diamond `openOrAddPositionFlashLoanV2`，在 WBTCLongPool 开仓（与 Trade 开多同一方法）；存 WBTC 抵押铸（第 8 笔）= FxMintRouter `0xB7533660…` · `borrowFromLong`，会显示 LTV 和 Liquidation Brake。
 
 ## 2.2 操作覆盖
 
 | 交易类型 | 本人实测 | 公开样本 |
 |---------|:---:|:---:|
-| **fxMINT 铸 fxUSD（USDC 直铸）** | ✅ `0x9a2c7e…` | ✅ `0x49e16d…` |
+| **fxMINT 用 USDC 铸 fxUSD（WBTCLongPool 开仓）** | ✅ `0x9a2c7e…` | ✅ `0x49e16d…` |
 | **fxMINT 存 WBTC 铸 fxUSD** | ✅ `0xc91891…` | — |
 | Redeem fxUSD | ⬜ | ✅ `0x9fb6f4…` |
 | **Earn 质押（Stability Pool Gauge）** | ✅ `0xd0b2db…` | — |
@@ -167,7 +167,7 @@ f(x) 页面导航：**Trade（杠杆）/ fxSAVE / fxMINT / Earn / fxUSD Bridge /
 | 9 | **approve USDC**（给杠杆合约 `0x33636d49…`） | `0x400031419b0be5c6dda93c9077026eab9f6755b996ec30aad580f5bac4086314` | 前置 |
 | 10 | **杠杆开多 BTC**（Trade 页 Long，5 USDC 保证金 @ 5.12x，sel `0xef9e1aa7`） | `0x24acba5528caa8d0507bf7a82f132e22c7c3cdd89cc646bd3a5c4724804ad91e` | 铸 20.619 fxUSD 建 xPOSITION 多头 |
 
-🔴 **杠杆开多和 fxMINT 铸币是同一个 selector `0xef9e1aa7`**（都是 mint fxUSD）—— 区别在**目标合约**：fxMINT 走 `0x33…cc708`（fxSAVE/mint 合约），杠杆走另一个 position 合约。截图 `fx-杠杆开多BTC-5x-20260901.png` 显示持仓面板有 **Repay / Add Collateral / TP/SL / Adjust Leverage** 四个管理按钮，说明杠杆头寸是可管理的独立仓位。
+🔴 **杠杆开多（第 10 笔）与 fxMINT 用 USDC 铸（第 6 笔）链上完全相同**：同为 Router Diamond `0x33636D49…` 的 `openOrAddPositionFlashLoanV2`（sel `0xef9e1aa7`）、同在 WBTCLongPool `0xAB709e26…` 开仓，区别只在杠杆倍数参数；fxMINT 存 WBTC 抵押铸（第 8 笔）才走 FxMintRouter `borrowFromLong`。截图 `fx-杠杆开多BTC-5x-20260901.png` 显示持仓面板有 **Repay / Add Collateral / TP/SL / Adjust Leverage** 四个管理按钮，说明杠杆头寸是可管理的独立仓位。
 
 **页面实际导航**：Trade / fxSAVE / fxMINT / Earn / fxUSD Bridge / Lock / Stats / Leaderboard。
 
