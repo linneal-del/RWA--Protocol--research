@@ -1,12 +1,12 @@
 # f(x) Protocol — fxUSD（杠杆 + 稳定币）· Ethereum
 
-> **状态**：✅ 交易类型覆盖已补全（2026-10-13）：30 类上链交易，29 类有 hash + 交易截图（含本人 9/1 实测 5 类），1 类 ⬜（Privacy Pools 隐私存入）；前端 9 张页面截图
+> **状态**：✅ 交易类型覆盖已补全（2026-10-13）：29 类上链交易全部有 hash + 交易截图（含本人 9/1 实测 5 类）；前端 9 张页面截图
 > **交付口径**：覆盖页面可点击的全部交易类型 + 给哈希 + 截图 + 背景信息；**链上解析由解析同学做，本页不做深度解析**
 > **目标链**：**Ethereum**
 
 ## 交易类型覆盖（2026-10-13）
 
-前端导航：Trade（Long / Short × Market / Limit，持仓面板）/ fxSAVE（Deposit / Withdraw）/ fxMINT（Deposit & Mint / Repay & Withdraw）/ Earn（稳定池 Gauge、Curve LP Gauge、FX² 自动复利池）/ fxUSD Bridge / Stats / Lock / Leaderboard / FAQ。共 30 类上链，29 类有 hash（已逐条确认成功且日志里有对应事件），1 类 ⬜。
+前端导航：Trade（Long / Short × Market / Limit，持仓面板）/ fxSAVE（Deposit / Withdraw）/ fxMINT（Deposit & Mint / Repay & Withdraw）/ Earn（稳定池 Gauge、Curve LP Gauge、FX² 自动复利池）/ fxUSD Bridge / Stats / Lock / Leaderboard / FAQ。共 29 类上链，全部有 hash（已逐条确认成功且日志里有对应事件）。
 
 | # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash |
 |---|---|---|---|---|
@@ -43,9 +43,8 @@
 | 27 | Lock 领 wstETH 收益 | Lock → wstETH Rewards（需连钱包） | FeeDistributor `0xd116513EEa4Efe3908212AfBAeFC76cb29245681` · `claim` | [0x57e67a96fcdadb76bae879ac07a83606bc6af4b6c95965f64dfd1728ce6c9ff8](https://etherscan.io/tx/0x57e67a96fcdadb76bae879ac07a83606bc6af4b6c95965f64dfd1728ce6c9ff8)（公开样本） |
 | 28 | Lock veFXN 委托（Delegation） | Lock → + New Delegation | VotingEscrowBoost `0x8Cc02c0D9592976635E98e6446ef4976567E7A81` · `boost` | [0x9cf022be81fe751a140d26c569848732b595b8ade00509b8d5932e30566e2c5a](https://etherscan.io/tx/0x9cf022be81fe751a140d26c569848732b595b8ade00509b8d5932e30566e2c5a)（公开样本，2024 年，极少用） |
 | 29 | fxUSD 跨链（LayerZero OFT） | fxUSD Bridge（bridge.aladdin.club） | fxUSD OFT Adapter `0xA07d8cc424421cC2bce0544a65481376f010A438` · `send` | [0x94d11a244b7034c80861b3a77c0f651bfc9272ea3863b36e923400334200213e](https://etherscan.io/tx/0x94d11a244b7034c80861b3a77c0f651bfc9272ea3863b36e923400334200213e)（公开样本） |
-| 30 | fxMINT → Privacy Pools 隐私存入 | fxMINT → Advanced | ⬜ 第三方 Privacy Pools 合约，前端需连钱包才显示目标合约，未取样 | ⬜ |
 
-页面有入口但**不产生链上交易**：限价单挂单 / TP·SL（链下签名，由 keeper 成交；LimitOrderManager 上用户只会调 `cancelOrder` / `increaseNonce`）、Stats / Leaderboard / FAQ、fxMINT 的 Mt Pelerin 法币买卖（第三方站外）、Earn 底部 “f(x) Earn” 列表（Euler / Morpho / Fluid / Spectra 等外链）。
+页面有入口但**不产生链上交易**：限价单挂单 / TP·SL（链下签名，由 keeper 成交；LimitOrderManager 上用户只会调 `cancelOrder` / `increaseNonce`）、Stats / Leaderboard / FAQ、fxMINT 的 Mt Pelerin 法币买卖（第三方站外）、Earn 底部 “f(x) Earn” 列表（Euler / Morpho / Fluid / Spectra 等外链）、fxMINT 页 Privacy Pools 隐私存入（说明文字里的 “here” 跳转第三方 https://privacypools.com/pools/1/fxusd ，在 Privacy Pools 合约上完成，不是 f(x) 交易，截图 `fx-ETH-PrivacyPools入口-20261013.png`）。
 
 ### 截图
 
@@ -96,6 +95,12 @@
 | <img src="截图/fx-ETH-锁仓到期提取交易-20261013.png" width="460"> | <img src="截图/fx-ETH-领veFXN收益交易-20261013.png" width="460"> |
 | **28 veFXN 委托（`0x9cf022…`）** | **29 fxUSD 跨链（`0x94d11a…`）** |
 | <img src="截图/fx-ETH-veFXN委托交易-20261013.png" width="460"> | <img src="截图/fx-ETH-fxUSD跨链交易-20261013.png" width="460"> |
+
+**连钱包确认（2026-10-13）**
+
+| fxMINT 页 Privacy Pools 入口（“here” 跳转 privacypools.com） |
+|:-:|
+| <img src="截图/fx-ETH-PrivacyPools入口-20261013.png" width="460"> |
 
 ⚠️ 开发注意：
 - **Trade / fxSAVE / 稳定池存入大多走同一个 Router Diamond `0x33636D49…`，只能按方法名区分**；Trade 开多与 fxMINT 页 USDC 铸 fxUSD（`0x9a2c7e…`）链上同为 `openOrAddPositionFlashLoanV2`，多空与标的看目标池（WBTCLongPool `0xAB709e26Fa6B0A30c119D8c55B887DeD24952473` / WstETHLongPool `0x6Ecfa38FeE8a5277B91eFdA204c235814F0122E8` / 两个 ShortPool），加仓、加保证金、调杠杆复用 open/close 两个方法；fxMINT 页自己的铸造 / 还款走 FxMintRouter `0xB7533660…`。

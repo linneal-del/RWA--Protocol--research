@@ -75,6 +75,6 @@
 
 ## 待确认
 
-- #9 拿到的是 Router `DepositStake` 的同指令样本（目的端为 Reserve 换 SOL），前端 Migrate to LST 实际调 Router 还是直接调池的 `DepositStake`，需连钱包确认
+- #9 是 Router `DepositStake` 的同指令样本（目的端为 Reserve 换 SOL）。Migrate 需要钱包持有原生 SOL 质押账户（stake account）才有可迁移对象；本次测试钱包质押账户为 0，前端 Migrate to LST 实际调用的程序待用持有质押账户的钱包确认
 - “Via Jupiter” 路径（Jupiter 程序发起、Sanctum 程序只在 CPI 里出现）是否纳入解析范围
 - 237 个 LST 的 mint / 池地址需从 Sanctum 接口拉全量清单，本文只列了程序级地址
