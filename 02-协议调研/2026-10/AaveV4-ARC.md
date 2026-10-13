@@ -75,6 +75,12 @@
 | **11 Tokenization 赎回（`0x246a9d…`）** | |
 | <img src="截图/AaveV4-ARC-Tokenization赎回交易-20261013.png" width="460"> | |
 
+**连钱包确认（2026-10-13）**
+
+| 连钱包 Dashboard | Deposit：无余额 | Borrow：需先存入抵押 |
+|:-:|:-:|:-:|
+| <img src="截图/AaveV4-ARC-Dashboard连钱包-20261013.png" width="460"> | <img src="截图/AaveV4-ARC-Deposit无余额-20261013.png" width="460"> | <img src="截图/AaveV4-ARC-Borrow需先存入-20261013.png" width="460"> |
+
 ### 开发注意
 
 1. **大部分交易是 `multicall`，必须按内部调用和事件解析**：Main Spoke 5,330 笔里有 3,580 笔是 `multicall`。只看 tx 方法名会把存入、还款、借款都归成 `multicall`，要以 Spoke 发的 `Supply` / `Withdraw` / `Borrow` / `Repay` / `SetUsingAsCollateral` / `LiquidationCall` 事件为准。另外 Spoke 用 `reserveId`（uint256）而不是资产地址来定位储备，要配合 Spoke 的储备配置把 id 映射成资产。Repay 事件数（2,295）远多于直接 repay 交易，说明很多还款是其他合约代调的。
@@ -82,6 +88,5 @@
 
 ### 待确认
 
-1. #4 存入并借款、#8～#11（仓位管理器、Tokenization Spoke）在 pro.aave.com 未连钱包时看不到入口，需要连钱包后确认 Dashboard 有没有对应按钮，再决定是否纳入接入范围。
-2. Dashboard 上的 Withdraw / Repay / 抵押开关入口，是按 V4 合约方法和 V3 前端习惯推定的，需要连钱包验证按钮的名字和位置。
+1. 连钱包后 Dashboard（`https://pro.aave.com/`）只有 Deposit / Borrow 两个入口；Withdraw / Repay / 抵押开关、#4 存入并借款、#8～#11（仓位管理器、Tokenization Spoke）的入口要账户在 Arc 上有仓位才显示（无余额时 Deposit 提示 No USDC Balance，Borrow 提示需先存入抵押，见截图 `AaveV4-ARC-Deposit无余额-20261013.png` / `AaveV4-ARC-Borrow需先存入-20261013.png`）。确认这些按钮需要一个在 Arc 上持有 USDC 的账户。
 3. 清算样本是在扫完 Main Spoke 约 1.2 万条事件里找到的 2 笔（事件扫描未跑完全量），Forex / Maple Spoke 暂时没找到清算样本。

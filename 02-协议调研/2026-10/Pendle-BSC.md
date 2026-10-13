@@ -121,12 +121,18 @@ BSC 当前 6 个 active 市场（Pendle API `core/v1/56/markets/active`，2026-1
 | **23 Bridge PT 跨出（`0xc247e8…`）** | |
 | <img src="截图/Pendle-BSC-BridgePT跨出交易-20261013.png" width="460"> | |
 
+**连钱包确认（2026-10-13）**
+
+| Dashboard（连钱包，无仓位） |
+|:-:|
+| <img src="截图/Pendle-BSC-Dashboard连钱包无仓位-20261013.png" width="460"> |
+
 ⚠️ 开发注意：
 - **方法名不带市场，必须看事件**：所有前端操作都打到同一个 RouterV4，市场 / PT / YT 地址藏在参数和事件里；买卖 YT 在市场合约层面表现为 PT↔SY 的 Swap 加 YT 合约的 Mint/Burn，只看 Market 的 Swap 事件会把 YT 交易误判成 PT 交易，要以 Router 发出的 SwapYtAndToken / SwapPtAndToken 等事件区分。
 - **一笔交易可能包含多个动作**：`multicall` / `callAndReflect` 里会叠加减流动性 + Claim、赎回 + 再买 PT 等；市价单还可能顺带吃掉限价单（#6，同笔里有 Limit Router 事件），解析时要按事件拆分，不能按 tx 方法名算一类。
 
 ## 待确认
 
-- #21 `callAndReflect` 的前端入口（Dashboard 换仓 / 转移流动性）需连钱包才看得到，本次未连钱包确认按钮名称
+- #21 `callAndReflect`：SDK 中由「退出旧市场（exitMarket）+ 领取利息与奖励（redeemRewards）+ 转发调用（reflect）」组成，用于换仓；入口在 Dashboard 的持仓行上，需持有 LP 仓位才显示，按钮名称待用有仓位的账户确认
 - PendleSwap（#22，走外部聚合器，非 Pendle 自有市场）和 Bridge PT（#23，LayerZero OFT）是否纳入解析范围
 - BSC 上 6 个市场流动性都很小（最大 slisBNB 约 $3M，其余 $2K～$380K），业务上是否值得全部接入

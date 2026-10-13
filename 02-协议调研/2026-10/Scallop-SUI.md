@@ -47,9 +47,15 @@
 | 23 | 领推荐收益 | Referral → Current Pending Reward（需连钱包） | referral · `referral_revenue_pool::claim_revenue_with_ve_sca_key`（同笔可接 swap） | [yQzMjzfhrxzzZctnWJcx7azPagUy3AC5HhJNzaAeWoS](https://suiscan.xyz/mainnet/tx/yQzMjzfhrxzzZctnWJcx7azPagUy3AC5HhJNzaAeWoS)（公开样本） |
 | 24 | Swap | Spot → Swap | swap · `swap::create_swap_hot_potato` → 聚合 router + `<DEX>::swap` → `swap::emit_swap_event`（前后 `scallop_swap_slippage::check_slippage`） | [2c6tir1uFE7aP64LHbtfuKLKNeRsAeoCgQwnx3z1FGqF](https://suiscan.xyz/mainnet/tx/2c6tir1uFE7aP64LHbtfuKLKNeRsAeoCgQwnx3z1FGqF)（公开样本） |
 | 25 | Orderbook 挂单 / 撤单 | Spot → Orderbook（DeepBook） | DeepBook v3 · `pool::place_limit_order` / `pool::cancel_order`（不经 Scallop 合约） | [7M8Q25vobnWhXvysnT7psWyVpbG8KHxprSy7TuC5Tks5](https://suiscan.xyz/mainnet/tx/7M8Q25vobnWhXvysnT7psWyVpbG8KHxprSy7TuC5Tks5)（公开样本；DeepBook 通用交易，链上无法区分是否经 Scallop 前端发起） |
-| 26 | Convert Dust（钱包内小额币一键兑换） | 钱包侧栏 → Convert Dust | — | ⬜ 需连钱包才可操作，链上与普通 Swap 无法区分，未取到可确认样本 |
+| 26 | Convert Dust（钱包内小额币一键换成 SCA） | 钱包侧栏 → Convert Dust（「Swap dust coins into SCA」） | 经 **Cetus 聚合器**把选中的小额币逐个换成 SCA；链上是 Cetus 聚合器 swap，无 Scallop 专属函数 | ⬜ 无样本（测试账户无小额币） |
 
 页面有入口但**不产生 Scallop 交易**：Tools（PTB 交易构建工具，用户自拼任意交易）、Bridge → Wormhole Connect / Portal / Sui Bridge、CEX On-Ramp / Alchemy Pay / Li.Fi（外部服务）、More → DefiLlama / Sentio（外链）、Ecosystem / Leaderboard（展示）、首页 Banner（跳 Cetus / Bucket / Kraken）。闪电贷前端不暴露（见下方 §1 页面提示），清算非用户主动操作，均不计入。
+
+**连钱包确认（2026-10-13）**
+
+| Convert Dust 弹窗 |
+|:-:|
+| <img src="截图/Scallop-SUI-ConvertDust弹窗-20261013.png" width="460"> |
 
 ⚠️ 开发注意：
 - **`user::stake` / `user::unstake_v2` / `user::stake_with_ve_sca_v2` 属于借款激励包（borrowIncentive）**：借款、还款、开债仓时前端会先把 obligation 从激励池取出、操作后再放回，同笔出现。veSCA 的操作在 `ve_sca` 模块（#12～#18）。

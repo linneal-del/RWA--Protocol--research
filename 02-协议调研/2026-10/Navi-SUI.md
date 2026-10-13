@@ -34,9 +34,15 @@
 | 15 | Vault 撤销存入申请 | Vault 详情 → 待执行申请（需连钱包） | vault 包 · `user_entry::cancel_deposit_with_auto_transfer` | [BUgLoqPoQsUhkKT7an2qepgFMhPAHqEnAdQCWWyyLzDx](https://suiscan.xyz/mainnet/tx/BUgLoqPoQsUhkKT7an2qepgFMhPAHqEnAdQCWWyyLzDx)（公开样本） |
 | 16 | Vault 撤销取出申请 | Vault 详情 → 待执行申请（需连钱包） | vault 包 · `user_entry::cancel_withdraw` | [7cL3MEtD8zycAtsohZ2sgDqnpHPNkvjYnMWoS9d4A6En](https://suiscan.xyz/mainnet/tx/7cL3MEtD8zycAtsohZ2sgDqnpHPNkvjYnMWoS9d4A6En)（公开样本） |
 | 17 | Swap | 顶部 Swap（右侧面板） | Navi 聚合器 · `<DEX>::swap`（本例为 vSUI `stake_pool::stake`）+ `slippage::check_slippage_v3` | [3FawchG9ReKTidtgjFWUebmfTwYTLvNWpCv1RNRjbFrz](https://suiscan.xyz/mainnet/tx/3FawchG9ReKTidtgjFWUebmfTwYTLvNWpCv1RNRjbFrz)（公开样本；聚合器通用交易，链上无法区分是否经 Navi 前端发起） |
-| 18 | Optimize（跨协议迁仓） | Optimize | — | ⬜ 需连钱包且持有 Suilend / Scallop / AlphaLend 仓位才出现迁移按钮；链上为外部协议取出 + Navi 存入的组合，无专用函数，未取到可确认样本 |
+| 18 | Optimize（跨协议迁仓 / 换仓） | Optimize（一键迁移）；Optimize → Custom migration（Navi 内换仓：把 Supply / Borrow 仓位从一种资产换成另一种） | 迁移来源：Suilend / Scallop / AlphaLend / Navi 仓位 / 钱包闲置余额（Current、Cetus、Momentum、质押金库不支持）；链上为外部协议取出 + 兑换 + Navi 存入的组合，无专用函数 | ⬜ 无样本（测试账户无可迁移仓位） |
 
 页面有入口但**不产生 Navi 交易**：Reward Hub（积分与兑换，链下）、Bridge 面板（外部跨链）、Copilot（多钱包看板，需登录；其 Claim 按钮未登录时无法确认调用）、Security 页（展示）。Portfolio 上的 Withdraw / Repay / Claim 复用 #2 / #4 / #5 的函数。闪电贷、清算非页面可点击操作，不计入。
+
+**连钱包确认（2026-10-13）**
+
+| Optimize（连钱包，无可迁移仓位） | Optimize → Custom migration |
+|:-:|:-:|
+| <img src="截图/Navi-SUI-Optimize连钱包无可迁移-20261013.png" width="460"> | <img src="截图/Navi-SUI-Optimize换仓弹窗-20261013.png" width="460"> |
 
 ⚠️ 开发注意：
 - **lending 包有两个版本**：当前前端调用 `0x512f2826…`，早期版本 `0xd899cf7d…`（历史交易在此包），解析需同时覆盖。**E-mode 市场的操作全部走 `*_with_account_cap` 变体**，仓位挂在 AccountCap 子账户下，不在用户地址名下。

@@ -11,7 +11,7 @@
 | # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash |
 |---|---|---|---|---|
 | 1 | 兑换获取 trUSD（USDC→trUSD） | 赚取 → 兑换 | Curve trUSD/USDC 池 `0xb723a224c9ACF3891B20437B4d55dd45600F5FA3` · `exchange` | [0xece57d0b3b9a430f172e77382e0c1d4df30e2cd84f9fcc497d18d579f8efc7ca](https://etherscan.io/tx/0xece57d0b3b9a430f172e77382e0c1d4df30e2cd84f9fcc497d18d579f8efc7ca)（本人实测） |
-|  | 兑换（USDT / AUSD / strUSD → trUSD） | 赚取 → 兑换（下拉选币） | ⬜ 未连钱包不出报价，路由合约无法确认 | ⬜ |
+|  | 兑换（USDT / AUSD / strUSD → trUSD） | 赚取 → 兑换（下拉选币） | 前端同时向 **LI.FI / Enso / KyberSwap** 询价并取最优路由，链上执行的是该聚合器的路由合约（非 Tori 合约）；USDT→trUSD 报价走 KyberSwap，需 approve + swap 两次签名 | 无 Tori 专属合约（聚合器交易） |
 | 2 | 质押（trUSD→strUSD） | 赚取 → 质押 → 质押 | strUSD `0x280839980a7eD0D7717F64125fE241012E5F5815` · `deposit` | [0x58d57d11a4b199bdd5808d5995aa9c935fdbf5837803847001cc50cce79fea0b](https://etherscan.io/tx/0x58d57d11a4b199bdd5808d5995aa9c935fdbf5837803847001cc50cce79fea0b)（本人实测） |
 | 3 | 解除质押（发起 7 天冷却，按份额） | 质押 → 解除质押 | strUSD · `cooldownShares` | [0xbdbf713ed1e9b9264aa2746a813a585e971b02789261b71b1923bd4bda5c9434](https://etherscan.io/tx/0xbdbf713ed1e9b9264aa2746a813a585e971b02789261b71b1923bd4bda5c9434)（本人实测） |
 |  | 解除质押（发起 7 天冷却，按数量） |  | strUSD · `cooldownAssets` | [0x5c9e169160a136d1ccabbb42b4270a8ae38b9d4d229999240c7f818d72465c22](https://etherscan.io/tx/0x5c9e169160a136d1ccabbb42b4270a8ae38b9d4d229999240c7f818d72465c22)（公开样本） |
@@ -19,12 +19,12 @@
 | 5 | 取消冷却（重新质押） | 质押 → WITHDRAW（需连钱包） | strUSD · `cancelCooldown` | [0x873e23e451263f4d1beff035079d4579c1c1bf2150802459e10483b25908f413](https://etherscan.io/tx/0x873e23e451263f4d1beff035079d4579c1c1bf2150802459e10483b25908f413)（公开样本） |
 | 6 | YT 锁定（YT-strUSD→lYT-strUSD） | 赚取 → YT 锁定 | PendleYTLock `0x6569C554cBf71Dfcc32aEc48B0eDd2582f5C4a96` · `deposit` | [0xd49d57d103e4c589539fef66e76c2af7d6b2dea9eae4cc64331da0b9b1c994ef](https://etherscan.io/tx/0xd49d57d103e4c589539fef66e76c2af7d6b2dea9eae4cc64331da0b9b1c994ef)（公开样本） |
 | 7 | 领取 lYT 收益（strUSD） | YT 锁定（需连钱包） | PendleYTLock · `claimYield` | [0xb71f8293c6086e595a516dcf882ed4436a402bc5fbecd189bc19e6bfc524c73b](https://etherscan.io/tx/0xb71f8293c6086e595a516dcf882ed4436a402bc5fbecd189bc19e6bfc524c73b)（公开样本） |
-|  | Pendle YT 收益归集（SY-strUSD 收进锁仓合约，非领给调用者） | ⚠️ 前端入口待确认（任何地址可调用，近期 11 个不同调用方） | PendleYTLock · `claimPendleYield` | [0xa7d4fd088a65c046f19027820e87ff49a15cea814416899fa962056720d04c55](https://etherscan.io/tx/0xa7d4fd088a65c046f19027820e87ff49a15cea814416899fa962056720d04c55) |
+|  | Pendle YT 收益归集（SY-strUSD 收进锁仓合约，非领给调用者） | YT 锁定 → 可领取收益旁的「Sync now」（任何地址可调用） | PendleYTLock · `claimPendleYield` | [0xa7d4fd088a65c046f19027820e87ff49a15cea814416899fa962056720d04c55](https://etherscan.io/tx/0xa7d4fd088a65c046f19027820e87ff49a15cea814416899fa962056720d04c55) |
 | 8 | 跨链 trUSD / strUSD（Ethereum→Monad） | 跨链 | Chainlink CCIP Router `0x80226fc0Ee2b096224EeAc085Bb9a8cba1146f7D` · `ccipSend`（trUSD 锁入 LockRelease 池 `0x558d77ff…`） | [0xd94697354f6d7269cf2fdb87da767c54af3303f7fffca932e8cfa68804ba1093](https://etherscan.io/tx/0xd94697354f6d7269cf2fdb87da767c54af3303f7fffca932e8cfa68804ba1093)（公开样本） |
 | 9 | 生态金库存入（trUSD） | 赚取 → 生态金库 → DEPOSIT | Upshift TokenizedVault `0xcd69123b3FBBfC666E1f6a501da27B564C00De54` · `deposit`（份额 ETRUSD `0x6f20aE2C…`） | [0x744263d59e642a9b47221fa6464b19ee5111a9c249015eed17d7e7620ee4b421](https://etherscan.io/tx/0x744263d59e642a9b47221fa6464b19ee5111a9c249015eed17d7e7620ee4b421)（公开样本） |
 | 10 | 生态金库申请提取（7 天） | 生态金库 → WITHDRAW | 同上 · `requestRedeem` | [0x3da4af13db5194edbdca5a3bf5e7f10b3bc2ad8219f617648e476575730911cd](https://etherscan.io/tx/0x3da4af13db5194edbdca5a3bf5e7f10b3bc2ad8219f617648e476575730911cd)（公开样本） |
 | 11 | 生态金库到期领取 | 生态金库 → WITHDRAW（需连钱包） | 同上 · `claim` | [0x103fd6db2170ff1679b71bf043f4505122447bbd82f92ede317679e49ec2397a](https://etherscan.io/tx/0x103fd6db2170ff1679b71bf043f4505122447bbd82f92ede317679e49ec2397a)（公开样本） |
-| 12 | Monad 生态金库从 Ethereum 存入（USDC/USDT→AUSD 并跨链） | 赚取 → Ecosystem Vault（Monad）→ 存入 → ETHEREUM | ⬜ 页面写“一笔交易完成兑换与跨链”，Ethereum 侧调用的合约要连钱包才显示，未找到能确认属于 Tori 的样本 | ⬜ |
+| 12 | Monad 生态金库从 Ethereum 存入（USDC/USDT→AUSD 并跨链） | 赚取 → Ecosystem Vault（Monad）→ 存入 → ETHEREUM | Ethereum 侧一笔交易完成：**Enso** 路由 USDC→AUSD（`0x00000000eFE302BEAA2b3e6e1b18d08D69a9012a`）+ **LayerZero** 跨链到 Monad（收 LayerZero 费）；Monad 上存入金库 `0x9e98bDA72ced55E562BEd1dCAf2b123E95eB181e`，份额代币 metrUSD，最低存入 10 AUSD | ⬜ 无样本（最低 10 AUSD，测试账户余额不足） |
 
 页面有入口但**不产生 Tori 交易**：活动（Cores 积分、推荐，链下）、DeFi（Morpho / Pendle / Curve / Fluid 等第三方外链）、透明度（数据页）、YT 锁定里的“买入”（跳 Pendle）。
 
@@ -59,6 +59,12 @@
 | <img src="截图/Tori-ETH-金库存入交易-20261013.png" width="460"> | <img src="截图/Tori-ETH-金库申请提取交易-20261013.png" width="460"> |
 | **11 金库到期领取（`0x103fd6…`）** | **7b Pendle YT 收益归集（`0xa7d4fd…`）** |
 | <img src="截图/Tori-ETH-金库领取交易-20261013.png" width="460"> | <img src="截图/Tori-ETH-Pendle收益归集交易-20261013.png" width="460"> |
+
+**连钱包确认（2026-10-13）**
+
+| USDT 兑换报价（KyberSwap 路由） | Monad 金库从 Ethereum 存入流程 |
+|:-:|:-:|
+| <img src="截图/Tori-ETH-USDT兑换报价KyberSwap-20261013.png" width="460"> | <img src="截图/Tori-ETH-Monad金库从ETH存入流程-20261013.png" width="460"> |
 
 ⚠️ 开发注意：
 - **兑换不是 Tori 自有铸币合约**，是 Curve trUSD/USDC 池 `0xb723a224…` 的 `exchange`（看 `TokenExchange` 事件 + 池地址）；聚合器（1inch / LiFi / CoW 等）也会路过这个池子，trUSD 合约另有机构直铸的 `mint`/`redeem`，前端不走。
