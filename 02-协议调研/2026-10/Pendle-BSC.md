@@ -24,39 +24,39 @@ BSC 当前 6 个 active 市场（Pendle API `core/v1/56/markets/active`，2026-1
 
 ### 交易类型覆盖
 
-| # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash |
-|---|---|---|---|---|
-| 1 | 买 PT（Token→PT） | 市场 → PT → Swap → Buy PT | RouterV4 · `swapExactTokenForPt` | [0x45e36b14284beeabe093ebff9fae4ab01584b37f93449cd243c107eff23e192d](https://bscscan.com/tx/0x45e36b14284beeabe093ebff9fae4ab01584b37f93449cd243c107eff23e192d) |
-| 2 | 卖 PT（PT→Token） | PT → Swap → Sell PT | RouterV4 · `swapExactPtForToken` | [0x98c5189c4d3894f8c6d42d627ce1775e14090233015e33e89bc3cacfd63f644c](https://bscscan.com/tx/0x98c5189c4d3894f8c6d42d627ce1775e14090233015e33e89bc3cacfd63f644c) |
-| 3 | 买 YT（Token→YT） | 市场 → YT → Swap → Buy YT | RouterV4 · `swapExactTokenForYt` | [0x43d8f4a714e108e8d4fea20a8d9e4a981c537c3945d83990a030c126a7ed6961](https://bscscan.com/tx/0x43d8f4a714e108e8d4fea20a8d9e4a981c537c3945d83990a030c126a7ed6961) |
-| 4 | 卖 YT（YT→Token） | YT → Swap → Sell YT | RouterV4 · `swapExactYtForToken` | [0xc9802c14a60267127aeb9e543b1efeec3df84bbf01e05b3edfb94ca50a88cc3c](https://bscscan.com/tx/0xc9802c14a60267127aeb9e543b1efeec3df84bbf01e05b3edfb94ca50a88cc3c) |
-| 5 | 以 SY 计价买卖 PT/YT（输入/输出选 SY） | Swap（代币选 SY） | RouterV4 · `swapExactSyForPt` | [0x2ee4f09b4772ac52e31af4301036d29816849d6e1c0bc3e7611ff0b75284da0e](https://bscscan.com/tx/0x2ee4f09b4772ac52e31af4301036d29816849d6e1c0bc3e7611ff0b75284da0e) |
-| | | | RouterV4 · `swapExactPtForSy` | [0x667382a57073a81e624162979b065a5d138563a9c7ec8809fec854a0532d36aa](https://bscscan.com/tx/0x667382a57073a81e624162979b065a5d138563a9c7ec8809fec854a0532d36aa) |
-| | | | RouterV4 · `swapExactSyForYt` | [0x1704ea1f885c45b0cc0c66dab646a62ddd229e46667e8e9c2e4b6d9f0708fb08](https://bscscan.com/tx/0x1704ea1f885c45b0cc0c66dab646a62ddd229e46667e8e9c2e4b6d9f0708fb08) |
-| | | | RouterV4 · `swapExactYtForSy` | [0x08db3060f088a887acb47edd10dba54364ca269754a6d70a51b4b86596590f84](https://bscscan.com/tx/0x08db3060f088a887acb47edd10dba54364ca269754a6d70a51b4b86596590f84) |
-| 6 | 限价单成交（市价单顺带吃掉挂单） | Swap（路由自动撮合挂单） | RouterV4 · `swapExactTokenForPt`，同笔 Limit Router 发出成交事件 | [0x141a47d1efb5955a66cf6fbe2f361ba76183c31f61fa95fd4800d0f7383e1efb](https://bscscan.com/tx/0x141a47d1efb5955a66cf6fbe2f361ba76183c31f61fa95fd4800d0f7383e1efb) |
-| 7 | 限价单撤单（单笔） | Limit → 我的订单（需连钱包） | Limit Router · `cancelSingle` | [0xe03d8fe651400f66c92f3e7939a65ee66a3a73fac9058e576618e74b0b0d9fb4](https://bscscan.com/tx/0xe03d8fe651400f66c92f3e7939a65ee66a3a73fac9058e576618e74b0b0d9fb4) |
-| 8 | 限价单批量撤单 | Limit → 我的订单（需连钱包） | Limit Router · `cancelBatch` | [0x3e676e38b1f76f349718ea0c436ed41e0273c9300aa693f0dc860bd0151978a2](https://bscscan.com/tx/0x3e676e38b1f76f349718ea0c436ed41e0273c9300aa693f0dc860bd0151978a2) |
-| 9 | 撤销全部挂单 | Limit → 我的订单（需连钱包） | Limit Router · `increaseNonce` | [0x6eb11a5f5eb70f7b794bae8f2ad1ccf8c4226b7db8eff70e43d52cb930d1212e](https://bscscan.com/tx/0x6eb11a5f5eb70f7b794bae8f2ad1ccf8c4226b7db8eff70e43d52cb930d1212e) |
-| 10 | 单币加流动性（Zap In） | LP → Zap → Deposit | RouterV4 · `addLiquiditySingleToken` | [0xa1886cd1d5a48acfddcf83091d01e9ab55510469d9f613f314653f9190fa467b](https://bscscan.com/tx/0xa1886cd1d5a48acfddcf83091d01e9ab55510469d9f613f314653f9190fa467b) |
-| 11 | 单币加流动性 · Keep YT 模式 | LP → Zap → Deposit（打开 Keep YT Mode） | RouterV4 · `addLiquiditySingleTokenKeepYt` | [0x6b979c9759fd1672489ae27570337c88b96f52d3c56f07810aa227fa577553f5](https://bscscan.com/tx/0x6b979c9759fd1672489ae27570337c88b96f52d3c56f07810aa227fa577553f5) |
-| | （输入为 SY） | | RouterV4 · `addLiquiditySingleSyKeepYt` | [0xb51bf9b66c76b67356c6ada769dac9334a1338152142ef4e17087c520156b75f](https://bscscan.com/tx/0xb51bf9b66c76b67356c6ada769dac9334a1338152142ef4e17087c520156b75f) |
-| 12 | 双币加流动性（Token + PT） | LP → Manual → Add Liquidity | RouterV4 · `addLiquidityDualTokenAndPt` | [0xa08ce83b9032f9ab7cb70d2dc64aefd3960390c6d3467c452cd139fed62ae96f](https://bscscan.com/tx/0xa08ce83b9032f9ab7cb70d2dc64aefd3960390c6d3467c452cd139fed62ae96f) |
-| 13 | 单币减流动性（Zap Out） | LP → Zap → Withdraw | RouterV4 · `removeLiquiditySingleToken` | [0x86d0900df56a9f0c8b317c82e9d461d85e6d6b0ba47db33bb671fe48a0c1fbe5](https://bscscan.com/tx/0x86d0900df56a9f0c8b317c82e9d461d85e6d6b0ba47db33bb671fe48a0c1fbe5) |
-| 14 | 双边减流动性（拿回 SY + PT） | LP → Manual → Remove Liquidity | RouterV4 · `removeLiquidityDualSyAndPt` | [0xcc652714e0e3b37283f48cdf387b99511bd2e4a76aa8f62ce222fddcebd01b8c](https://bscscan.com/tx/0xcc652714e0e3b37283f48cdf387b99511bd2e4a76aa8f62ce222fddcebd01b8c) |
-| 15 | 铸造 PT+YT（Mint PY） | Swap 旁 Mint → Mint | RouterV4 · `mintPyFromToken` | [0xb52c4d5d9babcd524794ed4f1536bc7b7f6258ec572d3c1c9c53c352c289cf4a](https://bscscan.com/tx/0xb52c4d5d9babcd524794ed4f1536bc7b7f6258ec572d3c1c9c53c352c289cf4a) |
-| | （输入为 SY） | | RouterV4 · `mintPyFromSy` | [0x6dcaf252c40ee7948f45334d2cfd405e0e0e12c8194327d7546fcb3b68ed8349](https://bscscan.com/tx/0x6dcaf252c40ee7948f45334d2cfd405e0e0e12c8194327d7546fcb3b68ed8349) |
-| 16 | 赎回 PT+YT（Redeem PY） | Mint → Redeem | RouterV4 · `redeemPyToToken` | [0x1181fa8d45f3747f3277dd2549a1498a46445615974ec67e5529216e695426d7](https://bscscan.com/tx/0x1181fa8d45f3747f3277dd2549a1498a46445615974ec67e5529216e695426d7) |
-| | （输出为 SY） | | RouterV4 · `redeemPyToSy` | [0x6dbaee085a18d9cf17fe9ee18e72539d166bc8e57d922315dc0555bd59e1ede9](https://bscscan.com/tx/0x6dbaee085a18d9cf17fe9ee18e72539d166bc8e57d922315dc0555bd59e1ede9) |
-| 17 | Wrap SY（Token→SY） | Mint 下拉 / LP Tools → SY Converter → Wrap SY | RouterV4 · `mintSyFromToken` | [0xc3d55fa9c99fa84dcf1d67ffee1e5ff3ab6d4c56e4ef07389257b9d89594257b](https://bscscan.com/tx/0xc3d55fa9c99fa84dcf1d67ffee1e5ff3ab6d4c56e4ef07389257b9d89594257b) |
-| 18 | Unwrap SY（SY→Token） | SY Converter → Unwrap SY | RouterV4 · `redeemSyToToken` | [0x5b2229913f3d7affdf5ad4a4f231cc0b6eae4ce7fa4ee7505d0b187d91c422e4](https://bscscan.com/tx/0x5b2229913f3d7affdf5ad4a4f231cc0b6eae4ce7fa4ee7505d0b187d91c422e4) |
-| 19 | Claim YT 利息 / LP 奖励 | Dashboard → Claim（需连钱包） | RouterV4 · `redeemDueInterestAndRewardsV2` | [0x3431d35f72838bafae6d2264b59546379f8c78e8dca3ce80b38d7d510c78ebf2](https://bscscan.com/tx/0x3431d35f72838bafae6d2264b59546379f8c78e8dca3ce80b38d7d510c78ebf2) |
-| | （旧版方法） | | RouterV4 · `redeemDueInterestAndRewards` | [0xb1c9472c43d7b0d7fe24080c01696dc2707788beaaa4dd9bf5ecf8674d93cf94](https://bscscan.com/tx/0xb1c9472c43d7b0d7fe24080c01696dc2707788beaaa4dd9bf5ecf8674d93cf94) |
-| | （包在 multicall 里） | | RouterV4 · `multicall` → `redeemDueInterestAndRewardsV2` | [0x2958d77d1db3bb97f1c0473de0417a0ca2bb3a60d62eccf08dd2b91019e5587f](https://bscscan.com/tx/0x2958d77d1db3bb97f1c0473de0417a0ca2bb3a60d62eccf08dd2b91019e5587f) |
-| 20 | 到期后退出（PT/YT/LP 一键换回 Token） | 到期市场 / Dashboard（需连钱包） | RouterV4 · `exitPostExpToToken` | [0x05ccf6e195ffa1e12dc10ab9835aa39d254c804cf39a656c197d2e7c8dd6b852](https://bscscan.com/tx/0x05ccf6e195ffa1e12dc10ab9835aa39d254c804cf39a656c197d2e7c8dd6b852) |
-| 21 | 转移流动性 / 换仓（到期仓位换到新市场） | Dashboard 持仓（需连钱包） | RouterV4 · `callAndReflect` → `redeemPyToSy` + `swapExactSyForPt` | [0x347bbfc39767f635d7106840f2590de4918700eaa5371999174be0b88f8890ad](https://bscscan.com/tx/0x347bbfc39767f635d7106840f2590de4918700eaa5371999174be0b88f8890ad) |
-| 22 | PendleSwap（任意代币兑换，走外部聚合器） | 顶部 Swap → PendleSwap | RouterV4 · `swapTokensToTokens` | [0x207821deee7d9ffa622f0ae142fe7ebc216eba41c24ba7677b5aa80c589cbc21](https://bscscan.com/tx/0x207821deee7d9ffa622f0ae142fe7ebc216eba41c24ba7677b5aa80c589cbc21) |
-| 23 | Bridge PT 跨出 BSC（LayerZero OFT） | More → Bridge PT | 跨链 PT 合约（如 PT-sUSDE-7MAY2026 `0x721105716ab5419f1aaadbbc7835e3eabd7e067d`）· `send` | [0xc247e870152e45a256a1aa8b0299935b5b54629badca54b47383165c7aa4c6f4](https://bscscan.com/tx/0xc247e870152e45a256a1aa8b0299935b5b54629badca54b47383165c7aa4c6f4) |
+| # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash | 来源 |
+|---|---|---|---|---|---|
+| 1 | 买 PT（Token→PT） | 市场 → PT → Swap → Buy PT | RouterV4 · `swapExactTokenForPt` | [0x45e36b14284beeabe093ebff9fae4ab01584b37f93449cd243c107eff23e192d](https://bscscan.com/tx/0x45e36b14284beeabe093ebff9fae4ab01584b37f93449cd243c107eff23e192d) | 公开样本 |
+| 2 | 卖 PT（PT→Token） | PT → Swap → Sell PT | RouterV4 · `swapExactPtForToken` | [0x98c5189c4d3894f8c6d42d627ce1775e14090233015e33e89bc3cacfd63f644c](https://bscscan.com/tx/0x98c5189c4d3894f8c6d42d627ce1775e14090233015e33e89bc3cacfd63f644c) | 公开样本 |
+| 3 | 买 YT（Token→YT） | 市场 → YT → Swap → Buy YT | RouterV4 · `swapExactTokenForYt` | [0x43d8f4a714e108e8d4fea20a8d9e4a981c537c3945d83990a030c126a7ed6961](https://bscscan.com/tx/0x43d8f4a714e108e8d4fea20a8d9e4a981c537c3945d83990a030c126a7ed6961) | 公开样本 |
+| 4 | 卖 YT（YT→Token） | YT → Swap → Sell YT | RouterV4 · `swapExactYtForToken` | [0xc9802c14a60267127aeb9e543b1efeec3df84bbf01e05b3edfb94ca50a88cc3c](https://bscscan.com/tx/0xc9802c14a60267127aeb9e543b1efeec3df84bbf01e05b3edfb94ca50a88cc3c) | 公开样本 |
+| 5 | 以 SY 计价买卖 PT/YT（输入/输出选 SY） | Swap（代币选 SY） | RouterV4 · `swapExactSyForPt` | [0x2ee4f09b4772ac52e31af4301036d29816849d6e1c0bc3e7611ff0b75284da0e](https://bscscan.com/tx/0x2ee4f09b4772ac52e31af4301036d29816849d6e1c0bc3e7611ff0b75284da0e) | 公开样本 |
+| | | | RouterV4 · `swapExactPtForSy` | [0x667382a57073a81e624162979b065a5d138563a9c7ec8809fec854a0532d36aa](https://bscscan.com/tx/0x667382a57073a81e624162979b065a5d138563a9c7ec8809fec854a0532d36aa) | 公开样本 |
+| | | | RouterV4 · `swapExactSyForYt` | [0x1704ea1f885c45b0cc0c66dab646a62ddd229e46667e8e9c2e4b6d9f0708fb08](https://bscscan.com/tx/0x1704ea1f885c45b0cc0c66dab646a62ddd229e46667e8e9c2e4b6d9f0708fb08) | 公开样本 |
+| | | | RouterV4 · `swapExactYtForSy` | [0x08db3060f088a887acb47edd10dba54364ca269754a6d70a51b4b86596590f84](https://bscscan.com/tx/0x08db3060f088a887acb47edd10dba54364ca269754a6d70a51b4b86596590f84) | 公开样本 |
+| 6 | 限价单成交（市价单顺带吃掉挂单） | Swap（路由自动撮合挂单） | RouterV4 · `swapExactTokenForPt`，同笔 Limit Router 发出成交事件 | [0x141a47d1efb5955a66cf6fbe2f361ba76183c31f61fa95fd4800d0f7383e1efb](https://bscscan.com/tx/0x141a47d1efb5955a66cf6fbe2f361ba76183c31f61fa95fd4800d0f7383e1efb) | 公开样本 |
+| 7 | 限价单撤单（单笔） | Limit → 我的订单（需连钱包） | Limit Router · `cancelSingle` | [0xe03d8fe651400f66c92f3e7939a65ee66a3a73fac9058e576618e74b0b0d9fb4](https://bscscan.com/tx/0xe03d8fe651400f66c92f3e7939a65ee66a3a73fac9058e576618e74b0b0d9fb4) | 公开样本 |
+| 8 | 限价单批量撤单 | Limit → 我的订单（需连钱包） | Limit Router · `cancelBatch` | [0x3e676e38b1f76f349718ea0c436ed41e0273c9300aa693f0dc860bd0151978a2](https://bscscan.com/tx/0x3e676e38b1f76f349718ea0c436ed41e0273c9300aa693f0dc860bd0151978a2) | 公开样本 |
+| 9 | 撤销全部挂单 | Limit → 我的订单（需连钱包） | Limit Router · `increaseNonce` | [0x6eb11a5f5eb70f7b794bae8f2ad1ccf8c4226b7db8eff70e43d52cb930d1212e](https://bscscan.com/tx/0x6eb11a5f5eb70f7b794bae8f2ad1ccf8c4226b7db8eff70e43d52cb930d1212e) | 公开样本 |
+| 10 | 单币加流动性（Zap In） | LP → Zap → Deposit | RouterV4 · `addLiquiditySingleToken` | [0xa1886cd1d5a48acfddcf83091d01e9ab55510469d9f613f314653f9190fa467b](https://bscscan.com/tx/0xa1886cd1d5a48acfddcf83091d01e9ab55510469d9f613f314653f9190fa467b) | 公开样本 |
+| 11 | 单币加流动性 · Keep YT 模式 | LP → Zap → Deposit（打开 Keep YT Mode） | RouterV4 · `addLiquiditySingleTokenKeepYt` | [0x6b979c9759fd1672489ae27570337c88b96f52d3c56f07810aa227fa577553f5](https://bscscan.com/tx/0x6b979c9759fd1672489ae27570337c88b96f52d3c56f07810aa227fa577553f5) | 公开样本 |
+| | （输入为 SY） | | RouterV4 · `addLiquiditySingleSyKeepYt` | [0xb51bf9b66c76b67356c6ada769dac9334a1338152142ef4e17087c520156b75f](https://bscscan.com/tx/0xb51bf9b66c76b67356c6ada769dac9334a1338152142ef4e17087c520156b75f) | 公开样本 |
+| 12 | 双币加流动性（Token + PT） | LP → Manual → Add Liquidity | RouterV4 · `addLiquidityDualTokenAndPt` | [0xa08ce83b9032f9ab7cb70d2dc64aefd3960390c6d3467c452cd139fed62ae96f](https://bscscan.com/tx/0xa08ce83b9032f9ab7cb70d2dc64aefd3960390c6d3467c452cd139fed62ae96f) | 公开样本 |
+| 13 | 单币减流动性（Zap Out） | LP → Zap → Withdraw | RouterV4 · `removeLiquiditySingleToken` | [0x86d0900df56a9f0c8b317c82e9d461d85e6d6b0ba47db33bb671fe48a0c1fbe5](https://bscscan.com/tx/0x86d0900df56a9f0c8b317c82e9d461d85e6d6b0ba47db33bb671fe48a0c1fbe5) | 公开样本 |
+| 14 | 双边减流动性（拿回 SY + PT） | LP → Manual → Remove Liquidity | RouterV4 · `removeLiquidityDualSyAndPt` | [0xcc652714e0e3b37283f48cdf387b99511bd2e4a76aa8f62ce222fddcebd01b8c](https://bscscan.com/tx/0xcc652714e0e3b37283f48cdf387b99511bd2e4a76aa8f62ce222fddcebd01b8c) | 公开样本 |
+| 15 | 铸造 PT+YT（Mint PY） | Swap 旁 Mint → Mint | RouterV4 · `mintPyFromToken` | [0xb52c4d5d9babcd524794ed4f1536bc7b7f6258ec572d3c1c9c53c352c289cf4a](https://bscscan.com/tx/0xb52c4d5d9babcd524794ed4f1536bc7b7f6258ec572d3c1c9c53c352c289cf4a) | 公开样本 |
+| | （输入为 SY） | | RouterV4 · `mintPyFromSy` | [0x6dcaf252c40ee7948f45334d2cfd405e0e0e12c8194327d7546fcb3b68ed8349](https://bscscan.com/tx/0x6dcaf252c40ee7948f45334d2cfd405e0e0e12c8194327d7546fcb3b68ed8349) | 公开样本 |
+| 16 | 赎回 PT+YT（Redeem PY） | Mint → Redeem | RouterV4 · `redeemPyToToken` | [0x1181fa8d45f3747f3277dd2549a1498a46445615974ec67e5529216e695426d7](https://bscscan.com/tx/0x1181fa8d45f3747f3277dd2549a1498a46445615974ec67e5529216e695426d7) | 公开样本 |
+| | （输出为 SY） | | RouterV4 · `redeemPyToSy` | [0x6dbaee085a18d9cf17fe9ee18e72539d166bc8e57d922315dc0555bd59e1ede9](https://bscscan.com/tx/0x6dbaee085a18d9cf17fe9ee18e72539d166bc8e57d922315dc0555bd59e1ede9) | 公开样本 |
+| 17 | Wrap SY（Token→SY） | Mint 下拉 / LP Tools → SY Converter → Wrap SY | RouterV4 · `mintSyFromToken` | [0xc3d55fa9c99fa84dcf1d67ffee1e5ff3ab6d4c56e4ef07389257b9d89594257b](https://bscscan.com/tx/0xc3d55fa9c99fa84dcf1d67ffee1e5ff3ab6d4c56e4ef07389257b9d89594257b) | 公开样本 |
+| 18 | Unwrap SY（SY→Token） | SY Converter → Unwrap SY | RouterV4 · `redeemSyToToken` | [0x5b2229913f3d7affdf5ad4a4f231cc0b6eae4ce7fa4ee7505d0b187d91c422e4](https://bscscan.com/tx/0x5b2229913f3d7affdf5ad4a4f231cc0b6eae4ce7fa4ee7505d0b187d91c422e4) | 公开样本 |
+| 19 | Claim YT 利息 / LP 奖励 | Dashboard → Claim（需连钱包） | RouterV4 · `redeemDueInterestAndRewardsV2` | [0x3431d35f72838bafae6d2264b59546379f8c78e8dca3ce80b38d7d510c78ebf2](https://bscscan.com/tx/0x3431d35f72838bafae6d2264b59546379f8c78e8dca3ce80b38d7d510c78ebf2) | 公开样本 |
+| | （旧版方法） | | RouterV4 · `redeemDueInterestAndRewards` | [0xb1c9472c43d7b0d7fe24080c01696dc2707788beaaa4dd9bf5ecf8674d93cf94](https://bscscan.com/tx/0xb1c9472c43d7b0d7fe24080c01696dc2707788beaaa4dd9bf5ecf8674d93cf94) | 公开样本 |
+| | （包在 multicall 里） | | RouterV4 · `multicall` → `redeemDueInterestAndRewardsV2` | [0x2958d77d1db3bb97f1c0473de0417a0ca2bb3a60d62eccf08dd2b91019e5587f](https://bscscan.com/tx/0x2958d77d1db3bb97f1c0473de0417a0ca2bb3a60d62eccf08dd2b91019e5587f) | 公开样本 |
+| 20 | 到期后退出（PT/YT/LP 一键换回 Token） | 到期市场 / Dashboard（需连钱包） | RouterV4 · `exitPostExpToToken` | [0x05ccf6e195ffa1e12dc10ab9835aa39d254c804cf39a656c197d2e7c8dd6b852](https://bscscan.com/tx/0x05ccf6e195ffa1e12dc10ab9835aa39d254c804cf39a656c197d2e7c8dd6b852) | 公开样本 |
+| 21 | 转移流动性 / 换仓（到期仓位换到新市场） | Dashboard 持仓（需连钱包） | RouterV4 · `callAndReflect` → `redeemPyToSy` + `swapExactSyForPt` | [0x347bbfc39767f635d7106840f2590de4918700eaa5371999174be0b88f8890ad](https://bscscan.com/tx/0x347bbfc39767f635d7106840f2590de4918700eaa5371999174be0b88f8890ad) | 公开样本 |
+| 22 | PendleSwap（任意代币兑换，走外部聚合器） | 顶部 Swap → PendleSwap | RouterV4 · `swapTokensToTokens` | [0x207821deee7d9ffa622f0ae142fe7ebc216eba41c24ba7677b5aa80c589cbc21](https://bscscan.com/tx/0x207821deee7d9ffa622f0ae142fe7ebc216eba41c24ba7677b5aa80c589cbc21) | 公开样本 |
+| 23 | Bridge PT 跨出 BSC（LayerZero OFT） | More → Bridge PT | 跨链 PT 合约（如 PT-sUSDE-7MAY2026 `0x721105716ab5419f1aaadbbc7835e3eabd7e067d`）· `send` | [0xc247e870152e45a256a1aa8b0299935b5b54629badca54b47383165c7aa4c6f4](https://bscscan.com/tx/0xc247e870152e45a256a1aa8b0299935b5b54629badca54b47383165c7aa4c6f4) | 公开样本 |
 
 页面有入口但**不产生 BSC 链上 Pendle 交易**：
 - 限价单挂单：链下签名，不上链（只有撤单 / 成交上链）。
@@ -127,7 +127,7 @@ BSC 当前 6 个 active 市场（Pendle API `core/v1/56/markets/active`，2026-1
 |:-:|
 | <img src="截图/Pendle-BSC-Dashboard连钱包无仓位-20261013.png" width="460"> |
 
-⚠️ 开发注意：
+### 开发注意
 - **方法名不带市场，必须看事件**：所有前端操作都打到同一个 RouterV4，市场 / PT / YT 地址藏在参数和事件里；买卖 YT 在市场合约层面表现为 PT↔SY 的 Swap 加 YT 合约的 Mint/Burn，只看 Market 的 Swap 事件会把 YT 交易误判成 PT 交易，要以 Router 发出的 SwapYtAndToken / SwapPtAndToken 等事件区分。
 - **一笔交易可能包含多个动作**：`multicall` / `callAndReflect` 里会叠加减流动性 + Claim、赎回 + 再买 PT 等；市价单还可能顺带吃掉限价单（#6，同笔里有 Limit Router 事件），解析时要按事件拆分，不能按 tx 方法名算一类。
 

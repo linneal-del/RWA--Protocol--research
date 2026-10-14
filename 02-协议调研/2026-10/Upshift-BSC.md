@@ -25,15 +25,15 @@
 
 Sienna 金库共 1,487 笔交易（BscScan 全量）：Deposit 850 / Request Redeem 348 / Process All Claims By Date 143 / Claim 10，其余是管理操作（Charge Management Fee、Withdraw From Subaccount、Update Total Assets 等）。HYBOND 金库共 50 笔，其中 47 笔是收管理费，用户侧交易只有 1 组存入、赎回、处理。
 
-| # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash |
-|---|---|---|---|---|
-| 1 | 存入 | 无（金库已隐藏） | Sienna · `deposit(uint256,address)`（事件 `Deposit`） | [0x974e345cb94658208cebf754ad850e7d3609719b41eb62930f3beed7891b9e44](https://bscscan.com/tx/0x974e345cb94658208cebf754ad850e7d3609719b41eb62930f3beed7891b9e44) |
-| | 存入（v2 金库，多资产版） | 无 | HYBOND · `deposit(address,uint256,address)` | [0xe3fd0696e4f1e9af2e59ff8df2a329c46c68791022e8441c412c7f0c329f93c3](https://bscscan.com/tx/0xe3fd0696e4f1e9af2e59ff8df2a329c46c68791022e8441c412c7f0c329f93c3) |
-| 2 | 申请赎回（进入排队） | 无（金库已隐藏） | Sienna · `requestRedeem(uint256,address,address)`（事件 `WithdrawalRequested`） | [0xf30fe5206938a39521bec5fd9b0b7c0c8c0372239548f70742fa6723be310d51](https://bscscan.com/tx/0xf30fe5206938a39521bec5fd9b0b7c0c8c0372239548f70742fa6723be310d51) |
-| | 申请赎回（v2 金库） | 无 | HYBOND · `requestRedeem(uint256,address)` | [0x58c479b26f711485cfcc751ed4975345c78aa37a0089de156d2434961e5d8c41](https://bscscan.com/tx/0x58c479b26f711485cfcc751ed4975345c78aa37a0089de156d2434961e5d8c41) |
-| 3 | 用户自领赎回款 | 无（金库已隐藏） | Sienna · `claim(uint256,uint256,uint256,address)`（事件 `WithdrawalProcessed`） | [0x9403c64ecae3ae22325533ed059f3b74315dc7fb79a26d3a40b5fbc599845f5c](https://bscscan.com/tx/0x9403c64ecae3ae22325533ed059f3b74315dc7fb79a26d3a40b5fbc599845f5c) |
-| 4 | 运营方按日期批量兑付赎回（不经前端） | — | Sienna · `processAllClaimsByDate(uint256,uint256,uint256,uint256)`（事件 `WithdrawalProcessed`，USDT 直接转给用户） | [0x88fcbbae092310945b353398c18a7a55e387bdccc5912b3b2c31b3c4e8b7cfba](https://bscscan.com/tx/0x88fcbbae092310945b353398c18a7a55e387bdccc5912b3b2c31b3c4e8b7cfba) |
-| | 批量兑付（v2 金库） | — | HYBOND · 同名方法 | [0x93dfdd70d9ed3395ac36909313739c38115f59b1c40f8a900da5568b167ca76c](https://bscscan.com/tx/0x93dfdd70d9ed3395ac36909313739c38115f59b1c40f8a900da5568b167ca76c) |
+| # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash | 来源 |
+|---|---|---|---|---|---|
+| 1 | 存入 | 无（金库已隐藏） | Sienna · `deposit(uint256,address)`（事件 `Deposit`） | [0x974e345cb94658208cebf754ad850e7d3609719b41eb62930f3beed7891b9e44](https://bscscan.com/tx/0x974e345cb94658208cebf754ad850e7d3609719b41eb62930f3beed7891b9e44) | 公开样本 |
+| | 存入（v2 金库，多资产版） | 无 | HYBOND · `deposit(address,uint256,address)` | [0xe3fd0696e4f1e9af2e59ff8df2a329c46c68791022e8441c412c7f0c329f93c3](https://bscscan.com/tx/0xe3fd0696e4f1e9af2e59ff8df2a329c46c68791022e8441c412c7f0c329f93c3) | 公开样本 |
+| 2 | 申请赎回（进入排队） | 无（金库已隐藏） | Sienna · `requestRedeem(uint256,address,address)`（事件 `WithdrawalRequested`） | [0xf30fe5206938a39521bec5fd9b0b7c0c8c0372239548f70742fa6723be310d51](https://bscscan.com/tx/0xf30fe5206938a39521bec5fd9b0b7c0c8c0372239548f70742fa6723be310d51) | 公开样本 |
+| | 申请赎回（v2 金库） | 无 | HYBOND · `requestRedeem(uint256,address)` | [0x58c479b26f711485cfcc751ed4975345c78aa37a0089de156d2434961e5d8c41](https://bscscan.com/tx/0x58c479b26f711485cfcc751ed4975345c78aa37a0089de156d2434961e5d8c41) | 公开样本 |
+| 3 | 用户自领赎回款 | 无（金库已隐藏） | Sienna · `claim(uint256,uint256,uint256,address)`（事件 `WithdrawalProcessed`） | [0x9403c64ecae3ae22325533ed059f3b74315dc7fb79a26d3a40b5fbc599845f5c](https://bscscan.com/tx/0x9403c64ecae3ae22325533ed059f3b74315dc7fb79a26d3a40b5fbc599845f5c) | 公开样本 |
+| 4 | 运营方按日期批量兑付赎回（不经前端） | — | Sienna · `processAllClaimsByDate(uint256,uint256,uint256,uint256)`（事件 `WithdrawalProcessed`，USDT 直接转给用户） | [0x88fcbbae092310945b353398c18a7a55e387bdccc5912b3b2c31b3c4e8b7cfba](https://bscscan.com/tx/0x88fcbbae092310945b353398c18a7a55e387bdccc5912b3b2c31b3c4e8b7cfba) | 公开样本 |
+| | 批量兑付（v2 金库） | — | HYBOND · 同名方法 | [0x93dfdd70d9ed3395ac36909313739c38115f59b1c40f8a900da5568b167ca76c](https://bscscan.com/tx/0x93dfdd70d9ed3395ac36909313739c38115f59b1c40f8a900da5568b167ca76c) | 公开样本 |
 
 前端 Points / Leaderboard / Referrals 是链下积分，不上链；RWA Redeem 页里的金库都不在 BSC。
 

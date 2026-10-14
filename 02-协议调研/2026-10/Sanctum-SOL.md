@@ -20,19 +20,19 @@
 
 ### 交易类型覆盖
 
-| # | 交易类型 | 前端入口 | 程序 · 指令 | signature |
-|---|---|---|---|---|
-| 1 | 质押 SOL → INF（直接存入） | Stake → INF → Direct deposit | Infinity · `SwapExactInV2`（输入 wSOL，铸出 INF） | [3riD3hBQk5grfwY9D4MArzNMgxerSjphmEuk7ZKNd3TdjC826kMM53LWNPxmuyG1MZP5fqdpmzF1JR6zihf5ncjK](https://explorer.solana.com/tx/3riD3hBQk5grfwY9D4MArzNMgxerSjphmEuk7ZKNd3TdjC826kMM53LWNPxmuyG1MZP5fqdpmzF1JR6zihf5ncjK) |
-| 2 | 质押 SOL → LST（直接存入 Sanctum 池，例 bbSOL） | Stake → 选 LST → Direct deposit | SPL Stake Pool · `DepositSol` | [r9mPKGaun8iTAjRj3G5GrGrhVunLMtaJ2w6hbpMX5T7nrQYiLHy3qt5pZFVMaaZCwEnxMWAxfP7nGvDTS3RGwAN](https://explorer.solana.com/tx/r9mPKGaun8iTAjRj3G5GrGrhVunLMtaJ2w6hbpMX5T7nrQYiLHy3qt5pZFVMaaZCwEnxMWAxfP7nGvDTS3RGwAN) |
-| 3 | wSOL → LST（Router 代存） | Stake / Swap 路由命中 Sanctum Router 时 | Router · `StakeWrappedSol`（CPI 目标池 `DepositSol`，本样本为官方 SPL 池程序上的 LST） | [2kCpv2FyjpYttaJwiv4eRn888f3MLFaCYs1JzxTtKgkT6BRaJFZPWC1KTQjYzhij7R6XRA2LfEr5vKbNahWDNERc](https://explorer.solana.com/tx/2kCpv2FyjpYttaJwiv4eRn888f3MLFaCYs1JzxTtKgkT6BRaJFZPWC1KTQjYzhij7R6XRA2LfEr5vKbNahWDNERc) |
-| 4 | LST → wSOL（Router 代取） | Unstake → Instant 路由命中 Router 时 | Router · `WithdrawWrappedSol`（CPI 目标池 `WithdrawSol`） | [4Fz4jFv2nmgR1rhkua24hJPRi2LhKmg4NqvmXZc8y9ggFeuwd8tYPzVEw5imVgUToqf3QH3DBwg74v5Djys8c2SL](https://explorer.solana.com/tx/4Fz4jFv2nmgR1rhkua24hJPRi2LhKmg4NqvmXZc8y9ggFeuwd8tYPzVEw5imVgUToqf3QH3DBwg74v5Djys8c2SL) |
-| 5 | LST ↔ LST 互换（走 Infinity 池，例 rkSOL→JupSOL） | Swap | Infinity · `SwapExactInV2` | [4HddtxQ2M29HG2SRoaEWEzT48aAcS2zLAvSZsiukoexpCwbzZngUhMM6F87tVZ66fSobCWwfyAFJuHwCBmZ9oswQ](https://explorer.solana.com/tx/4HddtxQ2M29HG2SRoaEWEzT48aAcS2zLAvSZsiukoexpCwbzZngUhMM6F87tVZ66fSobCWwfyAFJuHwCBmZ9oswQ) |
-| 6 | 经 stake 账户中转兑换（Router） | Swap / Unstake → Instant 路由命中 Router 时 | Router · `PrefundSwapViaStake`（源池 `WithdrawStake` 取出 stake → 存入目的端；本样本目的端为 Reserve `Unstake`/`UnstakeWsol`，即 LST→wSOL） | [3B5KyC6BX5ddYDHT5mUAvckfz8MkjMWkxJzaJTPjfLR7rmbhLHeGv7G1B7pVHM71QeDnBiLJZLzfX4kHJ7rAwvTC](https://explorer.solana.com/tx/3B5KyC6BX5ddYDHT5mUAvckfz8MkjMWkxJzaJTPjfLR7rmbhLHeGv7G1B7pVHM71QeDnBiLJZLzfX4kHJ7rAwvTC) |
-| 7 | 即时解押 INF（INF 换出，销毁 INF） | Unstake → 选 INF → Instant | Infinity · `SwapExactIn`（输入 INF） | [2yYaJdPnDmRzfrwu3dN3gLJciocKbSVMr2hq92qucnGUC1bg5xeE9DtrAAB92HJFC5ywgUmP5VA1ojDVLVySTkkT](https://explorer.solana.com/tx/2yYaJdPnDmRzfrwu3dN3gLJciocKbSVMr2hq92qucnGUC1bg5xeE9DtrAAB92HJFC5ywgUmP5VA1ojDVLVySTkkT) |
-| 8 | 延迟解押（LST → 解押中的 stake 账户，例 hubSOL） | Unstake → Delayed | SPL Stake Pool · `WithdrawStake` + Stake 程序 `Deactivate` | [4KveX2FJBXhVNhCVSUzT3TAsTWJKy4czYtBHvoi6PxsGVU8ngibeipAiRqcbptmbGc9qJWEQ5CXrB9Z4xcBqaTSF](https://explorer.solana.com/tx/4KveX2FJBXhVNhCVSUzT3TAsTWJKy4czYtBHvoi6PxsGVU8ngibeipAiRqcbptmbGc9qJWEQ5CXrB9Z4xcBqaTSF) |
-| 9 | stake 账户 → LST（Migrate） | Migrate → Migrate to LST（需连钱包） | Router · `DepositStake`（本样本目的端为 Reserve 换 SOL，同笔含 `PrefundWithdrawStake`） | [CZ2PbD9GFQsWrjPTzUmBMTgXEKGTkkDJa6qkZz2giwWtw6oL3t7ySxy5Fb1ZdktE1vytXECXpyeVjMbZFYTAwC8](https://explorer.solana.com/tx/CZ2PbD9GFQsWrjPTzUmBMTgXEKGTkkDJa6qkZz2giwWtw6oL3t7ySxy5Fb1ZdktE1vytXECXpyeVjMbZFYTAwC8) |
-| 10 | stake 账户即时换 SOL（Reserve） | Migrate → Unstake Instantly（需连钱包） | Reserve · `Unstake` | [xpXikm2GxNoqCqMW4f4X8RxquRxaF2zpAkT9uQ66RpUrZmyLsLc1nGUX55Z4C1MDuDMQU9pzY5Bxp61ZQCcpGWo](https://explorer.solana.com/tx/xpXikm2GxNoqCqMW4f4X8RxquRxaF2zpAkT9uQ66RpUrZmyLsLc1nGUX55Z4C1MDuDMQU9pzY5Bxp61ZQCcpGWo) |
-| 11 | 领取延迟解押后的 SOL | ⬜ 前端暂无入口（FAQ：在钱包里从 stake 账户提取） | Stake 程序 · `Withdraw`（非 Sanctum 程序） | ⬜ |
+| # | 交易类型 | 前端入口 | 程序 · 指令 | signature | 来源 |
+|---|---|---|---|---|---|
+| 1 | 质押 SOL → INF（直接存入） | Stake → INF → Direct deposit | Infinity · `SwapExactInV2`（输入 wSOL，铸出 INF） | [3riD3hBQk5grfwY9D4MArzNMgxerSjphmEuk7ZKNd3TdjC826kMM53LWNPxmuyG1MZP5fqdpmzF1JR6zihf5ncjK](https://explorer.solana.com/tx/3riD3hBQk5grfwY9D4MArzNMgxerSjphmEuk7ZKNd3TdjC826kMM53LWNPxmuyG1MZP5fqdpmzF1JR6zihf5ncjK) | 公开样本 |
+| 2 | 质押 SOL → LST（直接存入 Sanctum 池，例 bbSOL） | Stake → 选 LST → Direct deposit | SPL Stake Pool · `DepositSol` | [r9mPKGaun8iTAjRj3G5GrGrhVunLMtaJ2w6hbpMX5T7nrQYiLHy3qt5pZFVMaaZCwEnxMWAxfP7nGvDTS3RGwAN](https://explorer.solana.com/tx/r9mPKGaun8iTAjRj3G5GrGrhVunLMtaJ2w6hbpMX5T7nrQYiLHy3qt5pZFVMaaZCwEnxMWAxfP7nGvDTS3RGwAN) | 公开样本 |
+| 3 | wSOL → LST（Router 代存） | Stake / Swap 路由命中 Sanctum Router 时 | Router · `StakeWrappedSol`（CPI 目标池 `DepositSol`，本样本为官方 SPL 池程序上的 LST） | [2kCpv2FyjpYttaJwiv4eRn888f3MLFaCYs1JzxTtKgkT6BRaJFZPWC1KTQjYzhij7R6XRA2LfEr5vKbNahWDNERc](https://explorer.solana.com/tx/2kCpv2FyjpYttaJwiv4eRn888f3MLFaCYs1JzxTtKgkT6BRaJFZPWC1KTQjYzhij7R6XRA2LfEr5vKbNahWDNERc) | 公开样本 |
+| 4 | LST → wSOL（Router 代取） | Unstake → Instant 路由命中 Router 时 | Router · `WithdrawWrappedSol`（CPI 目标池 `WithdrawSol`） | [4Fz4jFv2nmgR1rhkua24hJPRi2LhKmg4NqvmXZc8y9ggFeuwd8tYPzVEw5imVgUToqf3QH3DBwg74v5Djys8c2SL](https://explorer.solana.com/tx/4Fz4jFv2nmgR1rhkua24hJPRi2LhKmg4NqvmXZc8y9ggFeuwd8tYPzVEw5imVgUToqf3QH3DBwg74v5Djys8c2SL) | 公开样本 |
+| 5 | LST ↔ LST 互换（走 Infinity 池，例 rkSOL→JupSOL） | Swap | Infinity · `SwapExactInV2` | [4HddtxQ2M29HG2SRoaEWEzT48aAcS2zLAvSZsiukoexpCwbzZngUhMM6F87tVZ66fSobCWwfyAFJuHwCBmZ9oswQ](https://explorer.solana.com/tx/4HddtxQ2M29HG2SRoaEWEzT48aAcS2zLAvSZsiukoexpCwbzZngUhMM6F87tVZ66fSobCWwfyAFJuHwCBmZ9oswQ) | 公开样本 |
+| 6 | 经 stake 账户中转兑换（Router） | Swap / Unstake → Instant 路由命中 Router 时 | Router · `PrefundSwapViaStake`（源池 `WithdrawStake` 取出 stake → 存入目的端；本样本目的端为 Reserve `Unstake`/`UnstakeWsol`，即 LST→wSOL） | [3B5KyC6BX5ddYDHT5mUAvckfz8MkjMWkxJzaJTPjfLR7rmbhLHeGv7G1B7pVHM71QeDnBiLJZLzfX4kHJ7rAwvTC](https://explorer.solana.com/tx/3B5KyC6BX5ddYDHT5mUAvckfz8MkjMWkxJzaJTPjfLR7rmbhLHeGv7G1B7pVHM71QeDnBiLJZLzfX4kHJ7rAwvTC) | 公开样本 |
+| 7 | 即时解押 INF（INF 换出，销毁 INF） | Unstake → 选 INF → Instant | Infinity · `SwapExactIn`（输入 INF） | [2yYaJdPnDmRzfrwu3dN3gLJciocKbSVMr2hq92qucnGUC1bg5xeE9DtrAAB92HJFC5ywgUmP5VA1ojDVLVySTkkT](https://explorer.solana.com/tx/2yYaJdPnDmRzfrwu3dN3gLJciocKbSVMr2hq92qucnGUC1bg5xeE9DtrAAB92HJFC5ywgUmP5VA1ojDVLVySTkkT) | 公开样本 |
+| 8 | 延迟解押（LST → 解押中的 stake 账户，例 hubSOL） | Unstake → Delayed | SPL Stake Pool · `WithdrawStake` + Stake 程序 `Deactivate` | [4KveX2FJBXhVNhCVSUzT3TAsTWJKy4czYtBHvoi6PxsGVU8ngibeipAiRqcbptmbGc9qJWEQ5CXrB9Z4xcBqaTSF](https://explorer.solana.com/tx/4KveX2FJBXhVNhCVSUzT3TAsTWJKy4czYtBHvoi6PxsGVU8ngibeipAiRqcbptmbGc9qJWEQ5CXrB9Z4xcBqaTSF) | 公开样本 |
+| 9 | stake 账户 → LST（Migrate） | Migrate → Migrate to LST（需连钱包） | Router · `DepositStake`（本样本目的端为 Reserve 换 SOL，同笔含 `PrefundWithdrawStake`） | [CZ2PbD9GFQsWrjPTzUmBMTgXEKGTkkDJa6qkZz2giwWtw6oL3t7ySxy5Fb1ZdktE1vytXECXpyeVjMbZFYTAwC8](https://explorer.solana.com/tx/CZ2PbD9GFQsWrjPTzUmBMTgXEKGTkkDJa6qkZz2giwWtw6oL3t7ySxy5Fb1ZdktE1vytXECXpyeVjMbZFYTAwC8) | 公开样本 |
+| 10 | stake 账户即时换 SOL（Reserve） | Migrate → Unstake Instantly（需连钱包） | Reserve · `Unstake` | [xpXikm2GxNoqCqMW4f4X8RxquRxaF2zpAkT9uQ66RpUrZmyLsLc1nGUX55Z4C1MDuDMQU9pzY5Bxp61ZQCcpGWo](https://explorer.solana.com/tx/xpXikm2GxNoqCqMW4f4X8RxquRxaF2zpAkT9uQ66RpUrZmyLsLc1nGUX55Z4C1MDuDMQU9pzY5Bxp61ZQCcpGWo) | 公开样本 |
+| 11 | 领取延迟解押后的 SOL | ⬜ 前端暂无入口（FAQ：在钱包里从 stake 账户提取） | Stake 程序 · `Withdraw`（非 Sanctum 程序） | ⬜ | — |
 
 #1、#2、#6、#8、#10 是 Sanctum 程序作为顶层指令的交易；#3、#4、#5、#7、#9 的样本是聚合器（Jupiter / Titan 等）路由里 CPI 调到的同一指令。前端 Swap / Instant Unstake 按 FAQ 会在 Jupiter、Infinity、Router 三者中选价，所以这几类在链上本来就常以 CPI 形式出现。
 
@@ -69,7 +69,7 @@
 | **9 Router DepositStake（`CZ2PbD…`）** | **10 Reserve 即时解押（`xpXikm…`）** |
 | <img src="截图/Sanctum-SOL-Router-DepositStake交易-20261013.png" width="460"> | <img src="截图/Sanctum-SOL-Reserve即时解押交易-20261013.png" width="460"> |
 
-⚠️ 开发注意：
+### 开发注意
 - **Infinity / Router / Reserve 都不是 Anchor 程序**：没有 8 字节 discriminator，Infinity 用指令数据首字节区分（`0x17` SwapExactInV2、`0x01` SwapExactIn、`0x00` SyncSolValue 为定时同步，非用户交易），日志直接打印指令名（如 `Program log: SwapExactInV2`）；Router 日志形如 `StakeWrappedSol(...)`。大部分调用是聚合器 CPI，解析必须同时扫顶层和 inner instructions。
 - **“质押 / 解押”靠代币铸造销毁判断，不靠指令名**：SOL→INF、INF→其他资产在 Infinity 里都是 Swap 指令，区别只在 INF 是 Mint To 还是 Burn（近期样本里未见 AddLiquidity / RemoveLiquidity 调用）；Router 的 SwapViaStake / DepositStake 会生成临时 bridge stake 账户，不是用户持仓。
 
