@@ -1,203 +1,118 @@
-# Aerodrome —— Base 链 DEX（V2 恒定函数 AMM）
+# Aerodrome（V2）— Base
 
-> ⚠️ **范围声明**：本协议属于 **DEX 调研**（`04-DEX调研/`），与 `02-协议调研/` 下的 RWA 协议分开存放。
-> **状态**：🟡 首笔 V2 swap 已实测并链上验证（多跳路由 ETH→wBLT→AERO）；✅ add liquidity（做市）已实测并确认 LP 凭证为 ERC-20；remove liquidity / collect fees 待补
-> **实测时间**：2026-08-12
-> **测试钱包**：`0x9da44afe5ba28aa42301c626155ea66eb544c33c`（与 Morpho/Renzo ETH 测试同一钱包）
-> **链上验证方式**：Base 链 Basescan + Base RPC（`eth_getTransactionReceipt`）
-> **解析类型**：AMM 交易解析（V2 恒定函数，见 §6.3 六维度自评）
+> **链**：Base（chainId 8453） ｜ 浏览器 https://basescan.org ｜ https://base.blockscout.com
+> **调研日期**：2026-08-12，2026-11-03 补全交易类型
+> #1 Swap、#2 加流动性（volatile）为本人实测（钱包 `0x9da44afe5ba28aa42301c626155ea66eb544c33c`）；其余为公开样本，均为链上公开交易，非本人钱包，已逐条用 RPC 确认 status=0x1 并核对方法选择器
+> V3（Slipstream 集中流动性）另见 [Aerodrome-V3.md](Aerodrome-V3.md)
 
-## 0. 一句话结论
+## 合约
 
-Aerodrome 是 Base 链上的主流 DEX，V2 版本为恒定函数 AMM（含 stable / volatile 池型）。**首笔实测是多跳 swap（0.00001 ETH → 经 3 个 V2 池 → 0.0466 AERO），链上发现 Aerodrome Router（`0xcAF22ce3...`）会发 `UniversalRouterSwap` 聚合事件，而每个 V2 池发 `Swap(sender, to, amount0In, amount1In, amount0Out, amount1Out)`——解析侧必须按池级 Swap 事件逐跳追踪，不能只认 Router 的聚合事件。** 本报告承载链上实测结论与解析规格。
+| 项 | 值 |
+|---|---|
+| 前端 | Dashboard https://aerodrome.finance/dash ｜ Swap https://aerodrome.finance/swap ｜ Liquidity https://aerodrome.finance/liquidity ｜ Launch pool https://aerodrome.finance/launch ｜ Vote https://aerodrome.finance/vote ｜ Lock https://aerodrome.finance/locks ｜ Create Lock https://aerodrome.finance/lock ｜ Incentivize https://aerodrome.finance/incentivize ｜ Upgrade https://aerodrome.finance/upgrade |
+| PoolFactory | `0x420DD381b31aEf6683db6B902084cB0FFECe40Da` |
+| Router（加 / 减流动性） | `0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43` |
+| UniversalRouter（前端 Swap） | `0xcAF22ce31298cf2bf1d152862f80216478ad7c67` |
+| Voter | `0x16613524e02ad97eDfeF371bC883F2F5d6C480A5` |
+| VotingEscrow（veAERO，ERC-721） | `0xeBf418Fe2512e7E6bd9b87a8F0f294aCDC67e6B4` |
+| RewardsDistributor（rebase） | `0x227f65131A261548b057215bB1D5Ab2997964C7d` |
+| AERO | `0x940181a94A35A4569E4529A3CDfB74e38FD98631` |
+| AerodromeMigration（Upgrade 到 Aero） | `0x22a2f7340a3fb4c7c389d91ee954766b12476721` |
+| 示例池 | volatile `0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d`（USDC/AERO）；stable `0x27a8afa3bd49406e48a074350fb7b2020c43b2bd`（USDC/USDbC） |
+| 示例池 Gauge / 激励合约 | Gauge `0x4f09bab2f0e15e2a078a227fe1537665f55b8360`；BribeVotingReward `0xae507c81432219593591534667729bef116cfd5d`（均为 USDC/AERO 池，由 `Voter.gauges(pool)` / `gaugeToBribe(gauge)` 查得） |
+| LP 凭证 | ERC-20，由池合约本身铸造（`Volatile AMM - USDC/AERO`、`Stable AMM - USDC/USDbC`） |
 
-## 1. 基础信息（实测口径）
+## 交易类型覆盖
 
-| 字段 | 值 |
-|------|-----|
-| 协议 | Aerodrome（app.aerodrome.finance） |
-| 链 | **Base** |
-| 版本 | **V2**（恒定函数 AMM，与 V3 集中流动性分开，见 [Aerodrome-V3.md](Aerodrome-V3.md)） |
-| 池型 | 待补（stable / volatile） |
-| 治理代币 | $AERO |
-| TVL | 待补（YYYY-MM-DD UI 快照） |
-| 24h Volume | 待补 |
-| 产品网页 | https://aerodrome.finance |
-| **操作入口** | **Swap**：https://aerodrome.finance/swap ｜ **Liquidity（做市）**：https://aerodrome.finance/liquidity ｜ **Pools 浏览**：https://aerodrome.finance/liquidity ｜ **Dashboard**：https://aerodrome.finance/dash |
-| 文档 | https://aerodrome.finance/docs |
-| 接入情况 | 待定 |
+28 类：26 类有样本（本人实测 2 类、公开样本 24 类），2 类 ⬜。
 
-## 2. 协议背景
+| # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash | 来源 |
+|---|---|---|---|---|---|
+| 1 | Swap（多跳 ETH→WETH→wBLT→AERO） | Swap 页 | UniversalRouter · `execute` `0x3593564c` | [0x12457f9bf19697daf7888e5b8f8ca64d5e2486792549540cab5af6cbd40c8e75](https://basescan.org/tx/0x12457f9bf19697daf7888e5b8f8ca64d5e2486792549540cab5af6cbd40c8e75) | 本人实测 |
+| 2 | 加流动性（volatile，USDC/AERO） | Liquidity → 池子 New deposit → Deposit | Router · `addLiquidity` `0x5a47ddc3`（stable=false） | [0x81f502b3061dcc7f661cf68817db7b786ee65532957bb7fe613524d1bd167ad5](https://basescan.org/tx/0x81f502b3061dcc7f661cf68817db7b786ee65532957bb7fe613524d1bd167ad5) | 本人实测 |
+| 3 | 加流动性（stable，USDC/USDbC） | 同上，池型 Basic Stable | Router · `addLiquidity` `0x5a47ddc3`（stable=true） | [0xa6a515d795171c3e5289b2c51297a385d35976d9bb5c6e07030b2a5300ec4f1d](https://basescan.org/tx/0xa6a515d795171c3e5289b2c51297a385d35976d9bb5c6e07030b2a5300ec4f1d) | 公开样本 |
+| 4 | 减流动性 | Dashboard → Liquidity Rewards → 仓位 Withdraw | Router · `removeLiquidity` `0x0dede6c4` | [0x7bb949273e44bbbcbaf141b21215d591898a91142c3cf39872ba9c6a5846216f](https://basescan.org/tx/0x7bb949273e44bbbcbaf141b21215d591898a91142c3cf39872ba9c6a5846216f) | 公开样本 |
+| 5 | 质押 LP 到 Gauge | Dashboard → 仓位 Stake | Gauge · `deposit(uint256)` `0xb6b55f25` | [0x54e520c60395578a9b4a1a498f273cd120247afa94b82ed1a3eb490e4a9092c6](https://basescan.org/tx/0x54e520c60395578a9b4a1a498f273cd120247afa94b82ed1a3eb490e4a9092c6) | 公开样本 |
+| 6 | 取消质押 | Dashboard → 仓位 Unstake | Gauge · `withdraw` `0x2e1a7d4d` | [0xdc8ca7513085db84978f9557cf924963866de3eadb966536fb87699979264176](https://basescan.org/tx/0xdc8ca7513085db84978f9557cf924963866de3eadb966536fb87699979264176) | 公开样本 |
+| 7 | 领 AERO 排放 | Dashboard → Liquidity Rewards → Claim | Gauge · `getReward(address)` `0xc00007b0` | [0x5b2510582aa8bbb6293345982db6e600f62b02439989402d03acfdde70b12a21](https://basescan.org/tx/0x5b2510582aa8bbb6293345982db6e600f62b02439989402d03acfdde70b12a21) | 公开样本 |
+| 8 | 领 LP 交易手续费（未质押仓位） | Dashboard → 仓位 Claim fees | Pool · `claimFees()` `0xd294f093` | [0x87835064c079c25b658aa812c91e2e779aeea4b02b9c6c4bdef9d71cd9f8a0f4](https://basescan.org/tx/0x87835064c079c25b658aa812c91e2e779aeea4b02b9c6c4bdef9d71cd9f8a0f4) | 公开样本 |
+| 9 | 创建池（Basic volatile） | Liquidity → Launch pool | PoolFactory · `createPool(address,address,bool)` `0x36bf95a0` | [0x688fa9c8c0738167085a6fd1c2e4eeaec12a2d5b79f05df3e63b208c101fc301](https://basescan.org/tx/0x688fa9c8c0738167085a6fd1c2e4eeaec12a2d5b79f05df3e63b208c101fc301) | 公开样本 |
+| 10 | 创建锁仓（AERO → veAERO） | Lock → Create Lock | VotingEscrow · `createLock` `0xb52c05fe` | [0x46accea014169e07388be4e829a45c038c8758bf323622a050ed012f223197ae](https://basescan.org/tx/0x46accea014169e07388be4e829a45c038c8758bf323622a050ed012f223197ae) | 公开样本 |
+| 11 | 追加锁仓数量 | Dashboard → Locks → Increase | VotingEscrow · `increaseAmount` `0xb2383e55` | [0xec2e073257961ec15fb9081bbb372b65bfaad7e0b112c731bf9a138cb0fff34a](https://basescan.org/tx/0xec2e073257961ec15fb9081bbb372b65bfaad7e0b112c731bf9a138cb0fff34a) | 公开样本 |
+| 12 | 延长锁仓期限 | Dashboard → Locks → Extend | VotingEscrow · `increaseUnlockTime` `0x9d507b8b` | [0xde70265f6097f01a454a528c7c3665fdb969a3663839c898bbef6c52f810374c](https://basescan.org/tx/0xde70265f6097f01a454a528c7c3665fdb969a3663839c898bbef6c52f810374c) | 公开样本 |
+| 13 | 开启 Auto-Max Lock | Dashboard → Locks → Extend → Auto-Max | VotingEscrow · `lockPermanent` `0xe75b1c2e` | [0x1eb80dec3a68833c95af9d42b8b88b3e3c14f79d34d09c8db4a0e0cca46806a8](https://basescan.org/tx/0x1eb80dec3a68833c95af9d42b8b88b3e3c14f79d34d09c8db4a0e0cca46806a8) | 公开样本 |
+| 14 | 关闭 Auto-Max Lock | 同上，关闭开关 | VotingEscrow · `unlockPermanent` `0x35b0f6bd` | [0x3c910a01e4bbe5474097d43cc6d8661153528724518d41c7c37b24686c57f791](https://basescan.org/tx/0x3c910a01e4bbe5474097d43cc6d8661153528724518d41c7c37b24686c57f791) | 公开样本 |
+| 15 | 合并锁仓 | Dashboard → Locks → Merge | VotingEscrow · `merge` `0xd1c2babb` | [0x0d8350ef5d5ff4f5dd3084cf9c40b9e8aebdf3dc857e966143916bf386e97649](https://basescan.org/tx/0x0d8350ef5d5ff4f5dd3084cf9c40b9e8aebdf3dc857e966143916bf386e97649) | 公开样本 |
+| 16 | 拆分锁仓 | Dashboard → Locks → Split | VotingEscrow · `split` `0x4b19becc` | ⬜ 无样本 | `canSplit(address(0))` 返回 false，仅白名单地址可拆分，普通钱包调用会 revert；Split 事件按 topic 检索无结果 |
+| 17 | 转移 veNFT | Dashboard → Locks → Transfer | VotingEscrow · `transferFrom` `0x23b872dd` | [0xc32559eaeb2f6efcca106d59b72de87b4999b6e7202916eb7f103a6725e45a24](https://basescan.org/tx/0xc32559eaeb2f6efcca106d59b72de87b4999b6e7202916eb7f103a6725e45a24) | 公开样本 |
+| 18 | 到期取回 AERO | Dashboard → Locks → Withdraw（锁仓到期后） | VotingEscrow · `withdraw` `0x2e1a7d4d` | [0x84de63620b63fa194b14bbdbe8a5c9cefabdb1bcd5a396c0de6b5efe3ace3c2b](https://basescan.org/tx/0x84de63620b63fa194b14bbdbe8a5c9cefabdb1bcd5a396c0de6b5efe3ace3c2b) | 公开样本 |
+| 19 | 投票 | Vote 页（2026-10-22 起已关闭） | Voter · `vote` `0x7ac09bf7` | [0x9d487be17183e06833339128253a1f5946537a5566f89c8ebfcb20dea08f7982](https://basescan.org/tx/0x9d487be17183e06833339128253a1f5946537a5566f89c8ebfcb20dea08f7982) | 公开样本 |
+| 20 | 重置投票 | Dashboard → Locks → Reset；Upgrade 流程第 4 步 | Voter · `reset` `0x310bd74b` | [0x175e18764f44960eb524164db77a735607b52b0bbc375be8cf71bc8325e320c5](https://basescan.org/tx/0x175e18764f44960eb524164db77a735607b52b0bbc375be8cf71bc8325e320c5) | 公开样本 |
+| 21 | 领投票奖励（手续费 + 激励） | Dashboard → Voting Rewards → Claim | Voter · `claimBribes` `0x7715ee75`（同实现的 `claimFees` `0x666256aa`） | [0x77e00c3718f6c7394ecdafd67330e9f5ad0393746fb16be134460852a88aefad](https://basescan.org/tx/0x77e00c3718f6c7394ecdafd67330e9f5ad0393746fb16be134460852a88aefad) | 公开样本 |
+| 22 | 领 rebase | Dashboard → Locks → Claim rebase | RewardsDistributor · `claim` `0x379607f5` | [0x15ad1db3b97e9654a19ffb515cd7a40b6a8a19d7d7801f9243d7a6bad444eb7f](https://basescan.org/tx/0x15ad1db3b97e9654a19ffb515cd7a40b6a8a19d7d7801f9243d7a6bad444eb7f) | 公开样本 |
+| 23 | 锁仓存入 Relay | Lock → Relays → Deposit Lock | Voter · `depositManaged` `0xe0c11f9a` | [0x096b76474007b5d95144142b1fff7ca596a956bbd07af6ea6ea8dbc360f9a3ea](https://basescan.org/tx/0x096b76474007b5d95144142b1fff7ca596a956bbd07af6ea6ea8dbc360f9a3ea) | 公开样本 |
+| 24 | 从 Relay 取出锁仓 | Dashboard → Locks → Withdraw from Relay；Upgrade 流程第 3 步 | Voter · `withdrawManaged` `0x370fb5fa` | [0x4afc4a962bcca024fdf1f337d650a8c5eb7eebf57e4623a1585af8b83008a7da](https://basescan.org/tx/0x4afc4a962bcca024fdf1f337d650a8c5eb7eebf57e4623a1585af8b83008a7da) | 公开样本 |
+| 25 | 添加激励（bribe） | Incentivize 页 | BribeVotingReward · `notifyRewardAmount` `0xb66503cf` | [0xfacc01e89977ff6f4836979aff6eeb452b3e7431f0068ec7a8bf11ea806bfc4b](https://basescan.org/tx/0xfacc01e89977ff6f4836979aff6eeb452b3e7431f0068ec7a8bf11ea806bfc4b) | 公开样本 |
+| 26 | 升级 AERO 到 Aero | Upgrade → AERO tokens → Upgrade | AerodromeMigration · `depositLiquid` `0x781ba9b8` | [0x9418363bce803848da21128a0655ddb48cc7eeb62c4412d166020428b765367f](https://basescan.org/tx/0x9418363bce803848da21128a0655ddb48cc7eeb62c4412d166020428b765367f) | 公开样本 |
+| 27 | 升级 veAERO 到 sAERO | Upgrade → Locks → Upgrade | AerodromeMigration · `depositVeNFT` `0xc0ddab40` | [0x71dd23efccdb852ea782bcb383fe138ca93de76a476b30a6e6323f8f2f005580](https://basescan.org/tx/0x71dd23efccdb852ea782bcb383fe138ca93de76a476b30a6e6323f8f2f005580) | 公开样本 |
+| 28 | 升级 LP 仓位 | Upgrade → Deposits → Upgrade | — | ⬜ 无样本 | 迁移合约近 150 笔只有 `depositLiquid` / `depositVeNFT`，测试钱包无 LP 仓位，看不到这一步实际调用哪个合约 |
 
-**上线时间**：2023-08-28，Base 链原生 DEX，无 VC 融资、无代币销售，以 fair launch 形式启动。
+Router 另有 `addLiquidityETH` `0xb7e0d4c0` / `removeLiquidityETH` `0xd7b0e0a5`（池子一侧为 ETH 时使用），以及 `swapExactTokensForTokens` 等直连 swap 方法（多为聚合器调用），解析口径同 #2～#4。Upgrade 页对无仓位钱包直接显示 “Upgrade complete”，页面不展开。
 
-**谱系**：继承 Fantom 上 Solidly fork 谱系，采用 **ve(3,3) 模型**——同属 Velodrome Finance 生态。2026 年 Aerodrome 将与 Velodrome（Optimism Superchain DEX）合并为 **Aero**，运行在 MetaDEX03 上，成为以太坊统一流动性层。
+## 截图
 
-**审计**：Spearbit + ChainSecurity 双重审计，运行在不可变智能合约上，无中心化服务器依赖。
+**前端页面**
 
-**规模**（2026-04 快照）：累计交易量超 $185B，累计手续费超 $270M，已向 token operator 分发约 $450M+ 收入。2025 年 10,000 veAERO 按平均效率投票全年约赚 $2,470 奖励。
+| 本人实测：Swap 成功（#1） | 本人实测：New deposit USDC/AERO（#2） |
+|:-:|:-:|
+| <img src="截图/Aerodrome-swap-20260812.png" width="460"> | <img src="截图/Aerodrome-swap2-20260812.png" width="460"> |
+| **Swap 页** | **Liquidity 池列表（含 Launch pool）** |
+| <img src="截图/Aerodrome-Swap页-20261103.png" width="460"> | <img src="截图/Aerodrome-Liquidity池列表页-20261103.png" width="460"> |
+| **New deposit（Basic Volatile）** | **Launch pool** |
+| <img src="截图/Aerodrome-NewDeposit页-20261103.png" width="460"> | <img src="截图/Aerodrome-LaunchPool页-20261103.png" width="460"> |
+| **Dashboard（Upgrade 横幅 / Liquidity Rewards / Locks / Voting Rewards）** | **Lock 页（Create Lock / Relays）** |
+| <img src="截图/Aerodrome-Dashboard页-20261103.png" width="460"> | <img src="截图/Aerodrome-Lock页-20261103.png" width="460"> |
+| **Create new lock** | **Relay deposit** |
+| <img src="截图/Aerodrome-CreateLock页-20261103.png" width="460"> | <img src="截图/Aerodrome-Relay存入页-20261103.png" width="460"> |
+| **Vote 页（迁移后已关闭）** | **Incentivize 页** |
+| <img src="截图/Aerodrome-Vote页-20261103.png" width="460"> | <img src="截图/Aerodrome-Incentivize页-20261103.png" width="460"> |
 
-**GitHub**：`aerodrome-finance`（合约源码公开）｜ **Twitter**：`aerodromefi`
+**交易详情（公开样本，均为 blockscout）**
 
-## 3. 底层资产
+| 3 加流动性 stable（`0xa6a515…`） | 4 减流动性（`0x7bb949…`） |
+|:-:|:-:|
+| <img src="截图/Aerodrome-加流动性stable交易-20261103.png" width="460"> | <img src="截图/Aerodrome-减流动性交易-20261103.png" width="460"> |
+| **5 质押 LP（`0x54e520…`）** | **6 取消质押（`0xdc8ca7…`）** |
+| <img src="截图/Aerodrome-质押LP交易-20261103.png" width="460"> | <img src="截图/Aerodrome-取消质押交易-20261103.png" width="460"> |
+| **7 领 AERO 排放（`0x5b2510…`）** | **8 领 LP 手续费（`0x878350…`）** |
+| <img src="截图/Aerodrome-领AERO排放交易-20261103.png" width="460"> | <img src="截图/Aerodrome-领LP手续费交易-20261103.png" width="460"> |
+| **9 创建池（`0x688fa9…`）** | **10 创建锁仓（`0x46acce…`）** |
+| <img src="截图/Aerodrome-创建池交易-20261103.png" width="460"> | <img src="截图/Aerodrome-创建锁仓交易-20261103.png" width="460"> |
+| **11 追加锁仓（`0xec2e07…`）** | **12 延长锁仓（`0xde7026…`）** |
+| <img src="截图/Aerodrome-追加锁仓交易-20261103.png" width="460"> | <img src="截图/Aerodrome-延长锁仓交易-20261103.png" width="460"> |
+| **13 开启 Auto-Max（`0x1eb80d…`）** | **14 关闭 Auto-Max（`0x3c910a…`）** |
+| <img src="截图/Aerodrome-开启AutoMax交易-20261103.png" width="460"> | <img src="截图/Aerodrome-关闭AutoMax交易-20261103.png" width="460"> |
+| **15 合并锁仓（`0x0d8350…`）** | **17 转移 veNFT（`0xc32559…`）** |
+| <img src="截图/Aerodrome-合并锁仓交易-20261103.png" width="460"> | <img src="截图/Aerodrome-转移veNFT交易-20261103.png" width="460"> |
+| **18 到期取回（`0x84de63…`）** | **19 投票（`0x9d487b…`）** |
+| <img src="截图/Aerodrome-到期取回交易-20261103.png" width="460"> | <img src="截图/Aerodrome-投票交易-20261103.png" width="460"> |
+| **20 重置投票（`0x175e18…`）** | **21 领投票奖励（`0x77e00c…`）** |
+| <img src="截图/Aerodrome-重置投票交易-20261103.png" width="460"> | <img src="截图/Aerodrome-领投票奖励交易-20261103.png" width="460"> |
+| **22 领 rebase（`0x15ad1d…`）** | **23 存入 Relay（`0x096b76…`）** |
+| <img src="截图/Aerodrome-领Rebase交易-20261103.png" width="460"> | <img src="截图/Aerodrome-存入Relay交易-20261103.png" width="460"> |
+| **24 取出 Relay（`0x4afc4a…`）** | **25 添加激励（`0xfacc01…`）** |
+| <img src="截图/Aerodrome-取出Relay交易-20261103.png" width="460"> | <img src="截图/Aerodrome-添加激励交易-20261103.png" width="460"> |
+| **26 升级 AERO（`0x941836…`）** | **27 升级 veAERO（`0x71dd23…`）** |
+| <img src="截图/Aerodrome-升级AERO交易-20261103.png" width="460"> | <img src="截图/Aerodrome-升级veAERO交易-20261103.png" width="460"> |
 
-DEX 协议底层**不是生息资产**，而是流动性池（LP）里的 token 对。与 RWA 协议（底层是债券/质押收益）根本不同。
+## 开发注意
 
-**池型**（Aerodrome V2）：
-- **stable 池**：同类资产（如 USDC/USDT、WETH/sETH），用稳定曲线（类似 Curve），低滑点、低 fee
-- **volatile 池**：不同类资产（如 WETH/USDC、AERO/WETH），用恒定乘积曲线（x*y=k，类似 Uni V2），更高 fee 补偿 IL 风险
+- **Swap 金额以池级 `Swap` 事件为准，不按 Router 归属**：前端 Swap 走 UniversalRouter（#1），每个池的 `Swap(sender, to, amount0In, amount1In, amount0Out, amount1Out)` 里 `sender` 是 Router 而不是用户，`to` 是下一跳；多跳要逐池解析。Router 最后的聚合事件不带金额。大量 swap 由聚合器直接打到池子，也不要按 Router 白名单过滤。
+- **LP 是 ERC-20（池合约自己 mint / burn），质押后在 Gauge 里**：#5 质押后 LP 会转进 Gauge，用户钱包里的 `balanceOf` 变成 0，所以仓位要加上 `Gauge.balanceOf(user)`。池型看 `pool.stable()`，或看 LP 名称前缀是 `Volatile AMM` 还是 `Stable AMM`。#2、#3 都调用 `addLiquidity`，靠第 3 个参数 `stable` 区分。
+- **veAERO 是 ERC-721，锁仓类操作看 VotingEscrow `Deposit` 事件的 `depositType`（topic3）**：1 = 创建（#10），2 = 追加（#11），3 = 延长（#12）。2026-10-22 起 Aerodrome 并入 Aero：Vote 页已关闭，示例 Gauge 的 `isAlive` 为 false，Liquidity 页排放 APR 全部显示 N/A。Upgrade 交易（#26 / #27）里也会出现 VotingEscrow 的 Deposit、Merge、Transfer 事件，要识别成迁移转出，不能当成普通锁仓。
 
-⚠️ 池型差异影响解析：stable 和 volatile 的曲线公式不同，**swap 事件的 amountIn/amountOut 计算逻辑不能共用一套**。池型判定字段待实测确认（可能在 PoolFactory 事件或合约 ABI 里）。
+## 待确认
 
-**V3 差异**：V3 引入集中流动性（参考 Uniswap V3），LP 可选价格区间做市，资金效率更高但 IL 风险也更大。V3 的 tick/区间概念在 V2 里不存在。
-
-## 4. 收益来源
-
-| 收益腿 | 来源 |
-|--------|------|
-| ⬜ LP 交易手续费 | 待补（fee tier 与池型关系） |
-| ⬜ $AERO 流动性激励 | 待补（gauge 机制、veAERO 投票导向） |
-
-⚠️ DEX 协议的"收益"与 RWA 协议不同——这里是 LP 侧的手续费分成 + 代币激励，不是底层资产生息。**解析口径要和 RWA 协议区分开**。
-
-## 5. 链上机制与凭证代币
-
-### 5.1 合约清单（2026-08-12 实测提取）
-
-| 合约 | 地址 | 说明 |
-|------|------|------|
-| **Swap Router** | `0xcAF22ce31298cf2bf1d152862f80216478ad7c67` | swap 操作入口，selector `0x3593564c` |
-| **Liquidity Router** | `0xcf77a3ba9a5ca399b7c97c74d54e5b1beb874e43` | add/remove liquidity 入口，selector `0x5a47ddc3`，**与 swap Router 分开** |
-| **USDC** | `0x833589fcd6edb6e08f4c7c32d4f71b54bda02913` | Base 链 USDC（6 位小数） |
-| **AERO** | `0x940181a94a35a4569e4529a3cdfb74e38fd98631` | Aerodrome 治理代币 |
-| **WETH** | `0x4200000000000000000000000000000000000006` | Base 链 WETH（系统预部署） |
-| **wBLT** | `0x4e74d4db6c0726ccded4656d0bce448876bb4c7a` | Wrapped BMX Liquidity（多跳中转 token） |
-| **USDC/AERO volatile 池** | `0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d` | LP token = `Volatime AMM - USDC/AERO`（ERC-20） |
-| 测试钱包 | `0x9da44afe5ba28aa42301c626155ea66eb544c33c` | 与 Morpho/Renzo 测试同一钱包 |
-
-### 5.2 池型机制
-
-- **volatile 池**：恒定乘积曲线（x*y=k），如 USDC/AERO。LP token 名为 `Volatile AMM - <token0>/<token1>`
-- **stable 池**：稳定曲线，同类资产（USDC/USDT 等），LP token 名为 `Stable AMM - ...`
-- 池型判定：LP token name 前缀（`Volatile AMM` / `Stable AMM`）或合约 ABI
-
-### 5.3 LP 凭证（已实测确认）
-
-🔴 **V2 LP 凭证是 ERC-20，不是 NFT**：
-- add liquidity 时池合约 `mint from 0x0` 铸造 LP token（标准 ERC-20）
-- 读 LP 仓位用 `balanceOf(user)`
-- 与 V3（Slipstream）的 NFT 凭证根本不同——V3 要按 tokenId 枚举 NFT
-
-### 5.4 swap 路由（已实测确认）
-
-- **多跳 swap**：一笔 tx 经过多个 V2 池逐跳兑换（实测 3 跳：ETH→WETH→wBLT→AERO）
-- 每个池发 `Swap(sender=router, to=下一跳, amount0In/Out, amount1In/Out)` 事件
-- Router 最后发 `UniversalRouterSwap` 聚合事件（不含金额，金额在池级 Swap 事件里）
-- 🔴 **sender 是 Router 不是用户**——解析要读 `to` / recipient 字段
-
-## 6. 数据接入要点
-
-### 6.1 ✅ 实测交易全集
-
-Linnea 在 Basescan / Aerodrome UI 做 swap / add liquidity / remove liquidity 操作后，把每笔的 tx hash + 时间 + 操作 + 链上结果填入下表：
-
-| # | 时间 | 操作（UI 视角） | 交易类型 | tx hash | 链上结果 |
-|:---:|------|---------------|---------|---------|---------|
-| 1 | 2026-08-12 07:39:17 UTC | Swap 0.00001 ETH → AERO（多跳） | 🔴 **V2 多跳 swap（3 跳：ETH→WETH→wBLT→AERO）** | `0x12457f9bf19697daf7888e5b8f8ca64d5e2486792549540cab5af6cbd40c8e75` | Router `0xcAF22ce3...` 收 0.00001 ETH → 包裹 WETH → 经 3 个 V2 池逐跳兑换：<br>① 池 `0x1975dbe5...`：WETH→wBLT<br>② 池 `0x61907c8c...`：wBLT 中转<br>③ 池 `0xa601c462...`：→ AERO<br>用户最终收到 **0.046644740996467356 AERO**（`0x940181a9...`）<br>每个池发 `Swap(sender=router, to=下一跳, amount0In/Out, amount1In/Out)`，Router 最后发 `UniversalRouterSwap` 聚合事件<br>gas 628,930 ｜ status SUCCESS ｜ block 49865505 |
-| 2 | 2026-08-12 07:50:19 UTC | Add Liquidity（做市） | 🔴 **add liquidity（LP 凭证 mint，ERC-20）** | `0x81f502b3061dcc7f661cf68817db7b786ee65532957bb7fe613524d1bd167ad5` | Router `0xcf77a3ba...`（**与 swap Router 不同**）<br>value = 0（无 ETH 原生币，用 ERC-20）<br>3 个 token 合约交互：<br>① AERO (`0x940181a9...`) 转出 240264208423807（~0.00024 AERO）<br>② WETH (`0x833589fc...`) 转出 100（wei）<br>③ 池合约 `0x6cdcb1c4...` 铸给用户 **2811695 LP token**（from `0x0` = mint）<br>🔴 **LP 凭证是 ERC-20（mint from 0x0），不是 NFT** —— 与 V3 的 NFT 凭证根本不同<br>gas 230,816 ｜ status SUCCESS ｜ block 49865836 ｜ 6 条 log |
-
-### 6.2 🔴 给解析同学的规格
-
-DEX 解析的关键坑（首笔实测已确认 + 预判待补）：
-
-| # | 规格 | 说明 |
-|:---:|------|------|
-| **1** | 🔴 **sender 是 Router，不是用户** | 实测 tx 里所有 V2 池的 `Swap` 事件 `sender` 都是 `0xcAF22ce3...`（Router），用户 `0x9DA44Afe...` 只在最终 token Transfer 的 recipient 里出现。**按 sender 归属会全错**，必须读每个 Swap 事件的 `to` 字段逐跳追踪 |
-| **2** | 🔴 **多跳路由要逐跳解析** | 一笔交易经过 3 个 V2 池（`0x1975dbe5...` → `0x61907c8c...` → `0xa601c462...`），中间 token（wBLT）在 Router 手里短暂持有。**只看最终到账 token 会漏掉中间跳**，影响金额归因和路由还原 |
-| **3** | **Router 有聚合事件，别和池级 Swap 混** | Router 最后发 `UniversalRouterSwap(sender, recipient)`，这是聚合层事件，不含金额。**金额在池级 Swap 事件里**，不要用聚合事件算金额 |
-| **4** | ✅ **LP 仓位是 ERC-20 不是 NFT** | 已实测 add liquidity：LP token 由池合约 `mint from 0x0` 铸造（ERC-20 标准），**不是 NFT**。与 V3 的 NFT 凭证根本不同。V2 LP 仓位按 `balanceOf(user)` 读取，V3 要按 tokenId 枚举 NFT |
-| **5** | ⬜ **跨池路由的中间 token 追踪**（待实测） | 多跳已见雏形（WETH→wBLT→AERO），路径编码（amountIn/Out 传递）待系统化 |
-| **6** | ⬜ **$AERO 激励发放的归属**（待实测） | gauge claim 事件与 LP 仓位关联，待补 |
-| **7** | 🔴 **swap Router 和 liquidity Router 不是同一个** | 实测确认：swap 用 `0xcAF22ce3...`（selector `0x3593564c`），add liquidity 用 `0xcf77a3ba...`（selector `0x5a47ddc3`）。**解析侧要按 selector / Router 地址区分操作类型** |
-
-### 6.3 六维度自评
-
-| 维度 | 可行性 | 取数方式 | 备注 |
-|------|:---:|---------|------|
-| 实时解析 | 🟡 | LP 仓位 `balanceOf(user)`（ERC-20）；swap 余额读 token 合约 | LP 凭证已确认 ERC-20；V3 的 NFT 待测 |
-| 交易历史解析 | 🟡 | swap（池级 Swap 事件）+ add liquidity（mint from 0x0）已实测；remove liquidity / claim 待测 | sender 是 Router 不是用户 |
-| 池子自发现 | 🟡 | PoolFactory 事件枚举；LP token name 前缀判定池型（Volatile/Stable AMM） | 已确认 USDC/AERO 池地址 |
-| 成交量 / TVL | 🟡 | swap 事件 amountIn/amountOut 累加；池 reserve0/reserve1 算 TVL | 已实测 3 跳 swap |
-| 费率历史 | 🟡 | swap 事件 amountIn/amountOut 反推 fee | volatile 池 fee 待确认 |
-| PNL | ⬜ | LP 侧：手续费收益 − IL | 需 remove liquidity 实测验证 IL |
-
-### 6.4 需向项目方 / 文档索取
-
-1. Router 合约的 swap 事件 ABI（含路由中间步骤的字段）
-2. PoolFactory 事件结构（如何枚举所有 pool）
-3. Gauge 合约的激励发放机制与 claim 事件
-4. stable / volatile 池型的判定字段
-
-## 7. 风险
-
-DEX 协议的核心风险（与 RWA 协议的风险维度完全不同）：
-
-| 风险类型 | 说明 |
-|---------|------|
-| 🔴 **无常损失（Impermanent Loss, IL）** | LP 提供流动性后，若 token 对价格发生偏离，LP 的持仓价值会低于"不动"的情况。volatile 池 IL 风险远高于 stable 池。**V3 集中流动性会放大 IL**（资金集中在窄区间，价格偏离时损失更大） |
-| 🔴 **$AERO 代币通胀** | 年化通胀约 10.9%（2026-04 快照），每周铸币分发给 LP。**LP 的 AERO 奖励是通胀币**，实际收益要扣掉 AERO 本身的贬值 |
-| ⚠️ **路由合约升级** | Aerodrome 的 Router 合约可能升级（如从 V2 Router 到 V3 Router），解析侧要跟踪 Router 地址变更 |
-| ⚠️ **veAERO 治理风险** | veAERO 锁仓后无法提前取出（类似 veCRV），锁仓期间 AERO 价格下跌会造成实际损失 |
-| ⚠️ **智能合约风险** | 虽经 Spearbit + ChainSecurity 审计，但 DEX 合约是高价值攻击目标（历史上发生过类似协议被黑） |
-
-**实测中观察到的具体风险**：暂无（仅 2 笔实测，未观察到异常）。后续 remove liquidity 实测时重点关注——remove 时收回的 token 数量是否与 add 时投入一致（IL 的直接体现）。
-
-## 8. 合规与准入
-
-DEX 协议通常无 KYC、非托管：
-
-| 维度 | 说明 |
-|------|------|
-| KYC | ❌ 无 KYC 环节，任何人可直接通过合约交互 |
-| 托管 | 非托管，资金在用户钱包和合约之间流转 |
-| 地域限制 | 前端可能有地域拦截（需实测确认），但合约层无限制 |
-| 合规姿态 | Aerodrome 强调"zero-leak economy"和去中心化，未做合规护栏 |
-| 访问入口 | Swap: https://aerodrome.finance/swap ｜ Liquidity: https://aerodrome.finance/liquidity ｜ Dashboard: https://aerodrome.finance/dash |
-
-⚠️ 前端拦截未实测——如果你在某些地区访问前端被拦，说明有地域限制。合约层（直接调 Router）应该不受限。
-
-## 9. 待确认清单
-
-| # | 问题 | 问谁 / 怎么查 |
-|---|------|------------|
-| 1 | ✅ **swap 交易里如何区分用户 vs router 的 sender** —— 已实测：sender 是 Router，用户在 `to` / recipient 字段 | Basescan 解码 swap 事件 |
-| 2 | 🔴 **多跳路由的中间 token 如何在事件里逐跳追踪** —— 已见 3 跳雏形（WETH→wBLT→AERO），路径编码待系统化 | 实测更多多跳 swap 后归纳 |
-| 3 | 🔴 **Router 的 `UniversalRouterSwap` 聚合事件 vs 池级 `Swap` 事件的口径区分** —— 聚合事件不含金额，金额在池级事件 | 已实测确认，待写入解析规格文档 |
-| 4 | ✅ **LP 仓位是 ERC-20 还是 NFT** —— 已实测：是 ERC-20（mint from 0x0），不是 NFT | 实测 add liquidity tx `0x81f502b3...`，池合约 `0x6cdcb1c4...` mint 2811695 LP token 给用户 |
-| 5 | 🔴 **多跳路由的中间 token 如何在事件里逐跳追踪** —— 已见 3 跳雏形（WETH→wBLT→AERO），路径编码待系统化 | 实测更多多跳 swap 后归纳 |
-| 6 | V2 和 V3 是否共用同一个 Router | 读合约 / 文档（已实测 V2 Router `0xcAF22ce3...`，V3 待测） |
-| 7 | 协议背景 / 风险 / 合规四章 | 未做，需补 |
-
-## 10. 参考链接
-
-- 产品页：https://aerodrome.finance
-- Swap：https://aerodrome.finance/swap
-- Liquidity（含 Slipstream/V3）：https://aerodrome.finance/liquidity
-- Vote：https://aerodrome.finance/vote ｜ Lock：https://aerodrome.finance/locks ｜ Incentivize：https://aerodrome.finance/incentivize
-- Dashboard：https://aerodrome.finance/dash ｜ Launch pool：https://aerodrome.finance/launch
-- 文档：https://aerodrome.finance/docs
-- GitHub：https://github.com/aerodrome-finance
-- Basescan：
-  - Swap Router：https://basescan.org/address/0xcAF22ce31298cf2bf1d152862f80216478ad7c67
-  - Liquidity Router：https://basescan.org/address/0xcf77a3ba9a5ca399b7c97c74d54e5b1beb874e43
-  - USDC/AERO 池：https://basescan.org/address/0x6cdcb1c4a4d1c3c6d054b27ac5b77e89eafb971d
-  - 测试钱包：https://basescan.org/address/0x9da44afe5ba28aa42301c626155ea66eb544c33c
-
-## 11. 实测截图
-
-⬜ **未落盘**。Linnea 实测后按 `references/screenshot-naming.md` 规范命名（`Aerodrome-<操作>-<YYYYMMDD>.png`），存入 `04-DEX调研/截图/`。
-
-| 文件 | 内容 | 状态 |
-|------|------|------|
-| ![Aerodrome swap](截图/Aerodrome-swap-20260812.png) | **Basescan tx 详情页**：tx `0x12457f9b...c8e75` ｜ From `0x9DA44Afe...c33c` → To（Router）`0xcAF22ce3...ad7c67` ｜ Value **0.00001 ETH** ｜ gas 628,930 ｜ status **Success** ｜ block 49865505 ｜ 18 条 log（3 个 V2 池级 Swap + 多个 Transfer + Router 的 UniversalRouterSwap 聚合事件） | ✅ 已落盘 |
-| ![Aerodrome add liquidity](截图/Aerodrome-swap2-20260812.png) | **Basescan tx 详情页**：tx `0x81f502b3...67ad5` ｜ From `0x9DA44Afe...c33c` → To（Liquidity Router）`0xcf77a3ba...4e43` ｜ Value **0**（无 ETH，用 ERC-20）｜ gas 230,816 ｜ status **Success** ｜ block 49865836 ｜ 6 条 log（AERO + WETH 转出 + LP token mint from 0x0）｜ 🔴 **LP 凭证为 ERC-20，不是 NFT** | ✅ 已落盘 |
+- 拆分锁仓（#16）要白名单，普通用户实际用不了，是否还需要覆盖
+- 升级 LP 仓位（#28）的链上形态：需要一个持有 LP 仓位的钱包实测一笔
+- Upgrade 类交易（#26～#28）是否纳入 Aerodrome V2 的解析范围；Launch pool 前端是直接调 `PoolFactory.createPool`（#9 样本就是直调），还是在首次 `addLiquidity` 时由 Router 自动建池
