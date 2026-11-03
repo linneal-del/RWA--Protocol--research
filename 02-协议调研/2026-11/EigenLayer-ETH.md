@@ -2,7 +2,7 @@
 
 > **链**：Ethereum ｜ 浏览器 https://etherscan.io （交易截图为 https://eth.blockscout.com ）
 > **调研日期**：2026-11-03
-> 本协议无本人实测交易，全部为公开样本；公开样本均为链上公开交易，非本人钱包，均为 EOA 直接调用，已逐条确认成功（receipt status=0x1）并核对方法选择器
+> 本人实测 2 类（测试钱包 `0x9DA44Afe5bA28aA42301C626155eA66eb544c33c`，2026-11-03 连钱包 Restake 0.0019 stETH 并委托 P2P.org），其余为公开样本；公开样本均为链上公开交易，非本人钱包，均为 EOA 直接调用；全部已确认成功（receipt status=0x1）并核对方法选择器
 
 ## 合约
 
@@ -22,13 +22,13 @@
 
 ## 交易类型覆盖
 
-14 类：13 类有公开样本，1 类 ⬜。
+14 类：13 类有样本（本人实测 2 类，公开样本 11 类），1 类 ⬜。
 
 | # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash | 来源 |
 |---|---|---|---|---|---|
-| 1 | Restake 存入 LST / ERC-20 | Token → 资产详情 → Restake；Operator 详情 → Restake | StrategyManager · `depositIntoStrategy(address strategy, address token, uint256 amount)`（`0xe7a050aa`） | [0x0920d248059c4a711131e3287750666d620c898d7c5d58e5e180ff8be634c60d](https://etherscan.io/tx/0x0920d248059c4a711131e3287750666d620c898d7c5d58e5e180ff8be634c60d) | 公开样本（stETH） |
+| 1 | Restake 存入 LST / ERC-20 | Dashboard → Restake → 选资产 → Deposit；Token → 资产详情 → Restake；Operator 详情 → Restake | StrategyManager · `depositIntoStrategy(address strategy, address token, uint256 amount)`（`0xe7a050aa`）；本例 stETH Strategy `0x93c4b944D05dfe6df7645A86cd2206016c51564D`，前置一笔 stETH `approve` 给 StrategyManager（[0x0c6c4a978cec9500ada305c28b712719e368546e50ec13013e70a678aca594d4](https://etherscan.io/tx/0x0c6c4a978cec9500ada305c28b712719e368546e50ec13013e70a678aca594d4)） | [0x6ed2cb5c1d53d93c8a76038ca61b5486ebc38448718b909c4ded66c46be86778](https://etherscan.io/tx/0x6ed2cb5c1d53d93c8a76038ca61b5486ebc38448718b909c4ded66c46be86778) | 本人实测 |
 | 2 | Restake 存入 EIGEN | Token → EIGEN → Restake | StrategyManager · `depositIntoStrategy`（strategy = EigenStrategy） | [0xef6987062e87888f37055af418eb68e3949daa640ca59343d851497a5b345c27](https://etherscan.io/tx/0xef6987062e87888f37055af418eb68e3949daa640ca59343d851497a5b345c27) | 公开样本 |
-| 3 | Delegate 委托给 Operator | Operator 详情 → Delegate；首次 Restake 时弹出选择 Operator | DelegationManager · `delegateTo(address operator, (bytes,uint256) approverSignatureAndExpiry, bytes32 approverSalt)`（`0xeea9064b`） | [0x08fc4ddc7388d9c26d4d511cb446ca20ba854061a2ec2af7ed26c711f930ea32](https://etherscan.io/tx/0x08fc4ddc7388d9c26d4d511cb446ca20ba854061a2ec2af7ed26c711f930ea32) | 公开样本 |
+| 3 | Delegate 委托给 Operator | 首次 Restake 时第 2 步「Delegate to an operator」选 Operator → Submit；Operator 详情 → Delegate | DelegationManager · `delegateTo(address operator, (bytes,uint256) approverSignatureAndExpiry, bytes32 approverSalt)`（`0xeea9064b`）；本例 operator = P2P.org [no slashing AVS] `0xDbEd88D83176316fc46797B43aDeE927Dc2ff2F5` | [0x2860025a84492fad8f35aecba504ebc380726d192ace426c4c687aae06ab603e](https://etherscan.io/tx/0x2860025a84492fad8f35aecba504ebc380726d192ace426c4c687aae06ab603e) | 本人实测 |
 | 4 | Undelegate 解除委托（自动排队取出全部份额） | Dashboard → Undelegate；Operator 详情 → Undelegate | DelegationManager · `undelegate(address staker)`（`0xda8be864`） | [0xb04ccf2b5ffb3103f61e8db89409195526b6ea3384e2acf262341a33b4a94e0d](https://etherscan.io/tx/0xb04ccf2b5ffb3103f61e8db89409195526b6ea3384e2acf262341a33b4a94e0d) | 公开样本 |
 | 5 | Redelegate 换绑 Operator | Operator 详情 → Redelegate（仅「部分委托」状态的用户可见） | DelegationManager · `redelegate(address newOperator, (bytes,uint256), bytes32)`（`0xa33a3433`） | ⬜ 无样本 | 回溯约 100 万个区块（约 4.6 个月），没找到 EOA 直接调用的成功交易 |
 | 6 | Unstake 排队取款（LST / ERC-20 / EIGEN） | 资产详情 → Unstake | DelegationManager · `queueWithdrawals((address[] strategies, uint256[] depositShares, address __deprecated_withdrawer)[])`（`0x0dd8dd02`） | [0x980c003da38c6fda939553099041f61edfb83b5fd03aed37702af20a70c3ce8e](https://etherscan.io/tx/0x980c003da38c6fda939553099041f61edfb83b5fd03aed37702af20a70c3ce8e) | 公开样本（swETH） |
@@ -41,11 +41,11 @@
 | 13 | Checkpoint 第 1 步：发起 | Token → ETH → Checkpoint | EigenPod · `startCheckpoint(bool revertIfNoBalance)`（`0x88676cad`） | [0x38d301614ede675de2f732945145c2f7bbe824a5d2169ab60bb91933801f5140](https://etherscan.io/tx/0x38d301614ede675de2f732945145c2f7bbe824a5d2169ab60bb91933801f5140) | 公开样本 |
 | 14 | Checkpoint 第 2 步：提交证明 | Checkpoint 流程内自动弹出第 2 笔签名 | EigenPod · `verifyCheckpointProofs((bytes32,bytes), (bytes32,bytes32,bytes)[])`（`0xf074ba62`） | [0xceaaa14ff6a2f46d5e33cd9d31e7619247ec7eceecbec745b56f93214da76d3a](https://etherscan.io/tx/0xceaaa14ff6a2f46d5e33cd9d31e7619247ec7eceecbec745b56f93214da76d3a) | 公开样本（与 #13 是同一 Pod、同一次 Checkpoint） |
 
-页面有入口但**不产生 EigenLayer 交易**：AVS 页、Apps 页（展示与外链）、顶部 Check Status 页、Operator / Token 页的排序和筛选。首次 Restake 前的 ERC-20 `approve` 是代币合约上的标准授权，不计入。Native Restaking 把验证者提款凭证指向 EigenPod 是信标链存款 / Launchpad 操作，不在本前端发起。
+页面有入口但**不产生 EigenLayer 交易**：AVS 页、Apps 页（展示与外链）、顶部 Check Status 页、Operator / Token 页的排序和筛选。首次 Restake 前的 ERC-20 `approve` 是代币合约上的标准授权，不单列（hash 见 #1）。Dashboard 的「Manage Balances」是汇总弹窗：Withdrawable → Withdraw 即 #8，按资产 Unstake 即 #6，不产生新的交易类型（2026-11-03 连钱包确认）。Native Restaking 把验证者提款凭证指向 EigenPod 是信标链存款 / Launchpad 操作，不在本前端发起。
 
 ## 截图
 
-**前端页面（均未连接钱包）**
+**前端页面（未连钱包）**
 
 | Dashboard（Undelegate / Claim Rewards 入口） | Claim Rewards 弹窗 |
 |:-:|:-:|
@@ -59,13 +59,23 @@
 | **AVS（展示，无交易）** |  |
 | <img src="截图/EigenLayer-ETH-AVS页-20261103.png" width="460"> |  |
 
+**本人实测前端（连钱包，2026-11-03）**
+
+| Restake → 选资产 | Deposit 面板（stETH 0.0019） |
+|:-:|:-:|
+| <img src="截图/EigenLayer-ETH-Restake选资产连钱包-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-Deposit面板连钱包-20261103.png" width="460"> |
+| **Delegate to an operator（选 P2P.org）** | **Deposit & delegate 进度窗（Approve → Deposit → Delegate）** |
+| <img src="截图/EigenLayer-ETH-Delegate选Operator连钱包-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-DepositDelegate进度窗-20261103.png" width="460"> |
+| **Dashboard（有仓位后 Undelegate / Manage Balances 可点）** | **Manage Balances 弹窗（Withdraw / Unstake）** |
+| <img src="截图/EigenLayer-ETH-Dashboard连钱包有仓位-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-ManageBalances弹窗-20261103.png" width="460"> |
+
 **交易详情（每类一张，均为 Blockscout）**
 
-| 1 Restake LST（`0x0920d2…`） | 2 Restake EIGEN（`0xef6987…`） |
+| 1 Restake stETH（本人，`0x6ed2cb…`） | 2 Restake EIGEN（`0xef6987…`） |
 |:-:|:-:|
-| <img src="截图/EigenLayer-ETH-RestakeLST交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-RestakeEIGEN交易-20261103.png" width="460"> |
-| **3 Delegate（`0x08fc4d…`）** | **4 Undelegate（`0xb04ccf…`）** |
-| <img src="截图/EigenLayer-ETH-Delegate交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-Undelegate交易-20261103.png" width="460"> |
+| <img src="截图/EigenLayer-ETH-RestakeStETH本人交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-RestakeEIGEN交易-20261103.png" width="460"> |
+| **3 Delegate（本人，`0x286002…`）** | **4 Undelegate（`0xb04ccf…`）** |
+| <img src="截图/EigenLayer-ETH-Delegate本人交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-Undelegate交易-20261103.png" width="460"> |
 | **6 Unstake 排队取款（`0x980c00…`）** | **7 Native Queue Withdrawal（`0x198334…`）** |
 | <img src="截图/EigenLayer-ETH-Unstake排队取款交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-NativeQueueWithdrawal交易-20261103.png" width="460"> |
 | **8 Withdraw 完成取款（`0x181d53…`）** | **9 Redeposit（`0x99a027…`）** |
@@ -74,8 +84,8 @@
 | <img src="截图/EigenLayer-ETH-ClaimRewards交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-CreateEigenPod交易-20261103.png" width="460"> |
 | **12 Restake 验证者（`0x166dff…`）** | **13 Checkpoint 发起（`0x38d301…`）** |
 | <img src="截图/EigenLayer-ETH-RestakeValidator交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-StartCheckpoint交易-20261103.png" width="460"> |
-| **14 Checkpoint 提交证明（`0xceaaa1…`）** |  |
-| <img src="截图/EigenLayer-ETH-VerifyCheckpoint交易-20261103.png" width="460"> |  |
+| **14 Checkpoint 提交证明（`0xceaaa1…`）** | **1 前置 approve stETH（本人，`0x0c6c4a…`）** |
+| <img src="截图/EigenLayer-ETH-VerifyCheckpoint交易-20261103.png" width="460"> | <img src="截图/EigenLayer-ETH-授权stETH本人交易-20261103.png" width="460"> |
 
 ## 开发注意
 
@@ -86,5 +96,4 @@
 ## 待确认
 
 - Redelegate（#5）近 4.6 个月没有 EOA 直接调用的样本，官方文档也建议不要用这个按钮，是否纳入解析范围待定
-- Dashboard 的「Manage Balances」按钮未连钱包时不可点，连上钱包后具体调用哪个方法未确认
 - 公开样本均为 EOA 直接调用核心合约，链上无法区分是不是从官方前端发起的
