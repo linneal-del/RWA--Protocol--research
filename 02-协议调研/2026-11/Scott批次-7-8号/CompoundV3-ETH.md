@@ -1,7 +1,7 @@
 # Compound V3（Comet）— Ethereum
 
 > **链**：Ethereum 主网 ｜ 浏览器 https://etherscan.io （交易截图为 https://eth.blockscout.com ）
-> **调研日期**：2026-11-03 ｜ 本协议无本人实测交易，全部为公开样本；公开样本均为链上公开交易，非本人钱包（发起方均为 EOA），已逐条用 RPC 确认 status=0x1 并核对方法选择器
+> **调研日期**：2026-11-03 ｜ 本人实测 3 类（测试钱包 `0x9DA44Afe5bA28aA42301C626155eA66eb544c33c`，2026-11-03 连钱包操作），其余为公开样本；公开样本均为链上公开交易，非本人钱包（发起方均为 EOA）；全部已用 RPC 确认 status=0x1 并核对方法选择器
 
 ## 合约
 
@@ -24,24 +24,24 @@
 
 ## 交易类型覆盖
 
-17 类：16 类有公开样本，1 类 ⬜。
+17 类：16 类有样本（本人实测 3 类，公开样本 13 类）；#14 前端已无入口，页面没有该类型。
 
 | # | 交易类型 | 前端入口 | 合约 · 方法 | tx hash | 来源 |
 |---|---|---|---|---|---|
-| 1 | 授权资产（Enable） | Dashboard → 资产首次 Supply / Repay 前的 Enable | 资产 ERC-20 · `approve(address,uint256)`（`0x095ea7b3`，spender = Comet） | [0x9c346b94516b294ce53d9c12ec77440e85495795361fcc10f848d55a20fdf7d7](https://etherscan.io/tx/0x9c346b94516b294ce53d9c12ec77440e85495795361fcc10f848d55a20fdf7d7) | 公开样本 |
+| 1 | 授权资产（Approve） | Supply 面板 → Approve & Add（资产首次存入时） | 资产 ERC-20 · `approve(address,uint256)`（`0x095ea7b3`；直存 spender = Comet，stETH / 多动作 spender = Bulker；本例为 stETH 授权 MainnetBulker） | [0xcbe0cda72d306e963e7e09946d9e4eba121c16e9a0ad765b212315cf7a4364ec](https://etherscan.io/tx/0xcbe0cda72d306e963e7e09946d9e4eba121c16e9a0ad765b212315cf7a4364ec) | 本人实测 |
 | 2 | Supply base（存款生息） | Dashboard → Supply USDC | Comet · `supply(address,uint256)`（`0xf2b9fdb8`，asset = base；事件 `Supply` + `Transfer` 从 0x0 铸出） | [0xde532379230bb5db9c29f4d7dcd32ea0dd35eaccfd36a7ec6ca9d26475f51fa3](https://etherscan.io/tx/0xde532379230bb5db9c29f4d7dcd32ea0dd35eaccfd36a7ec6ca9d26475f51fa3) | 公开样本 |
 | 3 | Supply collateral（存抵押） | Dashboard → 抵押资产行「+」 | Comet · `supply(address,uint256)`（asset = 抵押品；事件 `SupplyCollateral`） | [0xf06c69f6f773a1c3c4fffc9d133b41c75055644ac38fe54871a7d67869703b66](https://etherscan.io/tx/0xf06c69f6f773a1c3c4fffc9d133b41c75055644ac38fe54871a7d67869703b66) | 公开样本 |
 | 4 | Repay（还款） | Dashboard → Repay（需连钱包，有借款时出现） | Comet · `supply(address,uint256)`（asset = base；事件只有 `Supply`，无 `Transfer` 铸出） | [0x761350a05ed4ad949150b2476ab793aa511a0750c1f1239aa954a172f1ce43cf](https://etherscan.io/tx/0x761350a05ed4ad949150b2476ab793aa511a0750c1f1239aa954a172f1ce43cf) | 公开样本 |
 | 5 | Withdraw base（取存款） | Dashboard → Withdraw（需连钱包，有存款时出现） | Comet · `withdraw(address,uint256)`（`0xf3fef3a3`，asset = base；事件 `Withdraw` + `Transfer` 销毁到 0x0） | [0x1bf13abd2b3985ef22075a1459598ee8f2f534a53dea7ed80b58cb0815685d52](https://etherscan.io/tx/0x1bf13abd2b3985ef22075a1459598ee8f2f534a53dea7ed80b58cb0815685d52) | 公开样本 |
 | 6 | Borrow（借款） | Dashboard → Borrow USDC | Comet · `withdraw(address,uint256)`（asset = base；事件只有 `Withdraw`，无 `Transfer` 销毁） | [0x51bad788a3db0585198527a786f2cbb9ebcb5f3ea6ef1ce0bbf116543975b794](https://etherscan.io/tx/0x51bad788a3db0585198527a786f2cbb9ebcb5f3ea6ef1ce0bbf116543975b794) | 公开样本 |
 | 7 | Withdraw collateral（取抵押） | Dashboard → 抵押资产行「−」 | Comet · `withdraw(address,uint256)`（asset = 抵押品；事件 `WithdrawCollateral`） | [0x08248fbb6a95d7831fb34b82ea724af2e9766c9f19c5c44fac7c366e69ff6d72](https://etherscan.io/tx/0x08248fbb6a95d7831fb34b82ea724af2e9766c9f19c5c44fac7c366e69ff6d72) | 公开样本 |
-| 8 | 授权 Bulker（Enable Operator） | Extensions → Advanced Transactions → Enable；首次用 ETH / stETH 或多动作时前端也会先弹出 | Comet · `allow(address,bool)`（`0x110496e5`，manager = Bulker；事件 `Approval`） | [0xd6ee8d3910326e336ec7fe5a286ff9c37a75cf6a82e9f33f254b6c0ddc9c44a4](https://etherscan.io/tx/0xd6ee8d3910326e336ec7fe5a286ff9c37a75cf6a82e9f33f254b6c0ddc9c44a4) | 公开样本 |
+| 8 | 授权 Bulker（Enable Compound III） | 首次用 ETH / stETH 或多动作提交时弹出「Enable Compound III」→ Submit Transaction；也可在 Extensions → Advanced Transactions → Enable | Comet（cUSDCv3）· `allow(address,bool)`（`0x110496e5`，manager = Bulker；事件 `Approval`） | [0x070fc9e0062dfb6f87b4c4127c7aa4e44bddd8d4b872031e1c252b3f4aa1a10f](https://etherscan.io/tx/0x070fc9e0062dfb6f87b4c4127c7aa4e44bddd8d4b872031e1c252b3f4aa1a10f) | 本人实测 |
 | 9 | 存 ETH 作抵押（经 Bulker） | USDC 等市场 → Ether 行「+」 | Bulker · `invoke(bytes32[],bytes[])`（`0x555029a6`）= `ACTION_SUPPLY_NATIVE_TOKEN`；cUSDCv3 发 `SupplyCollateral`（WETH） | [0xa3bae020b21b15d58af0dd025a4d30c11e5b2d149e8406c75210ede82d1979fc](https://etherscan.io/tx/0xa3bae020b21b15d58af0dd025a4d30c11e5b2d149e8406c75210ede82d1979fc) | 公开样本 |
 | 10 | 存 ETH 为 base（ETH 市场存款 / 还款，经 Bulker） | ETH 市场 → Supply ETH / Repay | Bulker · `invoke` = `ACTION_SUPPLY_NATIVE_TOKEN`；cWETHv3 发 `Supply` + `Transfer` 铸出 | [0xf7f6c37a25f64b6a58e8119f7c3b88ddcd69e0af9ddd62ba1d37c0ad9193c720](https://etherscan.io/tx/0xf7f6c37a25f64b6a58e8119f7c3b88ddcd69e0af9ddd62ba1d37c0ad9193c720) | 公开样本 |
 | 11 | 取 ETH 抵押（经 Bulker） | USDC 等市场 → Ether 行「−」 | Bulker · `invoke` = `ACTION_WITHDRAW_NATIVE_TOKEN`；cUSDCv3 发 `WithdrawCollateral` | [0x495ab2e7f68ec1e952415318503215363f0f397ee95195d884dbb54dbba18200](https://etherscan.io/tx/0x495ab2e7f68ec1e952415318503215363f0f397ee95195d884dbb54dbba18200) | 公开样本 |
 | 12 | 取 ETH base（ETH 市场取款 / 借 ETH，经 Bulker） | ETH 市场 → Withdraw / Borrow ETH | Bulker · `invoke` = `ACTION_WITHDRAW_NATIVE_TOKEN`；cWETHv3 发 `Withdraw` + `Transfer` 销毁（借款时无销毁） | [0x2875f5fc37646c2fcee516449646153ef932e7389c13727ddaa174a2f475927a](https://etherscan.io/tx/0x2875f5fc37646c2fcee516449646153ef932e7389c13727ddaa174a2f475927a) | 公开样本 |
-| 13 | 存 stETH（自动包成 wstETH 作抵押，经 Bulker） | 市场 → wstETH 行「+」→ 选 stETH（需连钱包） | Bulker · `invoke` = `ACTION_SUPPLY_STETH`；cUSDCv3 发 `SupplyCollateral`（wstETH） | [0x6ebc1ab2fa3250641f7206d1cace3bd15d9984326c73455e5a4f4793a810e29b](https://etherscan.io/tx/0x6ebc1ab2fa3250641f7206d1cace3bd15d9984326c73455e5a4f4793a810e29b) | 公开样本 |
-| 14 | 取回为 stETH（经 Bulker） | 市场 → wstETH 行「−」→ 选 stETH（需连钱包） | Bulker · `invoke` = `ACTION_WITHDRAW_STETH` | ⬜ 无样本 | MainnetBulker 2025-01 至今约 3.9 万笔 `invoke` 中无此动作 |
+| 13 | 存 stETH（Wrap & Supply，自动包成 wstETH 作抵押，经 Bulker） | Dashboard 底部「Other Assets」→ Lido Staked ETH → Supply（stETH 是单独一行，不在 wstETH 行里） | MainnetBulker · `invoke` = `ACTION_SUPPLY_STETH`；cUSDCv3 发 `SupplyCollateral`（wstETH，本例 0.002 stETH → 0.0016 wstETH） | [0xd4bd8cfbfa88f9709fddc3b6cdba3aba0fc03932ffd0fe2411928d030e93a851](https://etherscan.io/tx/0xd4bd8cfbfa88f9709fddc3b6cdba3aba0fc03932ffd0fe2411928d030e93a851) | 本人实测 |
+| 14 | 取回为 stETH（经 Bulker） | 页面没有该类型：wstETH 行「−」只有 Withdraw wstETH，「Other Assets」里 stETH 只有 Supply（2026-11-03 连钱包确认） | Bulker · `invoke` = `ACTION_WITHDRAW_STETH`（合约仍支持） | 页面没有，无法提供 hash | MainnetBulker 2025-01 至今约 3.9 万笔 `invoke` 中也无此动作 |
 | 15 | 多动作打包（存抵押 + 借款） | Dashboard 连续加入多个操作后一次提交 | Bulker · `invoke` = `ACTION_SUPPLY_ASSET` + `ACTION_WITHDRAW_ASSET`；cUSDCv3 发 `SupplyCollateral` + `Withdraw` | [0xd920f518762dd29bdb3f3d69c87f512e75e9a80412382758fa47b8468ffecdcf](https://etherscan.io/tx/0xd920f518762dd29bdb3f3d69c87f512e75e9a80412382758fa47b8468ffecdcf) | 公开样本 |
 | 16 | 领 COMP（单市场） | 顶部奖励下拉 → Claim（需连钱包） | CometRewards · `claim(address comet,address src,bool shouldAccrue)`（`0xb7034f7e`；事件 `RewardClaimed`） | [0x9f4925af078e1fb68f4eb9b106b1b138a3038edfabc4ba1bb772d19ae70272e5](https://etherscan.io/tx/0x9f4925af078e1fb68f4eb9b106b1b138a3038edfabc4ba1bb772d19ae70272e5) | 公开样本 |
 | 17 | 领 COMP（多市场一次领，经 Bulker） | 顶部奖励下拉 → 多个市场一起 Claim | Bulker · `invoke` = `ACTION_CLAIM_REWARD` ×N（本例 cUSDCv3 + cUSDTv3）；CometRewards 发 `RewardClaimed` ×2 | [0xe569bc7170ef7807cd0f61fb60948a4e8376726f06089c77e5b4e19e9e2de737](https://etherscan.io/tx/0xe569bc7170ef7807cd0f61fb60948a4e8376726f06089c77e5b4e19e9e2de737) | 公开样本 |
@@ -62,23 +62,33 @@
 | **Rewards（跳 Merkl 领取）** | **Vote（治理）** |
 | <img src="截图/CompoundV3-ETH-Rewards页-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Vote页-20261103.png" width="460"> |
 
+**本人实测前端（连钱包，2026-11-03）**
+
+| Other Assets 区（stETH 单独一行，只有 Supply） | Supply stETH 面板（Approve & Add） |
+|:-:|:-:|
+| <img src="截图/CompoundV3-ETH-OtherAssets区stETH连钱包-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-SupplyStETH面板连钱包-20261103.png" width="460"> |
+| **Enable Compound III（授权 Bulker）** | **Wrap & Supply stETH 钱包确认** |
+| <img src="截图/CompoundV3-ETH-EnableCompoundIII弹窗-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-WrapSupplyStETH确认-20261103.png" width="460"> |
+| **Withdraw wstETH 面板（无 stETH 选项）** | **Rewards 页连钱包（引导去 Merkl）** |
+| <img src="截图/CompoundV3-ETH-WithdrawWstETH面板无stETH选项-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Rewards页连钱包Merkl-20261103.png" width="460"> |
+
 **交易详情（每类一张，均为 Blockscout）**
 
-| 1 授权资产（`0x9c346b…`） | 2 Supply base（`0xde5323…`） |
+| 1 授权资产（本人，`0xcbe0cd…`） | 2 Supply base（`0xde5323…`） |
 |:-:|:-:|
-| <img src="截图/CompoundV3-ETH-Approve授权资产交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-SupplyBase存款交易-20261103.png" width="460"> |
+| <img src="截图/CompoundV3-ETH-授权stETH本人交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-SupplyBase存款交易-20261103.png" width="460"> |
 | **3 Supply collateral（`0xf06c69…`）** | **4 Repay（`0x761350…`）** |
 | <img src="截图/CompoundV3-ETH-SupplyCollateral存抵押交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Repay还款交易-20261103.png" width="460"> |
 | **5 Withdraw base（`0x1bf13a…`）** | **6 Borrow（`0x51bad7…`）** |
 | <img src="截图/CompoundV3-ETH-WithdrawBase取款交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Borrow借款交易-20261103.png" width="460"> |
-| **7 Withdraw collateral（`0x08248f…`）** | **8 授权 Bulker（`0xd6ee8d…`）** |
-| <img src="截图/CompoundV3-ETH-WithdrawCollateral取抵押交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Allow授权Bulker交易-20261103.png" width="460"> |
+| **7 Withdraw collateral（`0x08248f…`）** | **8 授权 Bulker（本人，`0x070fc9…`）** |
+| <img src="截图/CompoundV3-ETH-WithdrawCollateral取抵押交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-授权Bulker本人交易-20261103.png" width="460"> |
 | **9 存 ETH 抵押（`0xa3bae0…`）** | **10 存 ETH 为 base（`0xf7f6c3…`）** |
 | <img src="截图/CompoundV3-ETH-Bulker存ETH抵押交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Bulker存ETH为Base交易-20261103.png" width="460"> |
 | **11 取 ETH 抵押（`0x495ab2…`）** | **12 取 ETH base（`0x2875f5…`）** |
 | <img src="截图/CompoundV3-ETH-Bulker取ETH抵押交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Bulker取ETHBase交易-20261103.png" width="460"> |
-| **13 存 stETH（`0x6ebc1a…`）** | **15 存抵押 + 借款（`0xd920f5…`）** |
-| <img src="截图/CompoundV3-ETH-Bulker存stETH交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Bulker存抵押加借款交易-20261103.png" width="460"> |
+| **13 存 stETH（本人，`0xd4bd8c…`）** | **15 存抵押 + 借款（`0xd920f5…`）** |
+| <img src="截图/CompoundV3-ETH-存stETH本人交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Bulker存抵押加借款交易-20261103.png" width="460"> |
 | **16 领 COMP（`0x9f4925…`）** | **17 多市场领 COMP（`0xe569bc…`）** |
 | <img src="截图/CompoundV3-ETH-ClaimCOMP交易-20261103.png" width="460"> | <img src="截图/CompoundV3-ETH-Bulker多市场ClaimCOMP交易-20261103.png" width="460"> |
 
@@ -91,5 +101,4 @@
 ## 待确认
 
 - COMP 奖励已改由 Merkl 发放（连钱包后 Rewards 页只引导去 Merkl 领取），CometRewards `claim` 近期抽查 14 笔只有 2 笔真正领到 COMP（其余无 `RewardClaimed`），领 COMP（#16 / #17）是否还需纳入解析
-- 取回为 stETH（#14）前端是否仍提供：MainnetBulker 2025-01 至今无 `ACTION_WITHDRAW_STETH`，需连钱包确认 wstETH 行「−」是否还有 stETH 选项
 - cWBTCv3 当前处于暂停状态（前端公告），是否仍纳入解析范围
