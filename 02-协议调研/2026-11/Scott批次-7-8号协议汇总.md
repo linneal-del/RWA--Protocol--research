@@ -1,0 +1,27 @@
+# Scott 批次 7 / 8 号协议汇总
+
+> **来源**：Scott 2026-11-03 协议接入清单第 7、8 项
+> **调研日期**：2026-11-03 ｜ 各协议详情见下表文档链接，本页只做索引
+
+## 覆盖情况
+
+| 批次 | 链 | 协议 | 文档 | 交易类型 / 有样本 | 状态 |
+|---|---|---|---|---|---|
+| 7 | ETH | Lombard | [Lombard-ETH.md](../2026-08/Lombard-ETH.md) | 19 / 19 | ✅ |
+| 7 | ETH | Wrapped Beacon（wBETH） | [wBETH-ETH.md](../2026-10/wBETH-ETH.md) | 4 / 4 | ✅ |
+| 7 | ETH | EigenLayer | [EigenLayer-ETH.md](EigenLayer-ETH.md) | 14 / 13 | ✅ 缺 Redelegate |
+| 7 | ETH | Compound V3 | [CompoundV3-ETH.md](CompoundV3-ETH.md) | 17 / 16 | ✅ 缺取回为 stETH |
+| 7 | Base | Aerodrome | [Aerodrome.md](../2026-08/Aerodrome.md) | 28 / 26 | ✅ 缺拆分锁仓、升级 LP 仓位 |
+| 7 | Base | Aerodrome V3 | [Aerodrome-V3.md](../2026-08/Aerodrome-V3.md) | 12 / 11 | ✅ 缺锁仓到期取回 |
+| 8 | SUI | Haedal | [Haedal-SUI.md](../2026-10/Haedal-SUI.md) | 21 / 21 | ✅ |
+| 8 | SUI | Sui Staking | [SUI五协议-SUI.md §1](../2026-08/SUI五协议-SUI.md) | 4 / 4 | ✅ 无截图 |
+| 8 | SUI | NAVI | [Navi-SUI.md](../2026-10/Navi-SUI.md) | 18 / 17 | ✅ 缺 Optimize |
+| 8 | SUI | Scallop | [Scallop-SUI.md](../2026-10/Scallop-SUI.md) | 26 / 25 | ✅ 缺 Convert Dust |
+
+缺样本的类型均为链上近期无成功交易或仅白名单可调用，原因见各文档「交易类型覆盖」。
+
+## 待对齐
+
+- Aerodrome 2026-10-22 并入 Aero：gauge 已 kill、Vote 页关闭，V2 / V3 的质押、投票、领排放类交易是否仍纳入解析
+- Compound V3 的 COMP 奖励改由 Merkl 发放（前端 Rewards 页连钱包确认），CometRewards `claim` 是否仍纳入解析；cWBTCv3 暂停中是否纳入
+- Lombard 前端 Rewards 已下线、BARD 领取 10-29 结束，领 BARD 是否仍纳入解析

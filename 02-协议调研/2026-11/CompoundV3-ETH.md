@@ -90,6 +90,6 @@
 
 ## 待确认
 
-- COMP 奖励已改由 Merkl 发放，CometRewards `claim` 近期抽查 14 笔只有 2 笔真正领到 COMP（其余无 `RewardClaimed`），领 COMP（#16 / #17）是否还需纳入解析
+- COMP 奖励已改由 Merkl 发放（连钱包后 Rewards 页只引导去 Merkl 领取），CometRewards `claim` 近期抽查 14 笔只有 2 笔真正领到 COMP（其余无 `RewardClaimed`），领 COMP（#16 / #17）是否还需纳入解析
 - 取回为 stETH（#14）前端是否仍提供：MainnetBulker 2025-01 至今无 `ACTION_WITHDRAW_STETH`，需连钱包确认 wstETH 行「−」是否还有 stETH 选项
 - cWBTCv3 当前处于暂停状态（前端公告），是否仍纳入解析范围
